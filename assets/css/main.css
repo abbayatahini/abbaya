@@ -1808,6 +1808,31 @@ input, select, textarea {
 
 		header br {
 			display: none;
+			/* Header Styles */
+header {
+    padding: 20px;
+    background-color: #f8f6f3;
+}
+
+.logo img {
+    height: 60px; /* Adjust height */
+    width: auto; /* Maintain aspect ratio */
+    display: block; /* Block level for standalone presentation */
+    margin-bottom: 10px; /* Space below */
+    transition: box-shadow 0.3s ease-in-out; /* Add hover effect below */
+}
+
+.logo img:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Hover shadow for effect */
+}
+
+/* Responsive adjustments, add near existing responsive styles */
+
+@media (max-width: 600px) {
+    .logo img {
+        height: 40px; /* Smaller screen size adjustment */
+    }
+}
 		}
 
 	}
