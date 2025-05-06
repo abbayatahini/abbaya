@@ -1,21 +1,154 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
   <title>Abbaya Tahini</title>
+  <!-- Google Fonts: Montserrat & Lato -->
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <style>
-    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f8f6f3; }
-    header { background: #c2a678; color: white; padding: 40px 0; text-align: center; }
-    section { margin: 40px auto; width: 90%; max-width: 800px; }
-    h1 { margin: 0; font-size: 2.5rem; }
-    nav a { margin: 0 15px; color: #c2a678; text-decoration: none; font-weight: bold; }
-    .btn { display: inline-block; padding: 10px 20px; background: #c2a678; color: white; text-decoration: none; border-radius: 6px; margin-top: 20px; }
-    footer { text-align: center; padding: 20px 0; background: #eee; color: #888; }
+    :root {
+      --main-color: #c2a678;
+      --accent-color: #b97c36;
+      --cream: #f8f6f3;
+      --brown: #5c4033;
+    }
+    body {
+      font-family: 'Lato', Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: var(--cream);
+      color: var(--brown);
+    }
+    header {
+      background: linear-gradient(90deg, var(--main-color), var(--accent-color));
+      color: white;
+      padding: 60px 0 30px 0;
+      text-align: center;
+    }
+    .logo {
+      display: inline-block;
+      margin-bottom: 15px;
+    }
+    .logo img {
+      height: 70px;
+      border-radius: 50%;
+      box-shadow: 0 4px 24px #c2a67844;
+    }
+    h1 {
+      margin: 0;
+      font-size: 2.5rem;
+      letter-spacing: 1px;
+      font-family: 'Montserrat', sans-serif;
+    }
+    header p {
+      font-size: 1.25rem;
+      margin-top: 12px;
+      font-family: 'Lato', sans-serif;
+    }
+    nav {
+      margin-top: 24px;
+    }
+    nav a {
+      margin: 0 18px;
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      font-family: 'Montserrat', sans-serif;
+      transition: opacity 0.2s;
+    }
+    nav a:hover {
+      opacity: 0.7;
+    }
+    section {
+      margin: 60px auto 40px auto;
+      width: 94%;
+      max-width: 900px;
+      background: #fffbea;
+      border-radius: 18px;
+      padding: 40px 28px 32px 28px;
+      box-shadow: 0 4px 28px #b97c361a;
+    }
+    h2 {
+      color: var(--accent-color);
+      font-family: 'Montserrat', sans-serif;
+      letter-spacing: 1px;
+      margin-top: 0;
+    }
+    /* Product Cards */
+    .products-list {
+      display: flex;
+      gap: 24px;
+      flex-wrap: wrap;
+      padding: 0;
+      list-style: none;
+      margin: 28px 0 10px 0;
+    }
+    .product-card {
+      background: #fff7ea;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px #c2a67822;
+      padding: 22px 18px;
+      flex: 1;
+      min-width: 240px;
+      max-width: 330px;
+      margin: 0;
+      transition: transform 0.16s;
+    }
+    .product-card:hover {
+      transform: translateY(-6px) scale(1.025);
+      box-shadow: 0 8px 28px #c2a67844;
+    }
+    .product-name {
+      font-weight: bold;
+      color: var(--brown);
+      font-family: 'Montserrat', sans-serif;
+    }
+    .btn {
+      display: inline-block;
+      padding: 12px 36px;
+      background: linear-gradient(90deg, var(--main-color), var(--accent-color));
+      color: white;
+      text-decoration: none;
+      border-radius: 34px;
+      font-size: 1.1rem;
+      margin-top: 32px;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 600;
+      letter-spacing: 1px;
+      box-shadow: 0 2px 12px #c2a67833;
+      transition: background 0.2s, color 0.2s;
+    }
+    .btn:hover {
+      background: var(--brown);
+      color: #f8f6f3;
+    }
+    /* Contact Section */
+    #contact a { color: var(--accent-color); text-decoration: underline; }
+    #contact a:hover { filter: brightness(0.7); }
+    /* Footer */
+    footer {
+      text-align: center;
+      padding: 28px 0;
+      background: #eee3c9;
+      color: #8a7768;
+      letter-spacing: 1px;
+      font-size: 1rem;
+      border-top: 1px solid #e0d3bb;
+      margin-top: 38px;
+    }
+    @media (max-width: 600px) {
+      section { padding: 22px 4vw; }
+      .products-list { flex-direction: column; gap: 16px; }
+    }
   </style>
 </head>
 <body>
   <header>
+    <!-- Add your logo below (uncomment and add image if desired) -->
+    <!-- <span class="logo"><img src="logo.png" alt="Abbaya logo"></span> -->
     <h1>Abbaya Tahini</h1>
-    <p>Pure, creamy, authentic tahini—made for you.</p>
+    <p>Pure, creamy, authentic tahini — made for you.</p>
     <nav>
       <a href="#about">About</a>
       <a href="#products">Products</a>
@@ -24,20 +157,30 @@
   </header>
   <section id="about">
     <h2>About Abbaya</h2>
-    <p>Abbaya brings you the finest, stone-ground tahini from carefully selected sesame seeds. Our passion is sharing the taste of tradition, crafted with care for your table.</p>
+    <p>
+      Welcome to Abbaya, where tradition meets perfection. Our tahini is crafted from premium, hand-selected sesame seeds, gently stone-ground to silky smoothness. With each jar, we bring you a taste of heritage, wellness, and warmth — perfect for drizzling, dipping, baking, and more.
+    </p>
   </section>
   <section id="products">
     <h2>Our Tahini</h2>
-    <ul>
-      <li><strong>Classic Tahini (250g jar):</strong> Smooth and rich—perfect for dips, dressings, and baking.</li>
-      <li><strong>Organic Tahini:</strong> Made from 100% organic sesame seeds.</li>
+    <ul class="products-list">
+      <li class="product-card">
+        <span class="product-name">Classic Tahini (250g jar)</span>
+        <p>Rich, creamy, and full of flavor — made for dips, dressings, and everything in between.</p>
+      </li>
+      <li class="product-card">
+        <span class="product-name">Organic Tahini</span>
+        <p>100% organic sesame seeds, stone-ground for exceptional taste and nutrition.</p>
+      </li>
     </ul>
     <a href="mailto:order@abbaya.com" class="btn">Order Now</a>
   </section>
   <section id="contact">
     <h2>Contact Us</h2>
-    <p>Email: <a href="mailto:info@abbaya.com">info@abbaya.com</a></p>
-    <p>Instagram: <a href="https://instagram.com/abbaya" target="_blank">@abbaya</a></p>
+    <p>
+      Email: <a href="mailto:info@abbaya.com">info@abbaya.com</a><br>
+      Instagram: <a href="https://instagram.com/abbaya" target="_blank">@abbaya</a>
+    </p>
   </section>
   <footer>
     &copy; 2024 Abbaya Tahini. All rights reserved.
