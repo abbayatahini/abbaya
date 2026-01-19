@@ -21,10 +21,36 @@
         background: var(--brand-dark);
     }
     
-    /* Banner/Hero section overlay */
-    #banner {
-        background-color: var(--brand-dark);
-        background: linear-gradient(to bottom, rgba(44, 24, 16, 0.7), rgba(44, 24, 16, 0.9));
+/* Banner/Hero section with background image */
+#banner {
+    background-image: url('../images/field.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    position: relative;
+}
+
+/* Dark overlay so text is readable */
+#banner::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(44, 24, 16, 0.5);
+    z-index: 0;
+}
+
+#banner .inner {
+    position: relative;
+    z-index: 1;
+}
+
+#banner .more {
+    position: relative;
+    z-index: 1;
+}
     }
     
     /* Primary buttons */
@@ -387,6 +413,7 @@
 
 	</body>
 </html>
+
 
 
 
