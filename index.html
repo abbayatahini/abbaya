@@ -15,6 +15,28 @@
     <meta property="og:locale" content="en_GB">
 		<link rel="stylesheet" href="assets/css/main.css" />
 		<style>
+			/* Skip link - hidden until focused */
+.skip-link {
+    position: absolute;
+    top: -9999px;  /* off-screen */
+    left: -9999px;
+    z-index: 9999;
+    background: var(--brand-primary);  /* your gold */
+    color: var(--brand-dark);          /* dark text for contrast */
+    padding: 1em 1.5em;
+    font-weight: bold;
+    text-decoration: none;
+    border: 2px solid var(--brand-secondary);
+}
+
+.skip-link:focus {
+    top: 10px;     /* visible at top when tabbed to */
+    left: 10px;
+}
+
+.skip-link:focus-visible {  /* modern browsers only show on keyboard focus */
+    outline: none;  /* remove default outline if you want custom */
+}
     /* Abbaya Tahini Custom Brand Colors */
     
     /* Main brand color - Change this to your preferred color! */
@@ -126,7 +148,7 @@
 		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
 	</head>
 	<body class="landing is-preload">
-
+<a href="#main-content" class="skip-link">Skip to main content</a>
 		<!-- Page Wrapper -->
 		<div id="page-wrapper">
 
@@ -422,6 +444,7 @@
 
 	</body>
 </html>
+
 
 
 
