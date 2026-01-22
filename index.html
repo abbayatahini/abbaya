@@ -91,10 +91,15 @@
 #banner {
     background-image: url('images/field.jpg');
     background-size: cover;
-    background-position: center;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-position: center center;
     background-repeat: no-repeat;
+    background-attachment: scroll;
     position: relative;
-	background-color: var(--brand-dark);
+    background-color: var(--brand-dark);
+    min-height: 100vh;
 }
 
 /* Dark overlay so text is readable */
@@ -118,8 +123,14 @@
     position: relative;
     z-index: 1;
 }
+    /* Mobile background fix */
+@media only screen and (max-width: 768px) {
+    #banner {
+        background-attachment: scroll;
+        background-position: center center;
+        background-size: cover;
     }
-    
+}
     /* Primary buttons */
     .button.primary {
         background-color: var(--brand-primary) !important;
@@ -489,6 +500,7 @@ color: var(--brand-dark);
 		
 	</body>
 </html>
+
 
 
 
