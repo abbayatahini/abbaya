@@ -212,6 +212,37 @@ color: var(--brand-dark);
     }
 </style>
 		<noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
+	    ...
+    /* existing styles ending here */
+    </style>
+
+    <!-- PASTE THE NEW CODE HERE -->
+    <style>
+    /* --- MOBILE TEXT FIXES --- */
+    @media screen and (max-width: 768px) {
+        p, li, blockquote {
+            font-size: 18px !important;
+            line-height: 1.6 !important;
+        }
+        table td, table th {
+            font-size: 16px !important;
+        }
+        table small {
+            font-size: 14px !important;
+        }
+        .button {
+            font-size: 16px !important;
+            height: 3.5em !important;
+            line-height: 3.5em !important;
+        }
+        h2 {
+            font-size: 1.8em !important;
+        }
+    }
+    </style>
+
+</head>  <-- The code sits right on top of this tag
+<body class="landing is-preload">
 	</head>
 	<body class="landing is-preload">
 <a href="#main-content" class="skip-link">Skip to main content</a>
@@ -529,6 +560,7 @@ Imported fresh to Portugal. Rich, creamy, and traditional.</p>
 		
 	</body>
 </html>
+
 
 
 
