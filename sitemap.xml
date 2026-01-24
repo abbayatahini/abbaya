@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://abbayatahini.com/</loc>  <!-- Your homepage -->
+    <lastmod>2026-01-24</lastmod>  <!-- Update with today's date in YYYY-MM-DD -->
+    <changefreq>monthly</changefreq>  <!-- How often it changes: daily, weekly, monthly -->
+    <priority>1.0</priority>  <!-- 0.0 to 1.0; 1.0 for most important pages -->
+  </url>
+  <!-- Add more <url> blocks for other pages -->
+  <url>
+    <loc>https://yourdomain.com/elements.html</loc>
+    <lastmod>2026-01-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://yourdomain.com/generic.html</loc>
+    <lastmod>2026-01-24</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
+  </url>
+</urlset>
