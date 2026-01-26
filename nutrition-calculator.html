@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vegan Nutrition Calculator | Abbaya Tahini</title>
+  <meta name="description" content="Free vegan nutrition calculator. Check if your meal has all essential amino acids, vitamins, minerals and healthy fats. Get suggestions for complete plant-based nutrition.">
+  <link rel="canonical" href="https://abbayatahini.com/nutrition-calculator.html">
+  
+  <!-- Open Graph -->
+  <meta property="og:title" content="Vegan Nutrition Calculator | Abbaya Tahini">
+  <meta property="og:description" content="Check if your vegan meal is nutritionally complete. Free tool for plant-based nutrition.">
+  <meta property="og:url" content="https://abbayatahini.com/nutrition-calculator.html">
+  
+  <link rel="stylesheet" href="assets/css/main.css">
+  
+  <style>
+    /* Calculator Specific Styles */
+    .calculator-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2em;
+    }
+
+    .calculator-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2em;
+      margin-top: 2em;
+    }
+
+    @media (max-width: 768px) {
+      .calculator-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .ingredient-panel, .results-panel {
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 12px;
+      padding: 2em;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    }
+
+    .ingredient-panel h3, .results-panel h3 {
+      color: #333;
+      margin-bottom: 1em;
+      padding-bottom: 0.5em;
+      border-bottom: 2px solid #c9a227;
+    }
+
+    /* Category Tabs */
+    .category-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5em;
+      margin-bottom: 1.5em;
+    }
+
+    .category-tab {
+      padding: 0.5em 1em;
+      border: 2px solid #c9a227;
+      background: white;
+      color: #333;
+      border-radius: 25px;
+      cursor: pointer;
+      font-size: 0.9em;
+      transition: all 0.3s ease;
+    }
+
+    .category-tab:hover, .category-tab.active {
+      background: #c9a227;
+      color: white;
+    }
+
+    /* Ingredient List */
+    .ingredient-list {
+      max-height: 400px;
+      overflow-y: auto;
+      border: 1px solid #eee;
+      border-radius: 8px;
+      padding: 1em;
+    }
+
+    .ingredient-item {
+      display: flex;
+      align-items: center;
+      padding: 0.75em;
+      border-bottom: 1px solid #f0f0f0;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .ingredient-item:hover {
+      background: #f9f9f9;
+    }
+
+    .ingredient-item input[type="checkbox"] {
+      margin-right: 1em;
+      width: 20px;
+      height: 20px;
+      accent-color: #c9a227;
+    }
+
+    .ingredient-item label {
+      flex: 1;
+      cursor: pointer;
+      color: #333;
+    }
+
+    .ingredient-item .serving {
+      color: #888;
+      font-size: 0.85em;
+    }
+
+    /* Selected Ingredients */
+    .selected-ingredients {
+      margin-top: 1.5em;
+      padding: 1em;
+      background: #f9f9f9;
+      border-radius: 8px;
+    }
+
+    .selected-ingredients h4 {
+      color: #333;
+      margin-bottom: 0.5em;
+    }
+
+    .selected-tag {
+      display: inline-block;
+      background: #c9a227;
+      color: white;
+      padding: 0.3em 0.8em;
+      border-radius: 15px;
+      margin: 0.25em;
+      font-size: 0.85em;
+    }
+
+    .selected-tag .remove {
+      margin-left: 0.5em;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    /* Results */
+    .nutrition-category {
+      margin-bottom: 1.5em;
+    }
+
+    .nutrition-category h4 {
+      color: #333;
+      margin-bottom: 0.75em;
+      display: flex;
+      align-items: center;
+      gap: 0.5em;
+    }
+
+    .nutrition-category h4 .status-icon {
+      font-size: 1.2em;
+    }
+
+    .nutrient-bar {
+      margin-bottom: 0.75em;
+    }
+
+    .nutrient-bar .label {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 0.25em;
+      font-size: 0.9em;
+      color: #555;
+    }
+
+    .nutrient-bar .bar {
+      height: 8px;
+      background: #eee;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .nutrient-bar .bar .fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.3s ease;
+    }
+
+    .fill.low { background: linear-gradient(90deg, #ff6b6b, #ee5a5a); }
+    .fill.medium { background: linear-gradient(90deg, #ffd93d, #f9c846); }
+    .fill.good { background: linear-gradient(90deg, #6bcb77, #4caf50); }
+    .fill.excess { background: linear-gradient(90deg, #4facfe, #00f2fe); }
+
+    /* Suggestions */
+    .suggestions {
+      margin-top: 1.5em;
+      padding: 1em;
+      background: #fff8e7;
+      border-radius: 8px;
+      border-left: 4px solid #c9a227;
+    }
+
+    .suggestions h4 {
+      color: #333;
+      margin-bottom: 0.75em;
+    }
+
+    .suggestion-item {
+      padding: 0.5em 0;
+      color: #555;
+      font-size: 0.95em;
+    }
+
+    .suggestion-item strong {
+      color: #c9a227;
+    }
+
+    /* Summary Score */
+    .meal-score {
+      text-align: center;
+      padding: 1.5em;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      border-radius: 12px;
+      color: white;
+      margin-bottom: 1.5em;
+    }
+
+    .meal-score .score {
+      font-size: 3em;
+      font-weight: bold;
+    }
+
+    .meal-score .score-label {
+      font-size: 1.1em;
+      opacity: 0.9;
+    }
+
+    /* Clear Button */
+    .clear-btn {
+      background: #ff6b6b;
+      color: white;
+      border: none;
+      padding: 0.75em 1.5em;
+      border-radius: 25px;
+      cursor: pointer;
+      margin-top: 1em;
+      transition: background 0.3s;
+    }
+
+    .clear-btn:hover {
+      background: #ee5a5a;
+    }
+
+    /* Tahini Highlight */
+    .tahini-highlight {
+      background: linear-gradient(135deg, #c9a227 0%, #a68523 100%);
+      color: white;
+      padding: 1em;
+      border-radius: 8px;
+      margin-top: 1em;
+      text-align: center;
+    }
+
+    .tahini-highlight a {
+      color: white;
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body class="is-preload">
+
+  <!-- Header -->
+  <header id="header">
+    <div class="inner">
+      <a href="index.html" class="logo">Abbaya Tahini</a>
+      <nav id="nav">
+        <a href="index.html">Home</a>
+        <a href="index.html#one">About</a>
+        <a href="index.html#shop">Shop</a>
+        <a href="index.html#blog">Blog</a>
+        <a href="nutrition-calculator.html">Nutrition Calculator</a>
+      </nav>
+      <a href="#navPanel" class="navPanelToggle"><span class="fa fa-bars"></span></a>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <section id="main" class="wrapper style1">
+    <div class="inner calculator-container">
+      
+      <header class="major">
+        <h1>🥗 Vegan Nutrition Calculator</h1>
+        <p>Build your meal and check if it's nutritionally complete</p>
+      </header>
+
+      <div class="calculator-grid">
+        
+        <!-- Left Panel: Ingredients -->
+        <div class="ingredient-panel">
+          <h3>📦 Select Ingredients</h3>
+          
+          <!-- Category Tabs -->
+          <div class="category-tabs">
+            <button class="category-tab active" data-category="all">All</button>
+            <button class="category-tab" data-category="legumes">Legumes</button>
+            <button class="category-tab" data-category="grains">Grains</button>
+            <button class="category-tab" data-category="nuts-seeds">Nuts & Seeds</button>
+            <button class="category-tab" data-category="vegetables">Vegetables</button>
+            <button class="category-tab" data-category="fruits">Fruits</button>
+            <button class="category-tab" data-category="other">Other</button>
+          </div>
+
+          <!-- Ingredient List -->
+          <div class="ingredient-list" id="ingredientList">
+            <!-- Populated by JavaScript -->
+          </div>
+
+          <!-- Selected Ingredients -->
+          <div class="selected-ingredients">
+            <h4>🍽️ Your Meal:</h4>
+            <div id="selectedTags">
+              <span style="color: #888;">No ingredients selected yet</span>
+            </div>
+            <button class="clear-btn" onclick="clearAll()">Clear All</button>
+          </div>
+        </div>
+
+        <!-- Right Panel: Results -->
+        <div class="results-panel">
+          <h3>📊 Nutrition Analysis</h3>
+
+          <!-- Meal Score -->
+          <div class="meal-score">
+            <div class="score" id="mealScore">0%</div>
+            <div class="score-label">Meal Completeness</div>
+          </div>
+
+          <!-- Essential Amino Acids -->
+          <div class="nutrition-category" id="aminoAcids">
+            <h4><span class="status-icon">🔴</span> Essential Amino Acids</h4>
+            <div id="aminoAcidBars"></div>
+          </div>
+
+          <!-- Vitamins -->
+          <div class="nutrition-category" id="vitamins">
+            <h4><span class="status-icon">🔴</span> Key Vitamins</h4>
+            <div id="vitaminBars"></div>
+          </div>
+
+          <!-- Minerals -->
+          <div class="nutrition-category" id="minerals">
+            <h4><span class="status-icon">🔴</span> Essential Minerals</h4>
+            <div id="mineralBars"></div>
+          </div>
+
+          <!-- Fats -->
+          <div class="nutrition-category" id="fats">
+            <h4><span class="status-icon">🔴</span> Healthy Fats</h4>
+            <div id="fatBars"></div>
+          </div>
+
+          <!-- Suggestions -->
+          <div class="suggestions" id="suggestions">
+            <h4>💡 Suggestions to Complete Your Meal:</h4>
+            <div id="suggestionList">
+              <p>Select some ingredients to get personalized suggestions.</p>
+            </div>
+          </div>
+
+          <!-- Tahini Promo -->
+          <div class="tahini-highlight" id="tahiniPromo" style="display: none;">
+            <strong>💡 Did you know?</strong><br>
+            Adding tahini provides calcium, iron, zinc, and healthy fats!<br>
+            <a href="index.html#shop">Try Abbaya Tahini →</a>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer id="footer">
+    <div class="inner">
+      <ul class="copyright">
+        <li>&copy; 2025 Abbaya Tahini</li>
+        <li>Coimbra, Portugal</li>
+      </ul>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="assets/js/jquery.min.js"></script>
+  <script src="assets/js/skel.min.js"></script>
+  <script src="assets/js/util.js"></script>
+  <script src="assets/js/main.js"></script>
+
+  <script>
+    // ============================================
+    // VEGAN NUTRITION DATABASE
+    // Values per standard serving size
+    // ============================================
+    
+    const ingredients = [
+      // LEGUMES
+      {
+        id: 'chickpeas',
+        name: 'Chickpeas',
+        category: 'legumes',
+        serving: '1 cup cooked (164g)',
+        nutrients: {
+          protein: 14.5,
+          histidine: 0.4, isoleucine: 0.6, leucine: 1.0, lysine: 0.9,
+          methionine: 0.2, phenylalanine: 0.7, threonine: 0.5, tryptophan: 0.1, valine: 0.6,
+          vitaminA: 1, vitaminC: 2, vitaminK: 6.6, vitaminB6: 0.2, folate: 282,
+          vitaminE: 0.6, thiamin: 0.2, riboflavin: 0.1, niacin: 0.9,
+          calcium: 80, iron: 4.7, magnesium: 78, zinc: 2.5, potassium: 477,
+          phosphorus: 276, selenium: 6, copper: 0.6,
+          omega3: 0.1, omega6: 2.6, fiber: 12.5
+        }
+      },
+      {
+        id: 'lentils',
+        name: 'Lentils',
+        category: 'legumes',
+        serving: '1 cup cooked (198g)',
+        nutrients: {
+          protein: 17.9,
+          histidine: 0.5, isoleucine: 0.8, leucine: 1.3, lysine: 1.2,
+          methionine: 0.2, phenylalanine: 0.9, threonine: 0.6, tryptophan: 0.2, valine: 0.9,
+          vitaminA: 8, vitaminC: 3, vitaminK: 3.4, vitaminB6: 0.4, folate: 358,
+          vitaminE: 0.2, thiamin: 0.3, riboflavin: 0.1, niacin: 2.1,
+          calcium: 38, iron: 6.6, magnesium: 71, zinc: 2.5, potassium: 731,
+          phosphorus: 356, selenium: 5.5, copper: 0.5,
+          omega3: 0.1, omega6: 0.4, fiber: 15.6
+        }
+      },
+      {
+        id: 'black-beans',
+        name: 'Black Beans',
+        category: 'legumes',
+        serving: '1 cup cooked (172g)',
+        nutrients: {
+          protein: 15.2,
+          histidine: 0.4, isoleucine: 0.7, leucine: 1.3, lysine: 1.1,
+          methionine: 0.2, phenylalanine: 0.9, threonine: 0.7, tryptophan: 0.2, valine: 0.8,
+          vitaminA: 6, vitaminC: 0, vitaminK: 5.7, vitaminB6: 0.1, folate: 256,
+          vitaminE: 0.1, thiamin: 0.4, riboflavin: 0.1, niacin: 0.9,
+          calcium: 46, iron: 3.6, magnesium: 120, zinc: 1.9, potassium: 611,
+          phosphorus: 241, selenium: 2, copper: 0.4,
+          omega3: 0.1, omega6: 0.2, fiber: 15
+        }
+      },
+      {
+        id: 'tofu',
+        name: 'Tofu (Firm)',
+        category: 'legumes',
+        serving: '1/2 cup (126g)',
+        nutrients: {
+          protein: 21.8,
+          histidine: 0.5, isoleucine: 1.0, leucine: 1.6, lysine: 1.3,
+          methionine: 0.3, phenylalanine: 1.0, threonine: 0.8, tryptophan: 0.3, valine: 1.0,
+          vitaminA: 18, vitaminC: 0.2, vitaminK: 2.4, vitaminB6: 0.1, folate: 27,
+          vitaminE: 0.1, thiamin: 0.2, riboflavin: 0.1, niacin: 0.2,
+          calcium: 861, iron: 3.4, magnesium: 73, zinc: 2, potassium: 299,
+          phosphorus: 239, selenium: 21.8, copper: 0.5,
+          omega3: 0.7, omega6: 3.6, fiber: 2.9
+        }
+      },
+      {
+        id: 'edamame',
+        name: 'Edamame',
+        category: 'legumes',
+        serving: '1 cup (155g)',
+        nutrients: {
+          protein: 18.5,
+          histidine: 0.5, isoleucine: 0.9, leucine: 1.5, lysine: 1.2,
+          methionine: 0.3, phenylalanine: 1.0, threonine: 0.8, tryptophan: 0.2, valine: 0.9,
+          vitaminA: 23, vitaminC: 9.5, vitaminK: 41.4, vitaminB6: 0.2, folate: 482,
+          vitaminE: 0.7, thiamin: 0.3, riboflavin: 0.2, niacin: 1.4,
+          calcium: 98, iron: 3.5, magnesium: 99, zinc: 2.1, potassium: 676,
+          phosphorus: 262, selenium: 1.4, copper: 0.5,
+          omega3: 0.6, omega6: 2.2, fiber: 8.1
+        }
+      },
+
+      // GRAINS
+      {
+        id: 'quinoa',
+        name: 'Quinoa',
+        category: 'grains',
+        serving: '1 cup cooked (185g)',
+        nutrients: {
+          protein: 8.1,
+          histidine: 0.3, isoleucine: 0.4, leucine: 0.6, lysine: 0.5,
+          methionine: 0.2, phenylalanine: 0.4, threonine: 0.3, tryptophan: 0.1, valine: 0.4,
+          vitaminA: 9, vitaminC: 0, vitaminK: 0, vitaminB6: 0.2, folate: 78,
+          vitaminE: 1.2, thiamin: 0.2, riboflavin: 0.2, niacin: 0.8,
+          calcium: 31, iron: 2.8, magnesium: 118, zinc: 2, potassium: 318,
+          phosphorus: 281, selenium: 5.2, copper: 0.4,
+          omega3: 0.1, omega6: 1.9, fiber: 5.2
+        }
+      },
+      {
+        id: 'brown-rice',
+        name: 'Brown Rice',
+        category: 'grains',
+        serving: '1 cup cooked (195g)',
+        nutrients: {
+          protein: 5.5,
+          histidine: 0.1, isoleucine: 0.2, leucine: 0.4, lysine: 0.2,
+          methionine: 0.1, phenylalanine: 0.3, threonine: 0.2, tryptophan: 0.1, valine: 0.3,
+          vitaminA: 0, vitaminC: 0, vitaminK: 1.2, vitaminB6: 0.3, folate: 8,
+          vitaminE: 0.1, thiamin: 0.2, riboflavin: 0.1, niacin: 3,
+          calcium: 20, iron: 1, magnesium: 86, zinc: 1.2, potassium: 154,
+          phosphorus: 162, selenium: 19.1, copper: 0.2,
+          omega3: 0, omega6: 0.6, fiber: 3.5
+        }
+      },
+      {
+        id: 'oats',
+        name: 'Oats',
+        category: 'grains',
+        serving: '1 cup cooked (234g)',
+        nutrients: {
+          protein: 6,
+          histidine: 0.1, isoleucine: 0.2, leucine: 0.4, lysine: 0.2,
+          methionine: 0.1, phenylalanine: 0.3, threonine: 0.2, tryptophan: 0.1, valine: 0.3,
+          vitaminA: 0, vitaminC: 0, vitaminK: 0.5, vitaminB6: 0.1, folate: 14,
+          vitaminE: 0.2, thiamin: 0.2, riboflavin: 0.1, niacin: 0.5,
+          calcium: 21, iron: 2.1, magnesium: 63, zinc: 2.3, potassium: 164,
+          phosphorus: 180, selenium: 12.6, copper: 0.2,
+          omega3: 0, omega6: 1, fiber: 4
+        }
+      },
+      {
+        id: 'whole-wheat-bread',
+        name: 'Whole Wheat Bread',
+        category: 'grains',
+        serving: '2 slices (64g)',
+        nutrients: {
+          protein: 7.2,
+          histidine: 0.2, isoleucine: 0.3, leucine: 0.5, lysine: 0.2,
+          methionine: 0.1, phenylalanine: 0.4, threonine: 0.2, tryptophan: 0.1, valine: 0.3,
+          vitaminA: 0, vitaminC: 0, vitaminK: 1.4, vitaminB6: 0.1, folate: 30,
+          vitaminE: 0.4, thiamin: 0.2, riboflavin: 0.1, niacin: 2.8,
+          calcium: 60, iron: 2, magnesium: 46, zinc: 1.1, potassium: 138,
+          phosphorus: 136, selenium: 18, copper: 0.2,
+          omega3: 0, omega6: 0.8, fiber: 4
+        }
+      },
+      {
+        id: 'buckwheat',
+        name: 'Buckwheat',
+        category: 'grains',
+        serving: '1 cup cooked (168g)',
+        nutrients: {
+          protein: 5.7,
+          histidine: 0.2, isoleucine: 0.2, leucine: 0.4, lysine: 0.3,
+          methionine: 0.1, phenylalanine: 0.3, threonine: 0.2, tryptophan: 0.1, valine: 0.3,
+          vitaminA: 0, vitaminC: 0, vitaminK: 3.7, vitaminB6: 0.2, folate: 24,
+          vitaminE: 0.1, thiamin: 0.1, riboflavin: 0.1, niacin: 1.6,
+          calcium: 12, iron: 1.3, magnesium: 86, zinc: 1, potassium: 148,
+          phosphorus: 118, selenium: 4.4, copper: 0.3,
+          omega3: 0, omega6: 0.5, fiber: 4.5
+        }
+      },
+
+      // NUTS & SEEDS
+      {
+        id: 'tahini',
+        name: '⭐ Tahini (Abbaya)',
+        category: 'nuts-seeds',
+        serving: '2 tbsp (30g)',
+        nutrients: {
+          protein: 5.1,
+          histidine: 0.1, isoleucine: 0.2, leucine: 0.4, lysine: 0.2,
+          methionine: 0.2, phenylalanine: 0.3, threonine: 0.2, tryptophan: 0.1, valine: 0.3,
+          vitaminA: 3, vitaminC: 0, vitaminK: 0, vitaminB6: 0.1, folate: 28,
+          vitaminE: 0.2, thiamin: 0.4, riboflavin: 0.1, niacin: 1.6,
+          calcium: 128, iron: 2.7, magnesium: 28, zinc: 1.4, potassium: 124,
+          phosphorus: 220, selenium: 10.2, copper: 0.5,
+          omega3: 0.1, omega6: 7.3, fiber: 1.4
+        }
+      },
+      {
+        id: 'almonds',
+        name: 'Almonds',
+        category: 'nuts-seeds',
+        serving: '1/4 cup (35g)',
+        nutrients: {
+          protein: 7.4,
+          histidine: 0.2, isoleucine: 0.3, leucine: 0.5, lysine: 0.2,
+          methionine: 0.1, phenylalanine: 0.4, threonine: 0.2, tryptophan: 0.1, valine: 0.3,
+          vitaminA: 0, vitaminC: 0, vitaminK: 0, vitaminB6: 0, folate: 14,
+          vitaminE: 9.1, thiamin: 0.1, riboflavin: 0.4, niacin: 1.3,
+          calcium: 93, iron: 1.3, magnesium: 96, zinc: 1.1, potassium: 257,
+          phosphorus: 172, selenium: 0.9, copper: 0.4,
+          omega3: 0, omega6: 4.4, fiber: 4.4
+        }
+      },
+      {
+        id: 'walnuts',
+        name: 'Walnuts',
+        category: 'nuts-seeds',
+        serving: '1/4 cup (30g)',
+        nutrients: {
+          protein: 4.6,
+          histidine: 0.1, isoleucine: 0.1, leucine: 0.2, lysine: 0.1,
+          methionine: 0.1, phenylalanine: 0.2, threonine: 0.1, tryptophan: 0, valine: 0.2,
+          vitaminA: 1, vitaminC: 0.4, vitaminK: 0.8, vitaminB6: 0.2, folate: 29,
+          vitaminE: 0.2, thiamin: 0.1, riboflavin: 0, niacin: 0.3,
+          calcium: 29, iron: 0.9, magnesium: 47, zinc: 0.9, potassium: 132,
+          phosphorus: 104, selenium: 1.5, copper: 0.5,
+          omega3: 2.7, omega6: 11.4, fiber: 2
+        }
+      },
+      {
+        id: 'chia-seeds',
+        name: 'Chia Seeds',
+        category: 'nuts-seeds',
+        serving: '2 tbsp (28g)',
+        nutrients: {
+          protein: 4.7,
+          histidine: 0.1, isoleucine: 0.2, leucine: 0.3, lysine: 0.2,
+          methionine: 0.1, phenylalanine: 0.2, threonine: 0.2, tryptophan: 0.1, valine: 0.2,
+          vitaminA: 15, vitaminC: 0.4, vitaminK: 0, vitaminB6: 0, folate: 14,
+          vitaminE: 0.1, thiamin: 0.2, riboflavin: 0, niacin: 2.5,
+          calcium: 179, iron: 2.2, magnesium: 95, zinc: 1.3, potassium: 115,
+          phosphorus: 244, selenium: 15.6, copper: 0.3,
+          omega3: 5, omega6: 1.6, fiber: 9.8
+        }
+      },
+      {
+        id: 'flaxseeds',
+        name: 'Flaxseeds',
+        category: 'nuts-seeds',
+        serving: '2 tbsp (20g)',
+        nutrients: {
+          protein: 3.6,
+          histidine: 0.1, isoleucine: 0.2, leucine: 0.2, lysine: 0.2,
+          methionine: 0.1, phenylalanine: 0.2, threonine: 0.1, tryptophan: 0.1, valine: 0.2,
+          vitaminA: 0, vitaminC: 0.1, vitaminK: 0.9, vitaminB6: 0.1, folate: 17,
+          vitaminE: 0.1, thiamin: 0.3, riboflavin: 0, niacin: 0.6,
+          calcium: 51, iron: 1.1, magnesium: 78, zinc: 0.9, potassium: 163,
+          phosphorus: 129, selenium: 5.1, copper: 0.2,
+          omega3: 4.6, omega6: 1.2, fiber: 5.5
+        }
+      },
+      {
+        id: 'hemp-seeds',
+        name: 'Hemp Seeds',
+        category: 'nuts-seeds',
+        serving: '3 tbsp (30g)',
+        nutrients: {
+          protein: 9.5,
+          histidine: 0.3, isoleucine: 0.4, leucine: 0.6, lysine: 0.4,
+          methionine: 0.3, phenylalanine: 0.5, threonine: 0.4, tryptophan: 0.1, valine: 0.5,
+          vitaminA: 3, vitaminC: 0.2, vitaminK: 0, vitaminB6: 0.1, folate: 33,
+          vitaminE: 0.2, thiamin: 0.4, riboflavin: 0.1, niacin: 2.8,
+          calcium: 21, iron: 2.4, magnesium: 210, zinc: 3, potassium: 360,
+          phosphorus: 495, selenium: 0.3, copper: 0.5,
+          omega3: 2.6, omega6: 8.2, fiber: 1.2
+        }
+      },
+      {
+        id: 'pumpkin-seeds',
+        name: 'Pumpkin Seeds',
+        category: 'nuts-seeds',
+        serving: '1/4 cup (32g)',
+        nutrients: {
+          protein: 8.5,
+          histidine: 0.2, isoleucine: 0.4, leucine: 0.6, lysine: 0.3,
+          methionine: 0.2, phenylalanine: 0.4, threonine: 0.3, tryptophan: 0.2, valine: 0.4,
+          vitaminA: 5, vitaminC: 0.6, vitaminK: 2.3, vitaminB6: 0, folate: 16,
+          vitaminE: 0.1, thiamin: 0.1, riboflavin: 0, niacin: 0.3,
+          calcium: 15, iron: 2.8, magnesium: 168, zinc: 2.5, potassium: 260,
+          phosphorus: 397, selenium: 3, copper: 0.4,
+          omega3: 0.1, omega6: 6.4, fiber: 1.8
+        }
+      },
+      {
+        id: 'sunflower-seeds',
+        name: 'Sunflower Seeds',
+        category: 'nuts-seeds',
+        serving: '1/4 cup (35g)',
+        nutrients: {
+          protein: 7.3,
+          histidine: 0.2, isoleucine: 0.3, leucine: 0.5, lysine: 0.3,
+          methionine: 0.1, phenylalanine: 0.3, threonine: 0.3, tryptophan: 0.1, valine: 0.4,
+          vitaminA: 1, vitaminC: 0.5, vitaminK: 0, vitaminB6: 0.5, folate: 80,
+          vitaminE: 12.3, thiamin: 0.5, riboflavin: 0.1, niacin: 2.9,
+          calcium: 27, iron: 1.8, magnesium: 114, zinc: 1.8, potassium: 227,
+          phosphorus: 365, selenium: 18.6, copper: 0.6,
+          omega3: 0, omega6: 8.1, fiber: 3
+        }
+      },
+      {
+        id: 'cashews',
+        name: 'Cashews',
+        category: 'nuts-seeds',
+        serving: '1/4 cup (32g)',
+        nutrients: {
+          protein: 5.2,
+          histidine: 0.1, isoleucine: 0.2, leucine: 0.4, lysine: 0.3,
+          methionine: 0.1, phenylalanine: 0.3, threonine: 0.2, tryptophan: 0.1, valine: 0.3,
+          vitaminA: 0, vitaminC: 0.2, vitaminK: 11, vitaminB6: 0.1, folate: 22,
+          vitaminE: 0.3, thiamin: 0.1, riboflavin: 0, niacin: 0.3,
+          calcium: 12, iron: 2.1, magnesium: 92, zinc: 1.9, potassium: 208,
+          phosphorus: 188, selenium: 6.3, copper: 0.7,
+          omega3: 0, omega6: 2.5, fiber: 1.1
+        }
+      },
+
+      // VEGETABLES
+      {
+        id: 'spinach',
+        name: 'Spinach',
+        category: 'vegetables',
+        serving: '2 cups raw (60g)',
+        nutrients: {
+          protein: 1.7,
+          histidine: 0, isoleucine: 0.1, leucine: 0.1, lysine: 0.1,
+          methionine: 0, phenylalanine: 0.1, threonine: 0.1, tryptophan: 0, valine: 0.1,
+          vitaminA: 281, vitaminC: 17, vitaminK: 290, vitaminB6: 0.1, folate: 116,
+          vitaminE: 1.2, thiamin: 0, riboflavin: 0.1, niacin: 0.4,
+          calcium: 59, iron: 1.6, magnesium: 47, zinc: 0.3, potassium: 334,
+          phosphorus: 29, selenium: 0.6, copper: 0.1,
+          omega3: 0.1, omega6: 0, fiber: 1.3
+        }
+      },
+      {
+        id: 'kale',
+        name: 'Kale',
+        category: 'vegetables',
+        serving: '2 cups chopped (80g)',
+        nutrients: {
+          protein: 2.2,
+          histidine: 0, isoleucine: 0.1, leucine: 0.1, lysine: 0.1,
+          methionine: 0, phenylalanine: 0.1, threonine: 0.1, tryptophan: 0, valine: 0.1,
+          vitaminA: 206, vitaminC: 80, vitaminK: 547, vitaminB6: 0.2, folate: 19,
+          vitaminE: 0.7, thiamin: 0.1, riboflavin: 0.1, niacin: 0.7,
+          calcium: 101, iron: 0.9, magnesium: 23, zinc: 0.4, potassium: 299,
+          phosphorus: 46, selenium: 0.6, copper: 0.2,
+          omega3: 0.1, omega6: 0.1, fiber: 2
+        }
+      },
+      {
+        id: 'broccoli',
+        name: 'Broccoli',
+        category: 'vegetables',
+        serving: '1 cup chopped (91g)',
+        nutrients: {
+          protein: 2.6,
+          histidine: 0, isoleucine: 0.1, leucine: 0.1, lysine: 0.1,
+          methionine: 0, phenylalanine: 0.1, threonine: 0.1, tryptophan: 0, valine: 0.1,
+          vitaminA: 31, vitaminC: 81, vitaminK: 93, vitaminB6: 0.2, folate: 57,
+          vitaminE: 0.7, thiamin: 0.1, riboflavin: 0.1, niacin: 0.6,
+          calcium: 43, iron: 0.7, magnesium: 19, zinc: 0.4, potassium: 288,
+          phosphorus: 60, selenium: 2.3, copper: 0,
+          omega3: 0, omega6: 0, fiber: 2.4
+        }
+      },
+      {
+        id: 'sweet-potato',
+        name: 'Sweet Potato',
+        category: 'vegetables',
+        serving: '1 medium (130g)',
+        nutrients: {
+          protein: 2.1,
+          histidine: 0, isoleucine: 0.1, leucine: 0.1, lysine: 0.1,
+          methionine: 0, phenylalanine: 0.1, threonine: 0.1, tryptophan: 0, valine: 0.1,
+          vitaminA: 1096, vitaminC: 3, vitaminK: 2.6, vitaminB6: 0.3, folate: 15,
+          vitaminE: 0.3, thiamin: 0.1, riboflavin: 0.1, niacin: 0.7,
+          calcium: 39, iron: 0.8, magnesium: 33, zinc: 0.4, potassium: 438,
+          phosphorus: 61, selenium: 0.3, copper: 0.2,
+          omega3: 0, omega6: 0, fiber: 4
+        }
+      },
+      {
+        id: 'bell-pepper',
+        name: 'Bell Pepper (Red)',
+        category: 'vegetables',
+        serving: '1 medium (119g)',
+        nutrients: {
+          protein: 1.2,
+          histidine: 0, isoleucine: 0, leucine: 0.1, lysine: 0.1,
+          methionine: 0, phenylalanine: 0, threonine: 0, tryptophan: 0, valine: 0.1,
+          vitaminA: 187, vitaminC: 152, vitaminK: 5.8, vitaminB6: 0.3, folate: 55,
+          vitaminE: 1.9, thiamin: 0.1, riboflavin: 0.1, niacin: 1.2,
+          calcium: 8, iron: 0.5, magnesium: 14, zinc: 0.3, potassium: 251,
+          phosphorus: 31, selenium: 0.1, copper: 0,
+          omega3: 0, omega6: 0, fiber: 2.5
+        }
+      },
+      {
+        id: 'avocado',
+        name: 'Avocado',
+        category: 'vegetables',
+        serving: '1/2 avocado (100g)',
+        nutrients: {
+          protein: 2,
+          histidine: 0, isoleucine: 0.1, leucine: 0.1, lysine: 0.1,
+          methionine: 0, phenylalanine: 0.1, threonine: 0.1, tryptophan: 0, valine: 0.1,
+          vitaminA: 7, vitaminC: 10, vitaminK: 21, vitaminB6: 0.3, folate: 81,
+          vitaminE: 2.1, thiamin: 0.1, riboflavin: 0.1, niacin: 1.7,
+          calcium: 12, iron: 0.6, magnesium: 29, zinc: 0.6, potassium: 485,
+          phosphorus: 52, selenium: 0.4, copper: 0.2,
+          omega3: 0.1, omega6: 1.7, fiber: 6.7
+        }
+      },
+      {
+        id: 'tomatoes',
+        name: 'Tomatoes',
+        category: 'vegetables',
+        serving: '1 cup chopped (180g)',
+        nutrients: {
+          protein: 1.6,
+          histidine: 0, isoleucine: 0, leucine: 0.1, lysine: 0.1,
+          methionine: 0, phenylalanine: 0.1, threonine: 0, tryptophan: 0, valine: 0,
+          vitaminA: 75, vitaminC: 25, vitaminK: 14.2, vitaminB6: 0.1, folate: 27,
+          vitaminE: 1, thiamin: 0.1, riboflavin: 0, niacin: 1.1,
+          calcium: 18, iron: 0.5, magnesium: 20, zinc: 0.3, potassium: 427,
+          phosphorus: 43, selenium: 0, copper: 0.1,
+          omega3: 0, omega6: 0.2, fiber: 2.2
+        }
+      },
+      {
+        id: 'mushrooms',
+        name: 'Mushrooms',
+        category: 'vegetables',
+        serving: '1 cup sliced (70g)',
+        nutrients: {
+          protein: 2.2,
+          histidine: 0, isoleucine: 0.1, leucine: 0.1, lysine: 0.1,
+          methionine: 0, phenylalanine: 0.1, threonine: 0.1, tryptophan: 0, valine: 0.1,
+          vitaminA: 0, vitaminC: 1.4, vitaminK: 0, vitaminB6: 0.1, folate: 12,
+          vitaminE: 0, thiamin: 0.1, riboflavin: 0.3, niacin: 2.5,
+          calcium: 2, iron: 0.4, magnesium: 6, zinc: 0.4, potassium: 223,
+          phosphorus: 60, selenium: 6.5, copper: 0.2,
+          omega3: 0, omega6: 0.1, fiber: 0.7
+        }
+      },
+
+      // FRUITS
+      {
+        id: 'banana',
+        name: 'Banana',
+        category: 'fruits',
+        serving: '1 medium (118g)',
+        nutrients: {
+          protein: 1.3,
+          histidine: 0, isoleucine: 0, leucine: 0.1, lysine: 0.1,
+          methionine: 0, phenylalanine: 0.1, threonine: 0, tryptophan: 0, valine: 0.1,
+          vitaminA: 4, vitaminC: 10, vitaminK: 0.6, vitaminB6: 0.4, folate: 24,
+          vitaminE: 0.1, thiamin: 0, riboflavin: 0.1, niacin: 0.8,
+          calcium: 6, iron: 0.3, magnesium: 32, zinc: 0.2, potassium: 422,
+          phosphorus: 26, selenium: 1.2, copper: 0.1,
+          omega3: 0, omega6: 0.1, fiber: 3.1
+        }
+      },
+      {
+        id: 'blueberries',
+        name: 'Blueberries',
+        category: 'fruits',
+        serving: '1 cup (148g)',
+        nutrients: {
+          protein: 1.1,
+          histidine: 0, isoleucine: 0, leucine: 0.1, lysine: 0,
+          methionine: 0, phenylalanine: 0.1, threonine: 0, tryptophan: 0, valine: 0,
+          vitaminA: 4, vitaminC: 14, vitaminK: 28.6, vitaminB6: 0.1, folate: 9,
+          vitaminE: 0.8, thiamin: 0.1, riboflavin: 0.1, niacin: 0.6,
+          calcium: 9, iron: 0.4, magnesium: 9, zinc: 0.2, potassium: 114,
+          phosphorus: 18, selenium: 0.1, copper: 0.1,
+          omega3: 0.1, omega6: 0.1, fiber: 3.6
+        }
+      },
+      {
+        id: 'orange',
+        name: 'Orange',
+        category: 'fruits',
+        serving: '1 large (184g)',
+        nutrients: {
+          protein: 1.7,
+          histidine: 0, isoleucine: 0, leucine: 0, lysine: 0.1,
+          methionine: 0, phenylalanine: 0.1, threonine: 0, tryptophan: 0, valine: 0.1,
+          vitaminA: 21, vitaminC: 98, vitaminK: 0, vitaminB6: 0.1, folate: 55,
+          vitaminE: 0.3, thiamin: 0.2, riboflavin: 0.1, niacin: 0.5,
+          calcium: 74, iron: 0.2, magnesium: 18, zinc: 0.1, potassium: 333,
+          phosphorus: 26, selenium: 0.9, copper: 0.1,
+          omega3: 0, omega6: 0, fiber: 4.4
+        }
+      },
+      {
+        id: 'dates',
+        name: 'Medjool Dates',
+        category: 'fruits',
+        serving: '2 dates (48g)',
+        nutrients: {
+          protein: 0.9,
+          histidine: 0, isoleucine: 0, leucine: 0, lysine: 0,
+          methionine: 0, phenylalanine: 0, threonine: 0, tryptophan: 0, valine: 0,
+          vitaminA: 4, vitaminC: 0, vitaminK: 1.3, vitaminB6: 0.1, folate: 8,
+          vitaminE: 0, thiamin: 0, riboflavin: 0, niacin: 0.6,
+          calcium: 32, iron: 0.5, magnesium: 26, zinc: 0.2, potassium: 334,
+          phosphorus: 31, selenium: 1.4, copper: 0.1,
+          omega3: 0, omega6: 0, fiber: 3.2
+        }
+      },
+      {
+        id: 'apple',
+        name: 'Apple',
+        category: 'fruits',
+        serving: '1 medium (182g)',
+        nutrients: {
+          protein: 0.5,
+          histidine: 0, isoleucine: 0, leucine: 0, lysine: 0,
+          methionine: 0, phenylalanine: 0, threonine: 0, tryptophan: 0, valine: 0,
+          vitaminA: 5, vitaminC: 8, vitaminK: 4, vitaminB6: 0.1, folate: 5,
+          vitaminE: 0.3, thiamin: 0, riboflavin: 0, niacin: 0.2,
+          calcium: 11, iron: 0.2, magnesium: 9, zinc: 0.1, potassium: 195,
+          phosphorus: 20, selenium: 0, copper: 0,
+          omega3: 0, omega6: 0.1, fiber: 4.4
+        }
+      },
+
+      // OTHER
+      {
+        id: 'nutritional-yeast',
+        name: 'Nutritional Yeast',
+        category: 'other',
+        serving: '2 tbsp (16g)',
+        nutrients: {
+          protein: 8,
+          histidine: 0.2, isoleucine: 0.4, leucine: 0.6, lysine: 0.5,
+          methionine: 0.1, phenylalanine: 0.4, threonine: 0.4, tryptophan: 0.1, valine: 0.4,
+          vitaminA: 0, vitaminC: 0, vitaminK: 0, vitaminB6: 9.6, folate: 1059,
+          vitaminE: 0, thiamin: 9.6, riboflavin: 9.7, niacin: 56,
+          calcium: 4, iron: 1, magnesium: 12, zinc: 2.7, potassium: 320,
+          phosphorus: 168, selenium: 7.2, copper: 0.1,
+          omega3: 0, omega6: 0, fiber: 4
+        }
+      },
+      {
+        id: 'tempeh',
+        name: 'Tempeh',
+        category: 'other',
+        serving: '1/2 cup (83g)',
+        nutrients: {
+          protein: 16.9,
+          histidine: 0.4, isoleucine: 0.7, leucine: 1.2, lysine: 0.8,
+          methionine: 0.2, phenylalanine: 0.8, threonine: 0.6, tryptophan: 0.2, valine: 0.8,
+          vitaminA: 0, vitaminC: 0, vitaminK: 0, vitaminB6: 0.2, folate: 20,
+          vitaminE: 0, thiamin: 0.1, riboflavin: 0.3, niacin: 2.2,
+          calcium: 92, iron: 2.2, magnesium: 67, zinc: 1.1, potassium: 305,
+          phosphorus: 221, selenium: 0, copper: 0.5,
+          omega3: 0.1, omega6: 1.8, fiber: 0
+        }
+      },
+      {
+        id: 'seaweed-nori',
+        name: 'Nori Seaweed',
+        category: 'other',
+        serving: '3 sheets (8g)',
+        nutrients: {
+          protein: 2.5,
+          histidine: 0.1, isoleucine: 0.1, leucine: 0.2, lysine: 0.1,
+          methionine: 0, phenylalanine: 0.1, threonine: 0.1, tryptophan: 0, valine: 0.1,
+          vitaminA: 54, vitaminC: 32, vitaminK: 3.2, vitaminB6: 0.1, folate: 114,
+          vitaminE: 0.8, thiamin: 0.1, riboflavin: 0.3, niacin: 1.1,
+          calcium: 14, iron: 1, magnesium: 10, zinc: 0.3, potassium: 86,
+          phosphorus: 43, selenium: 0.6, copper: 0,
+          omega3: 0, omega6: 0, fiber: 0.3
+        }
+      },
+      {
+        id: 'spirulina',
+        name: 'Spirulina',
+        category: 'other',
+        serving: '1 tbsp (7g)',
+        nutrients: {
+          protein: 4,
+          histidine: 0.1, isoleucine: 0.2, leucine: 0.3, lysine: 0.2,
+          methionine: 0.1, phenylalanine: 0.2, threonine: 0.2, tryptophan: 0.1, valine: 0.2,
+          vitaminA: 20, vitaminC: 0.7, vitaminK: 1.8, vitaminB6: 0, folate: 7,
+          vitaminE: 0.4, thiamin: 0.2, riboflavin: 0.3, niacin: 0.9,
+          calcium: 8, iron: 2, magnesium: 14, zinc: 0.1, potassium: 95,
+          phosphorus: 8, selenium: 0.5, copper: 0.4,
+          omega3: 0.1, omega6: 0.1, fiber: 0.3
+        }
+      },
+      {
+        id: 'olive-oil',
+        name: 'Olive Oil',
+        category: 'other',
+        serving: '1 tbsp (14g)',
+        nutrients: {
+          protein: 0,
+          histidine: 0, isoleucine: 0, leucine: 0, lysine: 0,
+          methionine: 0, phenylalanine: 0, threonine: 0, tryptophan: 0, valine: 0,
+          vitaminA: 0, vitaminC: 0, vitaminK: 8.1, vitaminB6: 0, folate: 0,
+          vitaminE: 1.9, thiamin: 0, riboflavin: 0, niacin: 0,
+          calcium: 0, iron: 0.1, magnesium: 0, zinc: 0, potassium: 0,
+          phosphorus: 0, selenium: 0, copper: 0,
+          omega3: 0.1, omega6: 1.3, fiber: 0
+        }
+      },
+      {
+        id: 'coconut-milk',
+        name: 'Coconut Milk',
+        category: 'other',
+        serving: '1/2 cup (120ml)',
+        nutrients: {
+          protein: 2.3,
+          histidine: 0, isoleucine: 0.1, leucine: 0.1, lysine: 0.1,
+          methionine: 0, phenylalanine: 0.1, threonine: 0.1, tryptophan: 0, valine: 0.1,
+          vitaminA: 0, vitaminC: 1.3, vitaminK: 0.1, vitaminB6: 0, folate: 8,
+          vitaminE: 0.1, thiamin: 0, riboflavin: 0, niacin: 0.4,
+          calcium: 20, iron: 1.9, magnesium: 44, zinc: 0.8, potassium: 316,
+          phosphorus: 120, selenium: 7.3, copper: 0.3,
+          omega3: 0, omega6: 0.4, fiber: 0
+        }
+      },
+      {
+        id: 'fortified-plant-milk',
+        name: 'Fortified Plant Milk',
+        category: 'other',
+        serving: '1 cup (240ml)',
+        nutrients: {
+          protein: 7,
+          histidine: 0.2, isoleucine: 0.3, leucine: 0.5, lysine: 0.4,
+          methionine: 0.1, phenylalanine: 0.3, threonine: 0.3, tryptophan: 0.1, valine: 0.3,
+          vitaminA: 150, vitaminC: 0, vitaminK: 0, vitaminB6: 0.5, folate: 24,
+          vitaminE: 0, thiamin: 0.1, riboflavin: 0.4, niacin: 0.4,
+          calcium: 300, iron: 1.1, magnesium: 24, zinc: 0.6, potassium: 349,
+          phosphorus: 105, selenium: 3, copper: 0.3,
+          omega3: 0.3, omega6: 2.5, fiber: 2
+        }
+      }
+    ];
+
+    // ============================================
+    // DAILY RECOMMENDED VALUES
+    // ============================================
+    
+    const dailyValues = {
+      // Essential Amino Acids (grams) - based on 70kg adult
+      histidine: 0.7,
+      isoleucine: 1.4,
+      leucine: 2.7,
+      lysine: 2.1,
+      methionine: 0.7, // methionine + cysteine
+      phenylalanine: 1.8, // phenylalanine + tyrosine
+      threonine: 1.1,
+      tryptophan: 0.3,
+      valine: 1.8,
+      
+      // Vitamins
+      vitaminA: 900, // mcg RAE
+      vitaminC: 90, // mg
+      vitaminK: 120, // mcg
+      vitaminB6: 1.3, // mg
+      folate: 400, // mcg
+      vitaminE: 15, // mg
+      thiamin: 1.2, // mg
+      riboflavin: 1.3, // mg
+      niacin: 16, // mg
+      
+      // Minerals
+      calcium: 1000, // mg
+      iron: 18, // mg (using higher female value)
+      magnesium: 400, // mg
+      zinc: 11, // mg
+      potassium: 2600, // mg
+      phosphorus: 700, // mg
+      selenium: 55, // mcg
+      copper: 0.9, // mg
+      
+      // Fats
+      omega3: 1.6, // g ALA
+      omega6: 17, // g
+      fiber: 28 // g
+    };
+
+    // ============================================
+    // CALCULATOR LOGIC
+    // ============================================
+
+    let selectedIngredients = [];
+
+    // Initialize the calculator
+    function init() {
+      renderIngredients('all');
+      setupCategoryTabs();
+      updateResults();
+    }
+
+    // Render ingredient list
+    function renderIngredients(category) {
+      const list
