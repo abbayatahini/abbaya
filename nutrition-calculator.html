@@ -1094,6 +1094,262 @@
       updateResults();
     }
 
-    // Render ingredient list
+       // Render ingredient list
     function renderIngredients(category) {
-      const list
+      const list = document.getElementById('ingredientList');
+      let filtered = category === 'all' 
+        ? ingredients 
+        : ingredients.filter(i => i.category === category);
+      
+      list.innerHTML = filtered.map(ing => `
+        <div class="ingredient-item">
+          <input type="checkbox" id="${ing.id}" 
+            ${selectedIngredients.includes(ing.id) ? 'checked' : ''}
+            onchange="toggleIngredient('${ing.id}')">
+          <label for="${ing.id}">${ing.name}</label>
+          <span class="serving">${ing.serving}</span>
+        </div>
+      `).join('');
+    }
+
+    // Setup category tabs
+    function setupCategoryTabs() {
+      document.querySelectorAll('.category-tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+          document.querySelectorAll('.category-tab').forEach(t => t.classList.remove('active'));
+          this.classList.add('active');
+          renderIngredients(this.dataset.category);
+        });
+      });
+    }
+
+    // Toggle ingredient selection
+    function toggleIngredient(id) {
+      if (selectedIngredients.includes(id)) {
+        selectedIngredients = selectedIngredients.filter(i => i !== id);
+      } else {
+        selectedIngredients.push(id);
+      }
+      updateSelectedTags();
+      updateResults();
+    }
+
+    // Update selected tags display
+    function updateSelectedTags() {
+      const container = document.getElementById('selectedTags');
+      if (selectedIngredients.length === 0) {
+        container.innerHTML = '<span style="color: #888;">No ingredients selected yet</span>';
+        return;
+      }
+      
+      container.innerHTML = selectedIngredients.map(id => {
+        const ing = ingredients.find(i => i.id === id);
+        return `<span class="selected-tag">${ing.name} <span class="remove" onclick="toggleIngredient('${id}')">&times;</span></span>`;
+      }).join('');
+    }
+
+    // Clear all selections
+    function clearAll() {
+      selectedIngredients = [];
+      updateSelectedTags();
+      updateResults();
+      renderIngredients(document.querySelector('.category-tab.active').dataset.category);
+    }
+
+    // Calculate total nutrients
+    function calculateTotals() {
+      const totals = {};
+      
+      // Initialize all nutrients to 0
+      Object.keys(dailyValues).forEach(key => {
+        totals[key] = 0;
+      });
+      totals.protein = 0;
+      
+      // Sum up nutrients from selected ingredients
+      selectedIngredients.forEach(id => {
+        const ing = ingredients.find(i => i.id === id);
+        if (ing && ing.nutrients) {
+          Object.keys(ing.nutrients).forEach(key => {
+            totals[key] = (totals[key] || 0) + ing.nutrients[key];
+          });
+        }
+      });
+      
+      return totals;
+    }
+
+    // Get percentage of daily value
+    function getPercentage(amount, dailyValue) {
+      return Math.min(Math.round((amount / dailyValue) * 100), 150);
+    }
+
+    // Get bar color class based on percentage
+    function getBarClass(percentage) {
+      if (percentage < 25) return 'low';
+      if (percentage < 50) return 'medium';
+      if (percentage <= 100) return 'good';
+      return 'excess';
+    }
+
+    // Get status icon based on category average
+    function getStatusIcon(percentages) {
+      const avg = percentages.reduce((a, b) => a + b, 0) / percentages.length;
+      if (avg < 25) return '🔴';
+      if (avg < 50) return '🟡';
+      if (avg < 75) return '🟢';
+      return '✅';
+    }
+
+    // Create nutrient bar HTML
+    function createBar(label, amount, dailyValue, unit = '') {
+      const percentage = getPercentage(amount, dailyValue);
+      const barClass = getBarClass(percentage);
+      const displayAmount = amount < 10 ? amount.toFixed(1) : Math.round(amount);
+      
+      return `
+        <div class="nutrient-bar">
+          <div class="label">
+            <span>${label}</span>
+            <span>${displayAmount}${unit} / ${dailyValue}${unit} (${percentage}%)</span>
+          </div>
+          <div class="bar">
+            <div class="fill ${barClass}" style="width: ${Math.min(percentage, 100)}%"></div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Update all results
+    function updateResults() {
+      const totals = calculateTotals();
+      
+      // Essential Amino Acids
+      const aminoAcids = ['histidine', 'isoleucine', 'leucine', 'lysine', 'methionine', 'phenylalanine', 'threonine', 'tryptophan', 'valine'];
+      const aminoPercentages = aminoAcids.map(aa => getPercentage(totals[aa], dailyValues[aa]));
+      
+      document.getElementById('aminoAcidBars').innerHTML = aminoAcids.map(aa => 
+        createBar(aa.charAt(0).toUpperCase() + aa.slice(1), totals[aa], dailyValues[aa], 'g')
+      ).join('');
+      document.querySelector('#aminoAcids .status-icon').textContent = getStatusIcon(aminoPercentages);
+
+      // Vitamins
+      const vitamins = [
+        { key: 'vitaminA', label: 'Vitamin A', unit: 'mcg' },
+        { key: 'vitaminC', label: 'Vitamin C', unit: 'mg' },
+        { key: 'vitaminK', label: 'Vitamin K', unit: 'mcg' },
+        { key: 'vitaminB6', label: 'Vitamin B6', unit: 'mg' },
+        { key: 'folate', label: 'Folate', unit: 'mcg' },
+        { key: 'vitaminE', label: 'Vitamin E', unit: 'mg' }
+      ];
+      const vitaminPercentages = vitamins.map(v => getPercentage(totals[v.key], dailyValues[v.key]));
+      
+      document.getElementById('vitaminBars').innerHTML = vitamins.map(v => 
+        createBar(v.label, totals[v.key], dailyValues[v.key], v.unit)
+      ).join('');
+      document.querySelector('#vitamins .status-icon').textContent = getStatusIcon(vitaminPercentages);
+
+      // Minerals
+      const minerals = [
+        { key: 'calcium', label: 'Calcium', unit: 'mg' },
+        { key: 'iron', label: 'Iron', unit: 'mg' },
+        { key: 'magnesium', label: 'Magnesium', unit: 'mg' },
+        { key: 'zinc', label: 'Zinc', unit: 'mg' },
+        { key: 'potassium', label: 'Potassium', unit: 'mg' }
+      ];
+      const mineralPercentages = minerals.map(m => getPercentage(totals[m.key], dailyValues[m.key]));
+      
+      document.getElementById('mineralBars').innerHTML = minerals.map(m => 
+        createBar(m.label, totals[m.key], dailyValues[m.key], m.unit)
+      ).join('');
+      document.querySelector('#minerals .status-icon').textContent = getStatusIcon(mineralPercentages);
+
+      // Fats
+      const fats = [
+        { key: 'omega3', label: 'Omega-3', unit: 'g' },
+        { key: 'omega6', label: 'Omega-6', unit: 'g' },
+        { key: 'fiber', label: 'Fiber', unit: 'g' }
+      ];
+      const fatPercentages = fats.map(f => getPercentage(totals[f.key], dailyValues[f.key]));
+      
+      document.getElementById('fatBars').innerHTML = fats.map(f => 
+        createBar(f.label, totals[f.key], dailyValues[f.key], f.unit)
+      ).join('');
+      document.querySelector('#fats .status-icon').textContent = getStatusIcon(fatPercentages);
+
+      // Calculate overall score
+      const allPercentages = [...aminoPercentages, ...vitaminPercentages, ...mineralPercentages, ...fatPercentages];
+      const avgScore = Math.round(allPercentages.reduce((a, b) => a + Math.min(b, 100), 0) / allPercentages.length);
+      document.getElementById('mealScore').textContent = avgScore + '%';
+
+      // Update suggestions
+      updateSuggestions(totals);
+      
+      // Show tahini promo if calcium or iron is low
+      const tahiniPromo = document.getElementById('tahiniPromo');
+      const hasTahini = selectedIngredients.includes('tahini');
+      if (!hasTahini && (getPercentage(totals.calcium, dailyValues.calcium) < 50 || getPercentage(totals.iron, dailyValues.iron) < 50)) {
+        tahiniPromo.style.display = 'block';
+      } else {
+        tahiniPromo.style.display = 'none';
+      }
+    }
+
+    // Generate suggestions
+    function updateSuggestions(totals) {
+      const suggestions = [];
+      
+      // Check amino acids - especially lysine and methionine (common limiting aminos)
+      if (getPercentage(totals.lysine, dailyValues.lysine) < 50) {
+        suggestions.push('Add <strong>legumes</strong> (lentils, chickpeas, tofu) for more lysine');
+      }
+      if (getPercentage(totals.methionine, dailyValues.methionine) < 50) {
+        suggestions.push('Add <strong>grains, nuts, or seeds</strong> for more methionine');
+      }
+      
+      // Check vitamins
+      if (getPercentage(totals.vitaminA, dailyValues.vitaminA) < 50) {
+        suggestions.push('Add <strong>sweet potato, spinach, or kale</strong> for Vitamin A');
+      }
+      if (getPercentage(totals.vitaminC, dailyValues.vitaminC) < 50) {
+        suggestions.push('Add <strong>bell peppers, broccoli, or oranges</strong> for Vitamin C');
+      }
+      if (getPercentage(totals.folate, dailyValues.folate) < 50) {
+        suggestions.push('Add <strong>lentils, spinach, or nutritional yeast</strong> for folate');
+      }
+      
+      // Check minerals
+      if (getPercentage(totals.calcium, dailyValues.calcium) < 50) {
+        suggestions.push('Add <strong>tahini, tofu, or fortified plant milk</strong> for calcium');
+      }
+      if (getPercentage(totals.iron, dailyValues.iron) < 50) {
+        suggestions.push('Add <strong>lentils, spinach, or tahini</strong> for iron');
+      }
+      if (getPercentage(totals.zinc, dailyValues.zinc) < 50) {
+        suggestions.push('Add <strong>pumpkin seeds, chickpeas, or hemp seeds</strong> for zinc');
+      }
+      
+      // Check fats
+      if (getPercentage(totals.omega3, dailyValues.omega3) < 50) {
+        suggestions.push('Add <strong>chia seeds, flaxseeds, or walnuts</strong> for Omega-3');
+      }
+      if (getPercentage(totals.fiber, dailyValues.fiber) < 50) {
+        suggestions.push('Add <strong>legumes, whole grains, or vegetables</strong> for fiber');
+      }
+
+      const container = document.getElementById('suggestionList');
+      if (selectedIngredients.length === 0) {
+        container.innerHTML = '<p>Select some ingredients to get personalized suggestions.</p>';
+      } else if (suggestions.length === 0) {
+        container.innerHTML = '<p style="color: #4caf50;"><strong>🎉 Great job!</strong> Your meal looks nutritionally complete!</p>';
+      } else {
+        container.innerHTML = suggestions.map(s => `<div class="suggestion-item">→ ${s}</div>`).join('');
+      }
+    }
+
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', init);
+  </script>
+
+</body>
+</html>
