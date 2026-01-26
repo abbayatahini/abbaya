@@ -15,6 +15,16 @@
   <link rel="stylesheet" href="assets/css/main.css">
   
   <style>
+    /* Brand Design System */
+    :root {
+      --brand-primary: #C4A35A;
+      --brand-secondary: #5C4033;
+      --brand-light: #F5E6C8;
+      --brand-dark: #2C1810;
+      --brand-bg: #FDF8F0;
+      --brand-accent: #D4B36A;
+    }
+
     /* Calculator Specific Styles */
     .calculator-container {
       max-width: 1200px;
@@ -29,130 +39,201 @@
       margin-top: 2em;
     }
 
-    @media (max-width: 768px) {
-      .calculator-grid {
-        grid-template-columns: 1fr;
-      }
-    }
-
     .ingredient-panel, .results-panel {
-      background: rgba(255, 255, 255, 0.95);
+      background: var(--brand-bg);
       border-radius: 12px;
       padding: 2em;
-      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      box-shadow: 0 4px 20px rgba(92, 64, 51, 0.1);
+      border: 1px solid rgba(196, 163, 90, 0.2);
     }
 
     .ingredient-panel h3, .results-panel h3 {
-      color: #333;
+      color: var(--brand-dark);
       margin-bottom: 1em;
       padding-bottom: 0.5em;
-      border-bottom: 2px solid #c9a227;
+      border-bottom: 3px solid var(--brand-primary);
+      font-size: 1.3em;
+    }
+
+    /* Search Box */
+    .search-box {
+      margin-bottom: 1.5em;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 0.9em 1.2em;
+      border: 2px solid var(--brand-light);
+      border-radius: 8px;
+      font-size: 1em;
+      background: white;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+
+    .search-box input:focus {
+      outline: none;
+      border-color: var(--brand-primary);
+      box-shadow: 0 0 0 3px rgba(196, 163, 90, 0.2);
+    }
+
+    .search-box input::placeholder {
+      color: #999;
     }
 
     /* Category Tabs */
     .category-tabs {
       display: flex;
       flex-wrap: wrap;
-      gap: 0.5em;
+      gap: 0.6em;
       margin-bottom: 1.5em;
     }
 
     .category-tab {
-      padding: 0.5em 1em;
-      border: 2px solid #c9a227;
+      padding: 0.7em 1.2em;
+      border: 2px solid var(--brand-primary);
       background: white;
-      color: #333;
+      color: var(--brand-secondary);
       border-radius: 25px;
       cursor: pointer;
-      font-size: 0.9em;
+      font-size: 1em;
+      font-weight: 500;
       transition: all 0.3s ease;
+      min-height: 44px;
     }
 
-    .category-tab:hover, .category-tab.active {
-      background: #c9a227;
+    .category-tab:hover {
+      background: var(--brand-light);
+      transform: translateY(-1px);
+    }
+
+    .category-tab.active {
+      background: var(--brand-primary);
       color: white;
+      box-shadow: 0 2px 8px rgba(196, 163, 90, 0.4);
     }
 
     /* Ingredient List */
     .ingredient-list {
-      max-height: 400px;
+      max-height: 500px;
       overflow-y: auto;
-      border: 1px solid #eee;
+      border: 1px solid var(--brand-light);
       border-radius: 8px;
-      padding: 1em;
+      padding: 0.5em;
+      background: white;
+    }
+
+    .ingredient-list::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .ingredient-list::-webkit-scrollbar-track {
+      background: var(--brand-bg);
+      border-radius: 4px;
+    }
+
+    .ingredient-list::-webkit-scrollbar-thumb {
+      background: var(--brand-primary);
+      border-radius: 4px;
+    }
+
+    .ingredient-list::-webkit-scrollbar-thumb:hover {
+      background: var(--brand-secondary);
     }
 
     .ingredient-item {
       display: flex;
       align-items: center;
-      padding: 0.75em;
-      border-bottom: 1px solid #f0f0f0;
+      padding: 0.9em 0.75em;
+      border-bottom: 1px solid var(--brand-light);
       cursor: pointer;
       transition: background 0.2s;
+      border-radius: 6px;
+      margin-bottom: 2px;
     }
 
     .ingredient-item:hover {
-      background: #f9f9f9;
+      background: var(--brand-bg);
+    }
+
+    .ingredient-item.selected {
+      background: rgba(196, 163, 90, 0.15);
+      border-color: var(--brand-primary);
     }
 
     .ingredient-item input[type="checkbox"] {
       margin-right: 1em;
-      width: 20px;
-      height: 20px;
-      accent-color: #c9a227;
+      width: 22px;
+      height: 22px;
+      accent-color: var(--brand-primary);
+      cursor: pointer;
     }
 
     .ingredient-item label {
       flex: 1;
       cursor: pointer;
-      color: #333;
+      color: var(--brand-dark);
+      font-size: 1.05em;
+      font-weight: 500;
     }
 
     .ingredient-item .serving {
-      color: #888;
-      font-size: 0.85em;
+      color: #777;
+      font-size: 0.95em;
     }
 
     /* Selected Ingredients */
     .selected-ingredients {
       margin-top: 1.5em;
-      padding: 1em;
-      background: #f9f9f9;
+      padding: 1.2em;
+      background: white;
       border-radius: 8px;
+      border: 1px solid var(--brand-light);
     }
 
     .selected-ingredients h4 {
-      color: #333;
-      margin-bottom: 0.5em;
+      color: var(--brand-dark);
+      margin-bottom: 0.75em;
+      font-size: 1.1em;
     }
 
     .selected-tag {
-      display: inline-block;
-      background: #c9a227;
+      display: inline-flex;
+      align-items: center;
+      background: var(--brand-primary);
       color: white;
-      padding: 0.3em 0.8em;
-      border-radius: 15px;
-      margin: 0.25em;
-      font-size: 0.85em;
+      padding: 0.5em 1em;
+      border-radius: 20px;
+      margin: 0.3em;
+      font-size: 0.95em;
+      font-weight: 500;
+      box-shadow: 0 2px 4px rgba(196, 163, 90, 0.3);
     }
 
     .selected-tag .remove {
-      margin-left: 0.5em;
+      margin-left: 0.6em;
       cursor: pointer;
       font-weight: bold;
+      opacity: 0.8;
+      transition: opacity 0.2s;
+      font-size: 1.1em;
+    }
+
+    .selected-tag .remove:hover {
+      opacity: 1;
     }
 
     /* Results */
     .nutrition-category {
-      margin-bottom: 1.5em;
+      margin-bottom: 1.8em;
     }
 
     .nutrition-category h4 {
-      color: #333;
+      color: var(--brand-dark);
       margin-bottom: 0.75em;
       display: flex;
       align-items: center;
       gap: 0.5em;
+      font-size: 1.1em;
     }
 
     .nutrition-category h4 .status-icon {
@@ -160,108 +241,245 @@
     }
 
     .nutrient-bar {
-      margin-bottom: 0.75em;
+      margin-bottom: 0.85em;
     }
 
     .nutrient-bar .label {
       display: flex;
       justify-content: space-between;
-      margin-bottom: 0.25em;
-      font-size: 0.9em;
-      color: #555;
+      margin-bottom: 0.3em;
+      font-size: 1em;
+      color: var(--brand-secondary);
     }
 
     .nutrient-bar .bar {
-      height: 8px;
-      background: #eee;
-      border-radius: 4px;
+      height: 10px;
+      background: var(--brand-light);
+      border-radius: 5px;
       overflow: hidden;
     }
 
     .nutrient-bar .bar .fill {
       height: 100%;
-      border-radius: 4px;
+      border-radius: 5px;
       transition: width 0.3s ease;
     }
 
-    .fill.low { background: linear-gradient(90deg, #ff6b6b, #ee5a5a); }
-    .fill.medium { background: linear-gradient(90deg, #ffd93d, #f9c846); }
-    .fill.good { background: linear-gradient(90deg, #6bcb77, #4caf50); }
-    .fill.excess { background: linear-gradient(90deg, #4facfe, #00f2fe); }
+    /* Warm earth tone colors for nutrient bars */
+    .fill.low { background: linear-gradient(90deg, #D97706, #B45309); }
+    .fill.medium { background: linear-gradient(90deg, #F59E0B, #D97706); }
+    .fill.good { background: linear-gradient(90deg, #65A30D, #4D7C0F); }
+    .fill.excess { background: linear-gradient(90deg, #0891B2, #0E7490); }
 
     /* Suggestions */
     .suggestions {
       margin-top: 1.5em;
-      padding: 1em;
-      background: #fff8e7;
+      padding: 1.2em;
+      background: var(--brand-light);
       border-radius: 8px;
-      border-left: 4px solid #c9a227;
+      border-left: 4px solid var(--brand-primary);
     }
 
     .suggestions h4 {
-      color: #333;
+      color: var(--brand-dark);
       margin-bottom: 0.75em;
+      font-size: 1.1em;
     }
 
     .suggestion-item {
-      padding: 0.5em 0;
-      color: #555;
-      font-size: 0.95em;
+      padding: 0.6em 0;
+      color: var(--brand-secondary);
+      font-size: 1em;
     }
 
     .suggestion-item strong {
-      color: #c9a227;
+      color: var(--brand-primary);
     }
 
-    /* Summary Score */
+    /* Meal Score Card */
     .meal-score {
       text-align: center;
-      padding: 1.5em;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 1.8em;
+      background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
       border-radius: 12px;
       color: white;
       margin-bottom: 1.5em;
+      box-shadow: 0 4px 15px rgba(92, 64, 51, 0.3);
     }
 
     .meal-score .score {
-      font-size: 3em;
+      font-size: 3.5em;
       font-weight: bold;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
 
     .meal-score .score-label {
-      font-size: 1.1em;
-      opacity: 0.9;
+      font-size: 1.2em;
+      opacity: 0.95;
+      margin-top: 0.3em;
+    }
+
+    /* Protein Summary Card */
+    .protein-summary {
+      text-align: center;
+      padding: 1.2em;
+      background: white;
+      border: 2px solid var(--brand-primary);
+      border-radius: 12px;
+      margin-bottom: 1.5em;
+    }
+
+    .protein-summary .protein-value {
+      font-size: 2.2em;
+      font-weight: bold;
+      color: var(--brand-primary);
+    }
+
+    .protein-summary .protein-label {
+      font-size: 1em;
+      color: var(--brand-secondary);
+      margin-top: 0.2em;
     }
 
     /* Clear Button */
     .clear-btn {
-      background: #ff6b6b;
+      background: var(--brand-secondary);
       color: white;
       border: none;
-      padding: 0.75em 1.5em;
+      padding: 0.85em 1.8em;
       border-radius: 25px;
       cursor: pointer;
       margin-top: 1em;
-      transition: background 0.3s;
+      font-size: 1em;
+      font-weight: 500;
+      transition: all 0.3s;
     }
 
     .clear-btn:hover {
-      background: #ee5a5a;
+      background: var(--brand-dark);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(44, 24, 16, 0.3);
     }
 
     /* Tahini Highlight */
     .tahini-highlight {
-      background: linear-gradient(135deg, #c9a227 0%, #a68523 100%);
+      background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-secondary) 100%);
       color: white;
-      padding: 1em;
+      padding: 1.2em;
       border-radius: 8px;
-      margin-top: 1em;
+      margin-top: 1.5em;
       text-align: center;
+      font-size: 1em;
     }
 
     .tahini-highlight a {
       color: white;
       text-decoration: underline;
+      font-weight: 600;
+    }
+
+    .tahini-highlight a:hover {
+      text-decoration: none;
+    }
+
+    /* Serving Selector */
+    .serving-selector {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1em;
+      align-items: center;
+      margin-bottom: 1.5em;
+      padding: 1em;
+      background: white;
+      border-radius: 8px;
+      border: 1px solid var(--brand-light);
+    }
+
+    .serving-selector label {
+      color: var(--brand-secondary);
+      font-weight: 500;
+      font-size: 1em;
+    }
+
+    .serving-selector input {
+      width: 80px;
+      padding: 0.5em;
+      border: 2px solid var(--brand-light);
+      border-radius: 6px;
+      font-size: 1em;
+      text-align: center;
+    }
+
+    .serving-selector input:focus {
+      outline: none;
+      border-color: var(--brand-primary);
+    }
+
+    /* No Results Message */
+    .no-results {
+      text-align: center;
+      padding: 2em;
+      color: #999;
+      font-size: 1em;
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 768px) {
+      .calculator-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .calculator-container {
+        padding: 1em;
+      }
+
+      .ingredient-panel, .results-panel {
+        padding: 1.5em;
+      }
+
+      .category-tabs {
+        gap: 0.5em;
+      }
+
+      .category-tab {
+        padding: 0.8em 1em;
+        font-size: 0.95em;
+        min-height: 56px;
+      }
+
+      .ingredient-item {
+        padding: 1em 0.75em;
+        min-height: 56px;
+      }
+
+      .ingredient-item input[type="checkbox"] {
+        width: 24px;
+        height: 24px;
+      }
+
+      .clear-btn {
+        width: 100%;
+        padding: 1em;
+        font-size: 1.1em;
+      }
+
+      .meal-score .score {
+        font-size: 2.8em;
+      }
+
+      .serving-selector {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .serving-selector input {
+        width: 100%;
+      }
+
+      .selected-tag {
+        font-size: 0.9em;
+        padding: 0.5em 0.9em;
+      }
     }
   </style>
 </head>
@@ -296,7 +514,12 @@
         <!-- Left Panel: Ingredients -->
         <div class="ingredient-panel">
           <h3>📦 Select Ingredients</h3>
-          
+
+          <!-- Search Box -->
+          <div class="search-box">
+            <input type="text" id="ingredientSearch" placeholder="Search ingredients..." oninput="filterIngredients()">
+          </div>
+
           <!-- Category Tabs -->
          <div class="category-tabs">
   <button class="category-tab active" data-category="all">All</button>
@@ -340,6 +563,12 @@
           <div class="meal-score">
             <div class="score" id="mealScore">0%</div>
             <div class="score-label">Meal Completeness</div>
+          </div>
+
+          <!-- Protein Summary -->
+          <div class="protein-summary">
+            <div class="protein-value" id="totalProtein">0g</div>
+            <div class="protein-label">Total Protein</div>
           </div>
 
           <!-- Essential Amino Acids -->
@@ -2165,7 +2394,447 @@
       }
     ];
 
-          
+    // ============================================
+    // STATE MANAGEMENT
+    // ============================================
+    let selectedIngredients = [];
+    let currentCategory = 'all';
+    let searchQuery = '';
+
+    // ============================================
+    // DAILY VALUES REFERENCE (per day for adults)
+    // ============================================
+    const dailyValues = {
+      // Essential Amino Acids (grams) - based on 70kg adult
+      histidine: 0.7,
+      isoleucine: 1.4,
+      leucine: 2.73,
+      lysine: 2.1,
+      methionine: 0.73,
+      phenylalanine: 1.75,
+      threonine: 1.05,
+      tryptophan: 0.28,
+      valine: 1.82,
+      // Vitamins
+      vitaminA: 900,      // mcg RAE
+      vitaminC: 90,       // mg
+      vitaminK: 120,      // mcg
+      vitaminB6: 1.3,     // mg
+      folate: 400,        // mcg DFE
+      vitaminE: 15,       // mg
+      thiamin: 1.2,       // mg
+      riboflavin: 1.3,    // mg
+      niacin: 16,         // mg
+      // Minerals
+      calcium: 1000,      // mg
+      iron: 18,           // mg (higher for menstruating individuals)
+      magnesium: 400,     // mg
+      zinc: 11,           // mg
+      potassium: 4700,    // mg
+      phosphorus: 700,    // mg
+      selenium: 55,       // mcg
+      copper: 0.9,        // mg
+      // Fats
+      omega3: 1.6,        // g ALA
+      omega6: 17,         // g
+      fiber: 28           // g
+    };
+
+    // ============================================
+    // INITIALIZATION
+    // ============================================
+    function init() {
+      setupCategoryTabs();
+      renderIngredientList();
+      updateResults();
+    }
+
+    // ============================================
+    // CATEGORY TABS
+    // ============================================
+    function setupCategoryTabs() {
+      const tabs = document.querySelectorAll('.category-tab');
+      tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+          tabs.forEach(t => t.classList.remove('active'));
+          tab.classList.add('active');
+          currentCategory = tab.dataset.category;
+          renderIngredientList();
+        });
+      });
+    }
+
+    // ============================================
+    // SEARCH / FILTER
+    // ============================================
+    function filterIngredients() {
+      searchQuery = document.getElementById('ingredientSearch').value.toLowerCase();
+      renderIngredientList();
+    }
+
+    // ============================================
+    // RENDER INGREDIENT LIST
+    // ============================================
+    function renderIngredientList() {
+      const container = document.getElementById('ingredientList');
+
+      let filtered = ingredients.filter(ing => {
+        const matchesCategory = currentCategory === 'all' || ing.category === currentCategory;
+        const matchesSearch = searchQuery === '' || ing.name.toLowerCase().includes(searchQuery);
+        return matchesCategory && matchesSearch;
+      });
+
+      if (filtered.length === 0) {
+        container.innerHTML = '<div class="no-results">No ingredients found</div>';
+        return;
+      }
+
+      container.innerHTML = filtered.map(ing => {
+        const isSelected = selectedIngredients.includes(ing.id);
+        return `
+          <div class="ingredient-item ${isSelected ? 'selected' : ''}" onclick="toggleIngredient('${ing.id}')">
+            <input type="checkbox" ${isSelected ? 'checked' : ''} onclick="event.stopPropagation(); toggleIngredient('${ing.id}')">
+            <label>${ing.name}</label>
+            <span class="serving">${ing.serving}</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // ============================================
+    // TOGGLE INGREDIENT SELECTION
+    // ============================================
+    function toggleIngredient(id) {
+      const index = selectedIngredients.indexOf(id);
+      if (index > -1) {
+        selectedIngredients.splice(index, 1);
+      } else {
+        selectedIngredients.push(id);
+      }
+      renderIngredientList();
+      updateSelectedTags();
+      updateResults();
+    }
+
+    // ============================================
+    // UPDATE SELECTED TAGS DISPLAY
+    // ============================================
+    function updateSelectedTags() {
+      const container = document.getElementById('selectedTags');
+
+      if (selectedIngredients.length === 0) {
+        container.innerHTML = '<span style="color: #888;">No ingredients selected yet</span>';
+        return;
+      }
+
+      container.innerHTML = selectedIngredients.map(id => {
+        const ing = ingredients.find(i => i.id === id);
+        return `
+          <span class="selected-tag">
+            ${ing.name}
+            <span class="remove" onclick="event.stopPropagation(); toggleIngredient('${id}')">&times;</span>
+          </span>
+        `;
+      }).join('');
+    }
+
+    // ============================================
+    // CALCULATE TOTALS
+    // ============================================
+    function calculateTotals() {
+      const servingSize = parseFloat(document.getElementById('servingSize').value) || 100;
+      const numPeople = parseInt(document.getElementById('numPeople').value) || 1;
+      const multiplier = (servingSize / 100) * numPeople;
+
+      const totals = {
+        protein: 0,
+        histidine: 0, isoleucine: 0, leucine: 0, lysine: 0,
+        methionine: 0, phenylalanine: 0, threonine: 0, tryptophan: 0, valine: 0,
+        vitaminA: 0, vitaminC: 0, vitaminK: 0, vitaminB6: 0, folate: 0,
+        vitaminE: 0, thiamin: 0, riboflavin: 0, niacin: 0,
+        calcium: 0, iron: 0, magnesium: 0, zinc: 0, potassium: 0,
+        phosphorus: 0, selenium: 0, copper: 0,
+        omega3: 0, omega6: 0, fiber: 0
+      };
+
+      selectedIngredients.forEach(id => {
+        const ing = ingredients.find(i => i.id === id);
+        if (ing && ing.nutrients) {
+          Object.keys(totals).forEach(key => {
+            if (ing.nutrients[key] !== undefined) {
+              totals[key] += ing.nutrients[key] * multiplier;
+            }
+          });
+        }
+      });
+
+      return totals;
+    }
+
+    // ============================================
+    // UPDATE ALL RESULTS
+    // ============================================
+    function updateResults() {
+      const totals = calculateTotals();
+
+      updateProteinDisplay(totals);
+      updateAminoAcidBars(totals);
+      updateVitaminBars(totals);
+      updateMineralBars(totals);
+      updateFatBars(totals);
+      updateMealScore(totals);
+      updateSuggestions(totals);
+      updateTahiniPromo();
+    }
+
+    // ============================================
+    // UPDATE PROTEIN DISPLAY
+    // ============================================
+    function updateProteinDisplay(totals) {
+      const proteinEl = document.getElementById('totalProtein');
+      proteinEl.textContent = totals.protein.toFixed(1) + 'g';
+    }
+
+    // ============================================
+    // RENDER NUTRIENT BAR
+    // ============================================
+    function renderNutrientBar(name, value, dailyValue, unit = '') {
+      const percentage = Math.min((value / dailyValue) * 100, 150);
+      const displayPercentage = Math.round((value / dailyValue) * 100);
+
+      let fillClass = 'low';
+      if (percentage >= 100) fillClass = 'good';
+      else if (percentage >= 75) fillClass = 'medium';
+      else if (percentage > 150) fillClass = 'excess';
+
+      return `
+        <div class="nutrient-bar">
+          <div class="label">
+            <span>${name}</span>
+            <span>${value.toFixed(2)}${unit} (${displayPercentage}%)</span>
+          </div>
+          <div class="bar">
+            <div class="fill ${fillClass}" style="width: ${Math.min(percentage, 100)}%"></div>
+          </div>
+        </div>
+      `;
+    }
+
+    // ============================================
+    // UPDATE AMINO ACID BARS
+    // ============================================
+    function updateAminoAcidBars(totals) {
+      const container = document.getElementById('aminoAcidBars');
+      const aminoAcids = [
+        { key: 'histidine', name: 'Histidine' },
+        { key: 'isoleucine', name: 'Isoleucine' },
+        { key: 'leucine', name: 'Leucine' },
+        { key: 'lysine', name: 'Lysine' },
+        { key: 'methionine', name: 'Methionine' },
+        { key: 'phenylalanine', name: 'Phenylalanine' },
+        { key: 'threonine', name: 'Threonine' },
+        { key: 'tryptophan', name: 'Tryptophan' },
+        { key: 'valine', name: 'Valine' }
+      ];
+
+      container.innerHTML = aminoAcids.map(aa =>
+        renderNutrientBar(aa.name, totals[aa.key], dailyValues[aa.key], 'g')
+      ).join('');
+
+      // Update status icon
+      const allMet = aminoAcids.every(aa => totals[aa.key] >= dailyValues[aa.key]);
+      const someMet = aminoAcids.some(aa => totals[aa.key] >= dailyValues[aa.key] * 0.5);
+      const statusIcon = document.querySelector('#aminoAcids .status-icon');
+      if (allMet) statusIcon.textContent = '🟢';
+      else if (someMet) statusIcon.textContent = '🟡';
+      else statusIcon.textContent = '🔴';
+    }
+
+    // ============================================
+    // UPDATE VITAMIN BARS
+    // ============================================
+    function updateVitaminBars(totals) {
+      const container = document.getElementById('vitaminBars');
+      const vitamins = [
+        { key: 'vitaminA', name: 'Vitamin A', unit: 'mcg' },
+        { key: 'vitaminC', name: 'Vitamin C', unit: 'mg' },
+        { key: 'vitaminE', name: 'Vitamin E', unit: 'mg' },
+        { key: 'vitaminK', name: 'Vitamin K', unit: 'mcg' },
+        { key: 'vitaminB6', name: 'Vitamin B6', unit: 'mg' },
+        { key: 'folate', name: 'Folate', unit: 'mcg' },
+        { key: 'thiamin', name: 'Thiamin (B1)', unit: 'mg' },
+        { key: 'riboflavin', name: 'Riboflavin (B2)', unit: 'mg' },
+        { key: 'niacin', name: 'Niacin (B3)', unit: 'mg' }
+      ];
+
+      container.innerHTML = vitamins.map(v =>
+        renderNutrientBar(v.name, totals[v.key], dailyValues[v.key], v.unit)
+      ).join('');
+
+      // Update status icon
+      const allMet = vitamins.every(v => totals[v.key] >= dailyValues[v.key]);
+      const someMet = vitamins.some(v => totals[v.key] >= dailyValues[v.key] * 0.5);
+      const statusIcon = document.querySelector('#vitamins .status-icon');
+      if (allMet) statusIcon.textContent = '🟢';
+      else if (someMet) statusIcon.textContent = '🟡';
+      else statusIcon.textContent = '🔴';
+    }
+
+    // ============================================
+    // UPDATE MINERAL BARS
+    // ============================================
+    function updateMineralBars(totals) {
+      const container = document.getElementById('mineralBars');
+      const minerals = [
+        { key: 'calcium', name: 'Calcium', unit: 'mg' },
+        { key: 'iron', name: 'Iron', unit: 'mg' },
+        { key: 'magnesium', name: 'Magnesium', unit: 'mg' },
+        { key: 'zinc', name: 'Zinc', unit: 'mg' },
+        { key: 'potassium', name: 'Potassium', unit: 'mg' },
+        { key: 'phosphorus', name: 'Phosphorus', unit: 'mg' },
+        { key: 'selenium', name: 'Selenium', unit: 'mcg' },
+        { key: 'copper', name: 'Copper', unit: 'mg' }
+      ];
+
+      container.innerHTML = minerals.map(m =>
+        renderNutrientBar(m.name, totals[m.key], dailyValues[m.key], m.unit)
+      ).join('');
+
+      // Update status icon
+      const allMet = minerals.every(m => totals[m.key] >= dailyValues[m.key]);
+      const someMet = minerals.some(m => totals[m.key] >= dailyValues[m.key] * 0.5);
+      const statusIcon = document.querySelector('#minerals .status-icon');
+      if (allMet) statusIcon.textContent = '🟢';
+      else if (someMet) statusIcon.textContent = '🟡';
+      else statusIcon.textContent = '🔴';
+    }
+
+    // ============================================
+    // UPDATE FAT BARS
+    // ============================================
+    function updateFatBars(totals) {
+      const container = document.getElementById('fatBars');
+      const fats = [
+        { key: 'omega3', name: 'Omega-3 (ALA)', unit: 'g' },
+        { key: 'omega6', name: 'Omega-6', unit: 'g' },
+        { key: 'fiber', name: 'Fiber', unit: 'g' }
+      ];
+
+      container.innerHTML = fats.map(f =>
+        renderNutrientBar(f.name, totals[f.key], dailyValues[f.key], f.unit)
+      ).join('');
+
+      // Update status icon
+      const allMet = fats.every(f => totals[f.key] >= dailyValues[f.key]);
+      const someMet = fats.some(f => totals[f.key] >= dailyValues[f.key] * 0.5);
+      const statusIcon = document.querySelector('#fats .status-icon');
+      if (allMet) statusIcon.textContent = '🟢';
+      else if (someMet) statusIcon.textContent = '🟡';
+      else statusIcon.textContent = '🔴';
+    }
+
+    // ============================================
+    // UPDATE MEAL SCORE
+    // ============================================
+    function updateMealScore(totals) {
+      const nutrients = [
+        'histidine', 'isoleucine', 'leucine', 'lysine', 'methionine',
+        'phenylalanine', 'threonine', 'tryptophan', 'valine',
+        'vitaminA', 'vitaminC', 'vitaminE', 'vitaminK', 'vitaminB6',
+        'folate', 'thiamin', 'riboflavin', 'niacin',
+        'calcium', 'iron', 'magnesium', 'zinc', 'potassium',
+        'phosphorus', 'selenium', 'copper',
+        'omega3', 'omega6', 'fiber'
+      ];
+
+      let totalScore = 0;
+      nutrients.forEach(key => {
+        const percentage = (totals[key] / dailyValues[key]) * 100;
+        totalScore += Math.min(percentage, 100);
+      });
+
+      const averageScore = Math.round(totalScore / nutrients.length);
+      document.getElementById('mealScore').textContent = averageScore + '%';
+    }
+
+    // ============================================
+    // UPDATE SUGGESTIONS
+    // ============================================
+    function updateSuggestions(totals) {
+      const container = document.getElementById('suggestionList');
+      const suggestions = [];
+
+      // Check for deficiencies and suggest foods
+      if (totals.lysine < dailyValues.lysine * 0.5) {
+        suggestions.push('Add <strong>legumes</strong> (chickpeas, lentils, tofu) for lysine');
+      }
+      if (totals.methionine < dailyValues.methionine * 0.5) {
+        suggestions.push('Add <strong>grains</strong> (quinoa, rice) or <strong>seeds</strong> for methionine');
+      }
+      if (totals.calcium < dailyValues.calcium * 0.5) {
+        suggestions.push('Add <strong>tahini</strong>, fortified plant milk, or leafy greens for calcium');
+      }
+      if (totals.iron < dailyValues.iron * 0.5) {
+        suggestions.push('Add <strong>spinach</strong>, lentils, or pumpkin seeds for iron');
+      }
+      if (totals.zinc < dailyValues.zinc * 0.5) {
+        suggestions.push('Add <strong>tahini</strong>, pumpkin seeds, or chickpeas for zinc');
+      }
+      if (totals.omega3 < dailyValues.omega3 * 0.5) {
+        suggestions.push('Add <strong>flaxseeds</strong>, chia seeds, or walnuts for omega-3');
+      }
+      if (totals.vitaminC < dailyValues.vitaminC * 0.5) {
+        suggestions.push('Add <strong>bell peppers</strong>, citrus fruits, or broccoli for vitamin C');
+      }
+      if (totals.fiber < dailyValues.fiber * 0.5) {
+        suggestions.push('Add <strong>whole grains</strong>, beans, or vegetables for fiber');
+      }
+      if (totals.vitaminB6 < dailyValues.vitaminB6 * 0.5) {
+        suggestions.push('Add <strong>bananas</strong>, potatoes, or chickpeas for vitamin B6');
+      }
+      if (totals.magnesium < dailyValues.magnesium * 0.5) {
+        suggestions.push('Add <strong>pumpkin seeds</strong>, spinach, or almonds for magnesium');
+      }
+
+      if (suggestions.length === 0) {
+        if (selectedIngredients.length === 0) {
+          container.innerHTML = '<p>Select some ingredients to get personalized suggestions.</p>';
+        } else {
+          container.innerHTML = '<p style="color: var(--brand-primary); font-weight: 600;">Great job! Your meal looks nutritionally balanced.</p>';
+        }
+      } else {
+        container.innerHTML = suggestions.map(s => `<div class="suggestion-item">${s}</div>`).join('');
+      }
+    }
+
+    // ============================================
+    // UPDATE TAHINI PROMO
+    // ============================================
+    function updateTahiniPromo() {
+      const promo = document.getElementById('tahiniPromo');
+      const hasTahini = selectedIngredients.includes('tahini');
+
+      if (selectedIngredients.length > 0 && !hasTahini) {
+        promo.style.display = 'block';
+      } else {
+        promo.style.display = 'none';
+      }
+    }
+
+    // ============================================
+    // CLEAR ALL
+    // ============================================
+    function clearAll() {
+      selectedIngredients = [];
+      document.getElementById('servingSize').value = 100;
+      document.getElementById('numPeople').value = 1;
+      document.getElementById('ingredientSearch').value = '';
+      searchQuery = '';
+      renderIngredientList();
+      updateSelectedTags();
+      updateResults();
+    }
+
     // Initialize on page load
     document.addEventListener('DOMContentLoaded', init);
   </script>
