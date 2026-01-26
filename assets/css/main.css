@@ -4094,8 +4094,8 @@ header {
   border-left: 4px solid #c9a227;
   padding: 1em 1.5em;
   margin: 2em 0;
-  background: #f9f9f9;
-  color: #555;
+  background: rgba(0, 0, 0, 0.2);
+  color: #fff;
 }
 
 .blog-content hr {
@@ -4127,3 +4127,4 @@ header {
   border-top: 1px solid #eee;
   text-align: center;
 }
+
