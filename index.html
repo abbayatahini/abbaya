@@ -108,19 +108,16 @@
     
 /* Banner/Hero section with background image */
 #banner {
-    background-image: url('images/field.jpg');
+    background-image: url('images/field.webp');
     background-size: cover;
-    -webkit-background-size: cover;
-    -moz-background-size: cover;
-    -o-background-size: cover;
     background-position: center center;
     background-repeat: no-repeat;
-    background-attachment: scroll;
+    background-attachment: scroll;  /* Good - don't use 'fixed' on mobile */
     position: relative;
-    background-color: var(--brand-dark);
+    background-color: var(--brand-dark);  /* Fallback while image loads */
     min-height: 100vh;
 }
-
+			
 /* Dark overlay so text is readable */
 #banner::before {
     content: '';
@@ -576,6 +573,7 @@ v				<div class="image"><img src="images/cookie.jpg" alt="Vegan Tahini Swirl Coo
 		
 	</body>
 </html>
+
 
 
 
