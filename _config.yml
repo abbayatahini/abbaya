@@ -1,0 +1,7 @@
+title: abbayatahini
+description: Ethiopian tahini in Portugal 
+baseurl: ""
+url: "https://github.com/abbayatahini/abbaya"
+
+# Build settings
+markdown: kramdown
