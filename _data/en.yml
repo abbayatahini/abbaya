@@ -1,0 +1,13 @@
+lang_code: en
+
+nav:
+  home: "Home"
+  about: "About"
+  contact: "Contact"
+
+home:
+  title: "Welcome to Abbaya Tahini"
+  description: "Ethiopian tahini in Portugal"
+
+footer:
+  copyright: "All rights reserved"
