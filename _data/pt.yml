@@ -1,0 +1,13 @@
+lang_code: pt-PT
+
+nav:
+  home: "Início"
+  about: "Sobre"
+  contact: "Contacto"
+
+home:
+  title: "Bem-vindo à Abbaya Tahini"
+  description: "Tahini etíope em Portugal"
+
+footer:
+  copyright: "Todos os direitos reservados"
