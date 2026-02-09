@@ -251,6 +251,38 @@ color: var(--brand-dark);
             font-size: 1.8em !important;
         }
     }
+		/* Language Switcher */
+.lang-switcher {
+    position: fixed;
+    top: 1em;
+    left: 1em;
+    z-index: 99999;
+    pointer-events: auto;
+}
+
+.lang-switcher a {
+    color: white;
+    text-decoration: none;
+    padding: 0.5em 0.8em;
+    margin: 0 0.2em;
+    border-radius: 4px;
+    font-size: 0.9em;
+    background: rgba(0,0,0,0.5);
+    display: inline-block;
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+.lang-switcher a:hover {
+    background: var(--brand-primary);
+    color: var(--brand-dark);
+}
+
+.lang-switcher a.active {
+    background: var(--brand-primary);
+    color: var(--brand-dark);
+    font-weight: bold;
+}
     </style>
 	</head>
 	<body class="landing is-preload">
