@@ -235,9 +235,43 @@ color: var(--brand-dark);
         }
     }
     </style>
+		/* Language Switcher */
+.lang-switcher {
+    position: fixed;
+    top: 1em;
+    right: 1em;
+    z-index: 10000;
+}
+
+.lang-switcher a {
+    color: white;
+    text-decoration: none;
+    padding: 0.5em 0.8em;
+    margin: 0 0.2em;
+    border-radius: 4px;
+    font-size: 0.9em;
+    background: rgba(0,0,0,0.3);
+}
+
+.lang-switcher a:hover {
+    background: var(--brand-primary);
+    color: var(--brand-dark);
+}
+
+.lang-switcher a.active {
+    background: var(--brand-primary);
+    color: var(--brand-dark);
+    font-weight: bold;
+}
 	</head>
 	<body class="landing is-preload">
 <a href="#main-content" class="skip-link">Skip to main content</a>
+
+		<!-- Language Switcher -->
+<div class="lang-switcher">
+    <a href="index.html" class="active">EN</a>
+    <a href="pt/index.html">PT</a>
+</div>
 		<!-- Page Wrapper -->
 		<div id="page-wrapper">
 
@@ -575,6 +609,7 @@ v				<div class="image"><img src="images/cookie final.webp" alt="Vegan Tahini Sw
 		
 	</body>
 </html>
+
 
 
 
