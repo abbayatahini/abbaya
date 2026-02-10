@@ -147,6 +147,68 @@
         background-size: cover;
     }
 }
+			/* --- MOBILE MENU FIXES --- */
+@media screen and (max-width: 980px) {
+    /* Make sure header is visible and positioned correctly */
+    #header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 10000;
+    }
+    
+    /* Fix menu toggle button positioning and size */
+    #header .menuToggle {
+        position: fixed !important;
+        top: 1em !important;
+        right: 1em !important;
+        z-index: 10001 !important;
+        display: block !important;
+        width: 4em !important;
+        height: 4em !important;
+        line-height: 4em !important;
+        text-align: center !important;
+        background: var(--brand-primary) !important;
+        border-radius: 0.35em !important;
+        opacity: 1 !important;
+        visibility: visible !important;
+    }
+    
+    /* Make the hamburger icon more visible */
+    #header .menuToggle:before,
+    #header .menuToggle:after {
+        background: var(--brand-dark) !important;
+    }
+    
+    /* Ensure menu toggle text/icon is centered */
+    #header .menuToggle span {
+        display: block !important;
+    }
+    
+    /* Fix language switcher on mobile so it doesn't overlap menu */
+    .lang-switcher {
+        top: 0.5em;
+        left: 0.5em;
+        z-index: 9999;
+    }
+    
+    .lang-switcher a {
+        padding: 0.4em 0.6em;
+        font-size: 0.8em;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    /* Extra small screens - make button even more prominent */
+    #header .menuToggle {
+        width: 3.5em !important;
+        height: 3.5em !important;
+        line-height: 3.5em !important;
+        top: 0.75em !important;
+        right: 0.75em !important;
+    }
+}
     /* Primary buttons */
     .button.primary {
         background-color: var(--brand-primary) !important;
@@ -613,6 +675,7 @@ v				<div class="image"><img src="images/cookie final.webp" alt="Vegan Tahini Sw
 		
 	</body>
 </html>
+
 
 
 
