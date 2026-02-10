@@ -12,12 +12,14 @@
   <meta property="og:description" content="Check if your vegan meal is nutritionally complete. Free tool for plant-based nutrition.">
   <meta property="og:url" content="https://abbayatahini.com/nutrition-calculator.html">
 
-  <!-- Google Fonts - Inter -->
+  <!-- Google Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-  <!-- Main CSS for header/footer only -->
+  <!-- Chart.js for visualizations -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
   <link rel="stylesheet" href="assets/css/main.css">
 
   <style>
@@ -37,6 +39,7 @@
       --success: #4CAF50;
       --warning: #FF9800;
       --danger: #E53935;
+      --info: #2196F3;
 
       --shadow-card: 0 4px 24px rgba(44, 24, 16, 0.08);
       --shadow-hover: 0 8px 32px rgba(44, 24, 16, 0.12);
@@ -66,12 +69,48 @@
     }
 
     /* ========================================
+       LANGUAGE SWITCHER
+    ======================================== */
+    .lang-switch {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      z-index: 1000;
+      display: flex;
+      gap: 0.25rem;
+      background: var(--brown-dark);
+      padding: 0.25rem;
+      border-radius: var(--radius-full);
+    }
+
+    .lang-switch button {
+      padding: 0.5rem 1rem;
+      border: none;
+      background: transparent;
+      color: var(--white);
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      border-radius: var(--radius-full);
+      transition: all var(--transition);
+    }
+
+    .lang-switch button:hover {
+      background: rgba(255,255,255,0.1);
+    }
+
+    .lang-switch button.active {
+      background: var(--gold);
+      color: var(--brown-dark);
+    }
+
+    /* ========================================
        HERO SECTION
     ======================================== */
     .calc-hero {
       background: linear-gradient(135deg, var(--brown-dark) 0%, var(--brown) 100%);
       color: var(--white);
-      padding: 2rem 1.5rem;
+      padding: 3rem 1.5rem 2rem;
       text-align: center;
     }
 
@@ -84,14 +123,41 @@
     .calc-hero p {
       font-size: 1rem;
       opacity: 0.9;
-      margin: 0;
+      margin: 0 0 1.5rem 0;
+    }
+
+    /* ========================================
+       STATS BAR
+    ======================================== */
+    .stats-bar {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .stat-item {
+      text-align: center;
+    }
+
+    .stat-value {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--gold);
+    }
+
+    .stat-label {
+      font-size: 0.75rem;
+      opacity: 0.8;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
     }
 
     /* ========================================
        MAIN LAYOUT
     ======================================== */
     .calc-container {
-      max-width: 1200px;
+      max-width: 1400px;
       margin: 0 auto;
       padding: 1.5rem;
     }
@@ -102,9 +168,15 @@
       gap: 1.5rem;
     }
 
-    @media (min-width: 900px) {
+    @media (min-width: 1024px) {
       .calc-grid {
         grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (min-width: 1280px) {
+      .calc-grid {
+        grid-template-columns: 1fr 1fr 350px;
       }
     }
 
@@ -121,6 +193,9 @@
     .panel-header {
       padding: 1.25rem 1.5rem;
       border-bottom: 1px solid rgba(196, 163, 90, 0.2);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
 
     .panel-header h2 {
@@ -132,6 +207,39 @@
 
     .panel-body {
       padding: 1.5rem;
+    }
+
+    /* ========================================
+       VIEW TOGGLE
+    ======================================== */
+    .view-toggle {
+      display: flex;
+      gap: 0.25rem;
+      background: var(--cream);
+      padding: 0.25rem;
+      border-radius: var(--radius-full);
+    }
+
+    .view-toggle button {
+      padding: 0.5rem 1rem;
+      border: none;
+      background: transparent;
+      color: var(--text-muted);
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      border-radius: var(--radius-full);
+      transition: all var(--transition);
+    }
+
+    .view-toggle button:hover {
+      color: var(--text);
+    }
+
+    .view-toggle button.active {
+      background: var(--white);
+      color: var(--text);
+      box-shadow: var(--shadow-card);
     }
 
     /* ========================================
@@ -234,7 +342,7 @@
       }
     }
 
-    @media (min-width: 900px) {
+    @media (min-width: 1024px) {
       .ingredient-grid {
         grid-template-columns: repeat(2, 1fr);
       }
@@ -331,80 +439,193 @@
     }
 
     /* ========================================
-       SCORE CIRCLE
+       SERVING SIZE SLIDER
     ======================================== */
-    .score-section {
-      text-align: center;
-      margin-bottom: 1.5rem;
+    .serving-control {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem;
+      background: var(--cream);
+      border-radius: var(--radius-md);
+      margin-top: 0.5rem;
     }
 
-    .score-circle {
-      position: relative;
-      width: 160px;
-      height: 160px;
-      margin: 0 auto 1rem;
-    }
-
-    .score-circle svg {
-      transform: rotate(-90deg);
-      width: 100%;
-      height: 100%;
-    }
-
-    .score-circle .bg {
-      fill: none;
-      stroke: var(--cream);
-      stroke-width: 12;
-    }
-
-    .score-circle .progress {
-      fill: none;
-      stroke: var(--gold);
-      stroke-width: 12;
-      stroke-linecap: round;
-      transition: stroke-dashoffset 0.5s ease, stroke 0.3s ease;
-    }
-
-    .score-circle .score-text {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      text-align: center;
-    }
-
-    .score-circle .score-value {
-      font-size: 2.5rem;
-      font-weight: 700;
-      color: var(--text);
-      line-height: 1;
-    }
-
-    .score-circle .score-label {
-      font-size: 0.875rem;
+    .serving-control span {
+      font-size: 0.8125rem;
       color: var(--text-muted);
-      margin-top: 0.25rem;
+      min-width: 60px;
+    }
+
+    .serving-slider {
+      flex: 1;
+      -webkit-appearance: none;
+      height: 6px;
+      border-radius: 3px;
+      background: var(--gold-light);
+      outline: none;
+    }
+
+    .serving-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--gold);
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+    }
+
+    .serving-slider::-moz-range-thumb {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: var(--gold);
+      cursor: pointer;
+      border: none;
+    }
+
+    .serving-value {
+      font-weight: 600;
+      color: var(--text);
+      min-width: 50px;
+      text-align: right;
     }
 
     /* ========================================
-       PROTEIN CARD
+       SELECTED ITEMS
     ======================================== */
-    .protein-card {
+    .selected-section {
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--gold-light);
+    }
+
+    .selected-section h4 {
+      font-size: 0.875rem;
+      font-weight: 600;
+      margin: 0 0 0.75rem 0;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .selected-items {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .selected-item {
+      background: var(--cream);
+      border-radius: var(--radius-md);
+      padding: 0.75rem;
+    }
+
+    .selected-item-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+
+    .selected-item-name {
+      font-size: 0.875rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .selected-item-remove {
+      background: none;
+      border: none;
+      color: var(--danger);
+      cursor: pointer;
+      padding: 0.25rem;
+      font-size: 1.25rem;
+      line-height: 1;
+    }
+
+    .empty-state {
+      color: var(--text-muted);
+      font-size: 0.875rem;
+      text-align: center;
+      padding: 1rem;
+    }
+
+    .clear-all {
+      display: block;
+      width: 100%;
+      margin-top: 1rem;
+      padding: 0.75rem;
+      background: var(--brown);
+      color: var(--white);
+      border: none;
+      border-radius: var(--radius-md);
+      font-size: 0.9375rem;
+      font-weight: 600;
+      font-family: inherit;
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+
+    .clear-all:hover {
+      background: var(--brown-dark);
+    }
+
+    /* ========================================
+       CHARTS
+    ======================================== */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .chart-container {
+      background: var(--cream);
+      border-radius: var(--radius-md);
+      padding: 1rem;
+      text-align: center;
+    }
+
+    .chart-container h4 {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      margin: 0 0 0.5rem 0;
+    }
+
+    .chart-wrapper {
+      position: relative;
+      height: 120px;
+    }
+
+    /* ========================================
+       CALORIE CARD
+    ======================================== */
+    .calorie-card {
       background: linear-gradient(135deg, var(--gold) 0%, var(--gold-dark) 100%);
       color: var(--white);
       border-radius: var(--radius-md);
       padding: 1.25rem;
       text-align: center;
       margin-bottom: 1.5rem;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1rem;
     }
 
-    .protein-card .value {
-      font-size: 2rem;
+    .calorie-item .value {
+      font-size: 1.5rem;
       font-weight: 700;
     }
 
-    .protein-card .label {
-      font-size: 0.875rem;
+    .calorie-item .label {
+      font-size: 0.75rem;
       opacity: 0.9;
     }
 
@@ -525,7 +746,58 @@
     .bar-fill.good { background: linear-gradient(90deg, var(--success), #66BB6A); }
 
     /* ========================================
-       SUGGESTIONS
+       COMPARE MODE
+    ======================================== */
+    .compare-panel {
+      display: none;
+    }
+
+    .compare-panel.active {
+      display: block;
+    }
+
+    .compare-select {
+      width: 100%;
+      padding: 0.875rem;
+      border: 2px solid var(--gold-light);
+      border-radius: var(--radius-md);
+      font-size: 1rem;
+      font-family: inherit;
+      background: var(--white);
+      margin-bottom: 1rem;
+      cursor: pointer;
+    }
+
+    .compare-select:focus {
+      outline: none;
+      border-color: var(--gold);
+    }
+
+    .compare-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .compare-table th,
+    .compare-table td {
+      padding: 0.75rem;
+      text-align: left;
+      border-bottom: 1px solid var(--gold-light);
+      font-size: 0.875rem;
+    }
+
+    .compare-table th {
+      background: var(--cream);
+      font-weight: 600;
+    }
+
+    .compare-table .winner {
+      color: var(--success);
+      font-weight: 600;
+    }
+
+    /* ========================================
+       SUGGESTIONS & PROMO
     ======================================== */
     .suggestions-card {
       background: linear-gradient(135deg, var(--cream) 0%, var(--gold-light) 100%);
@@ -559,9 +831,6 @@
       color: var(--gold-dark);
     }
 
-    /* ========================================
-       TAHINI PROMO
-    ======================================== */
     .tahini-promo {
       background: linear-gradient(135deg, var(--gold) 0%, var(--brown) 100%);
       color: var(--white);
@@ -591,17 +860,13 @@
       text-decoration: none;
       transition: all var(--transition);
       margin: 0 0.25rem;
+      border: none;
+      cursor: pointer;
     }
 
     .tahini-promo .btn:hover {
       transform: translateY(-2px);
       box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-    }
-
-    .tahini-promo .btn-outline {
-      background: transparent;
-      color: var(--white);
-      border: 2px solid var(--white);
     }
 
     /* ========================================
@@ -624,912 +889,46 @@
       transform: translateY(0);
     }
 
-    .meal-bar-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 0.75rem;
-    }
-
-    .meal-bar-header h4 {
-      font-size: 0.875rem;
-      font-weight: 600;
-      margin: 0;
-    }
-
-    .meal-bar .clear-btn {
-      background: none;
-      border: none;
-      color: var(--danger);
-      font-size: 0.8125rem;
-      font-weight: 500;
-      cursor: pointer;
-      padding: 0.25rem 0.5rem;
-    }
-
-    .meal-bar-items {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-    }
-
-    .meal-tag {
-      display: inline-flex;
-      align-items: center;
-      gap: 0.375rem;
-      background: var(--gold);
-      color: var(--white);
-      padding: 0.375rem 0.75rem;
-      border-radius: var(--radius-full);
-      font-size: 0.8125rem;
-      font-weight: 500;
-    }
-
-    .meal-tag .remove {
-      cursor: pointer;
-      opacity: 0.8;
-      font-size: 1rem;
-      line-height: 1;
-    }
-
-    .meal-tag .remove:hover {
-      opacity: 1;
-    }
-
-    @media (min-width: 900px) {
+    @media (min-width: 1024px) {
       .meal-bar {
         display: none;
       }
     }
 
-    /* Desktop selected items */
-    .selected-section {
-      margin-top: 1.5rem;
-      padding-top: 1.5rem;
-      border-top: 1px solid var(--gold-light);
-    }
-
-    .selected-section h4 {
-      font-size: 0.875rem;
-      font-weight: 600;
-      margin: 0 0 0.75rem 0;
-      color: var(--text-muted);
-    }
-
-    .selected-items {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-    }
-
-    .selected-items .meal-tag {
-      background: var(--gold);
-    }
-
-    .selected-section .clear-all {
-      display: block;
-      width: 100%;
-      margin-top: 1rem;
-      padding: 0.75rem;
-      background: var(--brown);
-      color: var(--white);
-      border: none;
-      border-radius: var(--radius-md);
-      font-size: 0.9375rem;
-      font-weight: 600;
-      font-family: inherit;
-      cursor: pointer;
-      transition: all var(--transition);
-    }
-
-    .selected-section .clear-all:hover {
-      background: var(--brown-dark);
-    }
-
-    .empty-state {
-      color: var(--text-muted);
-      font-size: 0.875rem;
-    }
-
     /* Spacing for mobile meal bar */
-    @media (max-width: 899px) {
+    @media (max-width: 1023px) {
       .calc-container {
-        padding-bottom: 120px;
+        padding-bottom: 100px;
       }
     }
 
     /* ========================================
-       UTILITIES
+       PRINT STYLES
     ======================================== */
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      border: 0;
+    @media print {
+      .lang-switch,
+      .meal-bar,
+      .search-box,
+      .category-pills,
+      .ingredient-grid,
+      .clear-all,
+      .tahini-promo,
+      .view-toggle {
+        display: none !important;
+      }
+
+      .calc-panel {
+        box-shadow: none;
+        border: 1px solid #ddd;
+      }
+
+      .nutrient-section {
+        break-inside: avoid;
+      }
+
+      .nutrient-section.expanded .section-content {
+        max-height: none;
+      }
     }
   </style>
 </head>
-<body class="is-preload">
-
-  <!-- Header -->
-  <header id="header">
-    <div class="inner">
-      <a href="index.html" class="logo">Abbaya Tahini</a>
-      <nav id="nav">
-        <a href="index.html">Home</a>
-        <a href="index.html#one">About</a>
-        <a href="index.html#shop">Shop</a>
-        <a href="index.html#blog">Blog</a>
-        <a href="nutrition-calculator.html">Nutrition Calculator</a>
-      </nav>
-      <a href="#navPanel" class="navPanelToggle"><span class="fa fa-bars"></span></a>
-    </div>
-  </header>
-
-  <!-- Calculator App -->
-  <div class="calc-app">
-
-    <!-- Hero -->
-    <section class="calc-hero">
-      <h1>Vegan Nutrition Calculator</h1>
-      <p>Build your meal. Check completeness.</p>
-    </section>
-
-    <!-- Main Container -->
-    <div class="calc-container">
-      <div class="calc-grid">
-
-        <!-- Left Panel: Ingredients -->
-        <div class="calc-panel">
-          <div class="panel-header">
-            <h2>Select Ingredients</h2>
-          </div>
-          <div class="panel-body">
-
-            <!-- Search -->
-            <div class="search-box">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <circle cx="11" cy="11" r="8"/>
-                <path d="m21 21-4.35-4.35"/>
-              </svg>
-              <input type="text" id="ingredientSearch" placeholder="Search ingredients..." oninput="filterIngredients()">
-            </div>
-
-            <!-- Category Pills -->
-            <div class="category-pills" id="categoryPills">
-              <button class="category-pill active" data-category="all">All</button>
-              <button class="category-pill" data-category="legumes">Legumes</button>
-              <button class="category-pill" data-category="grains">Grains</button>
-              <button class="category-pill" data-category="nuts-seeds">Nuts & Seeds</button>
-              <button class="category-pill" data-category="vegetables">Vegetables</button>
-              <button class="category-pill" data-category="fruits">Fruits</button>
-              <button class="category-pill" data-category="fermented">Fermented</button>
-              <button class="category-pill" data-category="other">Other</button>
-            </div>
-
-            <!-- Ingredient Grid -->
-            <div class="ingredient-grid" id="ingredientGrid">
-              <!-- Populated by JavaScript -->
-            </div>
-
-            <!-- Selected Items (Desktop) -->
-            <div class="selected-section" id="selectedSection">
-              <h4>Your Meal</h4>
-              <div class="selected-items" id="selectedItems">
-                <span class="empty-state">No ingredients selected</span>
-              </div>
-              <button class="clear-all" onclick="clearAll()">Clear All</button>
-            </div>
-
-          </div>
-        </div>
-
-        <!-- Right Panel: Results -->
-        <div class="calc-panel">
-          <div class="panel-header">
-            <h2>Nutrition Dashboard</h2>
-          </div>
-          <div class="panel-body">
-
-            <!-- Score Circle -->
-            <div class="score-section">
-              <div class="score-circle">
-                <svg viewBox="0 0 100 100">
-                  <circle class="bg" cx="50" cy="50" r="44"/>
-                  <circle class="progress" id="scoreProgress" cx="50" cy="50" r="44"
-                    stroke-dasharray="276.46" stroke-dashoffset="276.46"/>
-                </svg>
-                <div class="score-text">
-                  <div class="score-value" id="scoreValue">0%</div>
-                  <div class="score-label">Complete</div>
-                </div>
-              </div>
-            </div>
-
-            <!-- Protein Card -->
-            <div class="protein-card">
-              <div class="value" id="proteinValue">0g</div>
-              <div class="label">Total Protein</div>
-            </div>
-
-            <!-- Amino Acids Section -->
-            <div class="nutrient-section expanded" id="aminoSection">
-              <div class="section-header" onclick="toggleSection('aminoSection')">
-                <span class="title">
-                  <span class="status bad" id="aminoStatus">!</span>
-                  Essential Amino Acids
-                </span>
-                <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="m6 9 6 6 6-6"/>
-                </svg>
-              </div>
-              <div class="section-content">
-                <div class="section-inner" id="aminoBars"></div>
-              </div>
-            </div>
-
-            <!-- Vitamins Section -->
-            <div class="nutrient-section" id="vitaminSection">
-              <div class="section-header" onclick="toggleSection('vitaminSection')">
-                <span class="title">
-                  <span class="status bad" id="vitaminStatus">!</span>
-                  Key Vitamins
-                </span>
-                <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="m6 9 6 6 6-6"/>
-                </svg>
-              </div>
-              <div class="section-content">
-                <div class="section-inner" id="vitaminBars"></div>
-              </div>
-            </div>
-
-            <!-- Minerals Section -->
-            <div class="nutrient-section" id="mineralSection">
-              <div class="section-header" onclick="toggleSection('mineralSection')">
-                <span class="title">
-                  <span class="status bad" id="mineralStatus">!</span>
-                  Essential Minerals
-                </span>
-                <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="m6 9 6 6 6-6"/>
-                </svg>
-              </div>
-              <div class="section-content">
-                <div class="section-inner" id="mineralBars"></div>
-              </div>
-            </div>
-
-            <!-- Fats Section -->
-            <div class="nutrient-section" id="fatSection">
-              <div class="section-header" onclick="toggleSection('fatSection')">
-                <span class="title">
-                  <span class="status bad" id="fatStatus">!</span>
-                  Healthy Fats & Fiber
-                </span>
-                <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="m6 9 6 6 6-6"/>
-                </svg>
-              </div>
-              <div class="section-content">
-                <div class="section-inner" id="fatBars"></div>
-              </div>
-            </div>
-
-            <!-- Suggestions -->
-            <div class="suggestions-card" id="suggestionsCard">
-              <h3>
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--gold-dark)" stroke-width="2">
-                  <path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/>
-                </svg>
-                Suggestions
-              </h3>
-              <div id="suggestionList">
-                <div class="suggestion-item">Select ingredients to get suggestions</div>
-              </div>
-            </div>
-
-            <!-- Tahini Promo -->
-            <div class="tahini-promo" id="tahiniPromo">
-              <p><strong>Tahini</strong> adds calcium, iron, zinc & healthy fats!</p>
-              <a href="#" class="btn" onclick="addTahini(); return false;">Add Tahini</a>
-              <a href="index.html#shop" class="btn btn-outline">Learn More</a>
-            </div>
-
-          </div>
-        </div>
-
-      </div>
-    </div>
-
-    <!-- Floating Meal Bar (Mobile) -->
-    <div class="meal-bar" id="mealBar">
-      <div class="meal-bar-header">
-        <h4>Your Meal</h4>
-        <button class="clear-btn" onclick="clearAll()">Clear All</button>
-      </div>
-      <div class="meal-bar-items" id="mealBarItems">
-        <!-- Populated by JavaScript -->
-      </div>
-    </div>
-
-  </div>
-
-  <!-- Footer -->
-  <footer id="footer">
-    <div class="inner">
-      <ul class="copyright">
-        <li>&copy; 2025 Abbaya Tahini</li>
-        <li>Coimbra, Portugal</li>
-      </ul>
-    </div>
-  </footer>
-
-  <!-- Scripts -->
-  <script src="assets/js/jquery.min.js"></script>
-  <script src="assets/js/skel.min.js"></script>
-  <script src="assets/js/util.js"></script>
-  <script src="assets/js/main.js"></script>
-
-  <script>
-    // ============================================
-    // VEGAN NUTRITION DATABASE
-    // All values per 100g serving
-    // ============================================
-
-    const ingredients = [
-      // LEGUMES
-      { id: 'chickpeas', name: 'Chickpeas (cooked)', category: 'legumes', emoji: '🫘', serving: '100g',
-        nutrients: { protein: 8.9, histidine: 0.24, isoleucine: 0.38, leucine: 0.63, lysine: 0.58, methionine: 0.12, phenylalanine: 0.47, threonine: 0.32, tryptophan: 0.08, valine: 0.36, vitaminA: 1, vitaminC: 1.3, vitaminK: 4, vitaminB6: 0.14, folate: 172, vitaminE: 0.35, thiamin: 0.12, riboflavin: 0.06, niacin: 0.53, calcium: 49, iron: 2.9, magnesium: 48, zinc: 1.5, potassium: 291, phosphorus: 168, selenium: 3.7, copper: 0.35, omega3: 0.04, omega6: 1.1, fiber: 7.6 }},
-      { id: 'lentils', name: 'Lentils (cooked)', category: 'legumes', emoji: '🫘', serving: '100g',
-        nutrients: { protein: 9.0, histidine: 0.25, isoleucine: 0.39, leucine: 0.65, lysine: 0.63, methionine: 0.08, phenylalanine: 0.45, threonine: 0.32, tryptophan: 0.08, valine: 0.45, vitaminA: 8, vitaminC: 1.5, vitaminK: 1.7, vitaminB6: 0.18, folate: 181, vitaminE: 0.11, thiamin: 0.17, riboflavin: 0.07, niacin: 1.1, calcium: 19, iron: 3.3, magnesium: 36, zinc: 1.3, potassium: 369, phosphorus: 180, selenium: 2.8, copper: 0.25, omega3: 0.04, omega6: 0.17, fiber: 7.9 }},
-      { id: 'black-beans', name: 'Black Beans (cooked)', category: 'legumes', emoji: '🫘', serving: '100g',
-        nutrients: { protein: 8.9, histidine: 0.24, isoleucine: 0.38, leucine: 0.69, lysine: 0.59, methionine: 0.13, phenylalanine: 0.47, threonine: 0.37, tryptophan: 0.1, valine: 0.45, vitaminA: 0, vitaminC: 0, vitaminK: 3.3, vitaminB6: 0.07, folate: 149, vitaminE: 0.05, thiamin: 0.24, riboflavin: 0.06, niacin: 0.5, calcium: 27, iron: 2.1, magnesium: 70, zinc: 1.1, potassium: 355, phosphorus: 140, selenium: 1.2, copper: 0.21, omega3: 0.06, omega6: 0.11, fiber: 8.7 }},
-      { id: 'kidney-beans', name: 'Kidney Beans (cooked)', category: 'legumes', emoji: '🫘', serving: '100g',
-        nutrients: { protein: 8.7, histidine: 0.24, isoleucine: 0.38, leucine: 0.69, lysine: 0.59, methionine: 0.13, phenylalanine: 0.47, threonine: 0.37, tryptophan: 0.1, valine: 0.45, vitaminA: 0, vitaminC: 1.2, vitaminK: 8.4, vitaminB6: 0.12, folate: 130, vitaminE: 0.03, thiamin: 0.16, riboflavin: 0.06, niacin: 0.58, calcium: 28, iron: 2.2, magnesium: 45, zinc: 1.0, potassium: 403, phosphorus: 142, selenium: 1.2, copper: 0.24, omega3: 0.08, omega6: 0.13, fiber: 6.4 }},
-      { id: 'white-beans', name: 'White Beans (cooked)', category: 'legumes', emoji: '🫘', serving: '100g',
-        nutrients: { protein: 9.7, histidine: 0.27, isoleucine: 0.43, leucine: 0.78, lysine: 0.67, methionine: 0.12, phenylalanine: 0.53, threonine: 0.41, tryptophan: 0.12, valine: 0.51, vitaminA: 0, vitaminC: 0, vitaminK: 4.2, vitaminB6: 0.09, folate: 81, vitaminE: 0.02, thiamin: 0.15, riboflavin: 0.04, niacin: 0.14, calcium: 90, iron: 3.7, magnesium: 63, zinc: 1.4, potassium: 561, phosphorus: 113, selenium: 2.3, copper: 0.24, omega3: 0.09, omega6: 0.08, fiber: 6.3 }},
-      { id: 'tofu', name: 'Tofu (firm)', category: 'legumes', emoji: '🧈', serving: '100g',
-        nutrients: { protein: 17.3, histidine: 0.41, isoleucine: 0.79, leucine: 1.26, lysine: 1.05, methionine: 0.21, phenylalanine: 0.81, threonine: 0.66, tryptophan: 0.23, valine: 0.82, vitaminA: 85, vitaminC: 0.1, vitaminK: 2.0, vitaminB6: 0.09, folate: 29, vitaminE: 0.01, thiamin: 0.15, riboflavin: 0.08, niacin: 0.38, calcium: 683, iron: 2.7, magnesium: 58, zinc: 1.6, potassium: 237, phosphorus: 190, selenium: 17.4, copper: 0.4, omega3: 0.58, omega6: 2.87, fiber: 2.3 }},
-      { id: 'tempeh', name: 'Tempeh', category: 'legumes', emoji: '🧱', serving: '100g',
-        nutrients: { protein: 20.3, histidine: 0.52, isoleucine: 0.93, leucine: 1.49, lysine: 0.99, methionine: 0.24, phenylalanine: 0.96, threonine: 0.79, tryptophan: 0.29, valine: 0.96, vitaminA: 0, vitaminC: 0, vitaminK: 0, vitaminB6: 0.22, folate: 24, vitaminE: 0, thiamin: 0.08, riboflavin: 0.36, niacin: 2.64, calcium: 111, iron: 2.7, magnesium: 81, zinc: 1.1, potassium: 412, phosphorus: 266, selenium: 0, copper: 0.56, omega3: 0.14, omega6: 2.15, fiber: 0 }},
-      { id: 'edamame', name: 'Edamame', category: 'legumes', emoji: '🫛', serving: '100g',
-        nutrients: { protein: 11.9, histidine: 0.33, isoleucine: 0.55, leucine: 0.93, lysine: 0.76, methionine: 0.16, phenylalanine: 0.62, threonine: 0.49, tryptophan: 0.16, valine: 0.57, vitaminA: 15, vitaminC: 6.1, vitaminK: 26.7, vitaminB6: 0.1, folate: 311, vitaminE: 0.72, thiamin: 0.2, riboflavin: 0.16, niacin: 0.93, calcium: 63, iron: 2.3, magnesium: 64, zinc: 1.4, potassium: 436, phosphorus: 169, selenium: 0.9, copper: 0.32, omega3: 0.36, omega6: 1.79, fiber: 5.2 }},
-      { id: 'mung-beans', name: 'Mung Beans (cooked)', category: 'legumes', emoji: '🫘', serving: '100g',
-        nutrients: { protein: 7.0, histidine: 0.2, isoleucine: 0.33, leucine: 0.56, lysine: 0.51, methionine: 0.09, phenylalanine: 0.4, threonine: 0.24, tryptophan: 0.07, valine: 0.38, vitaminA: 1, vitaminC: 1, vitaminK: 2.7, vitaminB6: 0.07, folate: 159, vitaminE: 0.15, thiamin: 0.16, riboflavin: 0.06, niacin: 0.58, calcium: 27, iron: 1.4, magnesium: 48, zinc: 0.8, potassium: 266, phosphorus: 99, selenium: 2.5, copper: 0.16, omega3: 0.03, omega6: 0.12, fiber: 7.6 }},
-      { id: 'split-peas', name: 'Split Peas (cooked)', category: 'legumes', emoji: '🫛', serving: '100g',
-        nutrients: { protein: 8.3, histidine: 0.2, isoleucine: 0.35, leucine: 0.6, lysine: 0.58, methionine: 0.08, phenylalanine: 0.4, threonine: 0.3, tryptophan: 0.07, valine: 0.4, vitaminA: 7, vitaminC: 0.4, vitaminK: 5, vitaminB6: 0.05, folate: 65, vitaminE: 0.04, thiamin: 0.19, riboflavin: 0.06, niacin: 0.89, calcium: 14, iron: 1.3, magnesium: 36, zinc: 1.0, potassium: 362, phosphorus: 99, selenium: 0.6, copper: 0.18, omega3: 0.03, omega6: 0.15, fiber: 8.3 }},
-
-      // GRAINS
-      { id: 'quinoa', name: 'Quinoa (cooked)', category: 'grains', emoji: '🌾', serving: '100g',
-        nutrients: { protein: 4.4, histidine: 0.15, isoleucine: 0.18, leucine: 0.3, lysine: 0.27, methionine: 0.09, phenylalanine: 0.19, threonine: 0.15, tryptophan: 0.05, valine: 0.21, vitaminA: 5, vitaminC: 0, vitaminK: 0, vitaminB6: 0.12, folate: 42, vitaminE: 0.63, thiamin: 0.11, riboflavin: 0.11, niacin: 0.41, calcium: 17, iron: 1.5, magnesium: 64, zinc: 1.1, potassium: 172, phosphorus: 152, selenium: 2.8, copper: 0.19, omega3: 0.05, omega6: 1.03, fiber: 2.8 }},
-      { id: 'brown-rice', name: 'Brown Rice (cooked)', category: 'grains', emoji: '🍚', serving: '100g',
-        nutrients: { protein: 2.6, histidine: 0.07, isoleucine: 0.1, leucine: 0.2, lysine: 0.09, methionine: 0.05, phenylalanine: 0.13, threonine: 0.09, tryptophan: 0.03, valine: 0.14, vitaminA: 0, vitaminC: 0, vitaminK: 0.6, vitaminB6: 0.15, folate: 4, vitaminE: 0.04, thiamin: 0.1, riboflavin: 0.03, niacin: 1.53, calcium: 10, iron: 0.5, magnesium: 44, zinc: 0.6, potassium: 79, phosphorus: 83, selenium: 9.8, copper: 0.1, omega3: 0.01, omega6: 0.32, fiber: 1.8 }},
-      { id: 'oats', name: 'Oats (cooked)', category: 'grains', emoji: '🥣', serving: '100g',
-        nutrients: { protein: 2.5, histidine: 0.05, isoleucine: 0.08, leucine: 0.15, lysine: 0.08, methionine: 0.03, phenylalanine: 0.1, threonine: 0.07, tryptophan: 0.03, valine: 0.11, vitaminA: 0, vitaminC: 0, vitaminK: 0.2, vitaminB6: 0.04, folate: 6, vitaminE: 0.08, thiamin: 0.08, riboflavin: 0.02, niacin: 0.23, calcium: 9, iron: 0.9, magnesium: 27, zinc: 1.0, potassium: 70, phosphorus: 77, selenium: 5.4, copper: 0.08, omega3: 0.01, omega6: 0.43, fiber: 1.7 }},
-      { id: 'buckwheat', name: 'Buckwheat (cooked)', category: 'grains', emoji: '🌾', serving: '100g',
-        nutrients: { protein: 3.4, histidine: 0.09, isoleucine: 0.13, leucine: 0.22, lysine: 0.18, methionine: 0.05, phenylalanine: 0.15, threonine: 0.13, tryptophan: 0.05, valine: 0.17, vitaminA: 0, vitaminC: 0, vitaminK: 1.9, vitaminB6: 0.08, folate: 14, vitaminE: 0.09, thiamin: 0.04, riboflavin: 0.04, niacin: 0.94, calcium: 7, iron: 0.8, magnesium: 51, zinc: 0.6, potassium: 88, phosphorus: 70, selenium: 2.2, copper: 0.15, omega3: 0.03, omega6: 0.32, fiber: 2.7 }},
-      { id: 'millet', name: 'Millet (cooked)', category: 'grains', emoji: '🌾', serving: '100g',
-        nutrients: { protein: 3.5, histidine: 0.08, isoleucine: 0.15, leucine: 0.43, lysine: 0.06, methionine: 0.08, phenylalanine: 0.19, threonine: 0.12, tryptophan: 0.05, valine: 0.19, vitaminA: 0, vitaminC: 0, vitaminK: 0.3, vitaminB6: 0.11, folate: 19, vitaminE: 0.02, thiamin: 0.11, riboflavin: 0.08, niacin: 1.33, calcium: 3, iron: 0.6, magnesium: 44, zinc: 0.9, potassium: 62, phosphorus: 100, selenium: 0.9, copper: 0.16, omega3: 0.03, omega6: 0.48, fiber: 1.3 }},
-      { id: 'barley', name: 'Barley (cooked)', category: 'grains', emoji: '🌾', serving: '100g',
-        nutrients: { protein: 2.3, histidine: 0.05, isoleucine: 0.08, leucine: 0.15, lysine: 0.08, methionine: 0.04, phenylalanine: 0.12, threonine: 0.08, tryptophan: 0.04, valine: 0.11, vitaminA: 4, vitaminC: 0, vitaminK: 0.8, vitaminB6: 0.06, folate: 16, vitaminE: 0.02, thiamin: 0.08, riboflavin: 0.06, niacin: 2.06, calcium: 11, iron: 1.3, magnesium: 22, zinc: 0.8, potassium: 93, phosphorus: 54, selenium: 8.6, copper: 0.1, omega3: 0.02, omega6: 0.23, fiber: 3.8 }},
-      { id: 'bulgur', name: 'Bulgur (cooked)', category: 'grains', emoji: '🌾', serving: '100g',
-        nutrients: { protein: 3.1, histidine: 0.07, isoleucine: 0.11, leucine: 0.2, lysine: 0.09, methionine: 0.05, phenylalanine: 0.14, threonine: 0.09, tryptophan: 0.04, valine: 0.13, vitaminA: 0, vitaminC: 0, vitaminK: 0.5, vitaminB6: 0.08, folate: 18, vitaminE: 0.01, thiamin: 0.06, riboflavin: 0.03, niacin: 1.0, calcium: 10, iron: 1.0, magnesium: 32, zinc: 0.6, potassium: 68, phosphorus: 40, selenium: 0.6, copper: 0.07, omega3: 0.01, omega6: 0.17, fiber: 4.5 }},
-      { id: 'couscous', name: 'Couscous (cooked)', category: 'grains', emoji: '🌾', serving: '100g',
-        nutrients: { protein: 3.8, histidine: 0.09, isoleucine: 0.14, leucine: 0.26, lysine: 0.1, methionine: 0.06, phenylalanine: 0.18, threonine: 0.11, tryptophan: 0.05, valine: 0.17, vitaminA: 0, vitaminC: 0, vitaminK: 0.1, vitaminB6: 0.05, folate: 15, vitaminE: 0.04, thiamin: 0.06, riboflavin: 0.03, niacin: 0.98, calcium: 8, iron: 0.4, magnesium: 8, zinc: 0.3, potassium: 58, phosphorus: 22, selenium: 27.5, copper: 0.04, omega3: 0.01, omega6: 0.13, fiber: 1.4 }},
-      { id: 'wild-rice', name: 'Wild Rice (cooked)', category: 'grains', emoji: '🍚', serving: '100g',
-        nutrients: { protein: 4.0, histidine: 0.12, isoleucine: 0.17, leucine: 0.31, lysine: 0.18, methionine: 0.13, phenylalanine: 0.2, threonine: 0.15, tryptophan: 0.06, valine: 0.23, vitaminA: 0, vitaminC: 0, vitaminK: 0.5, vitaminB6: 0.14, folate: 26, vitaminE: 0.24, thiamin: 0.05, riboflavin: 0.09, niacin: 1.29, calcium: 3, iron: 0.6, magnesium: 32, zinc: 1.3, potassium: 101, phosphorus: 82, selenium: 0.9, copper: 0.12, omega3: 0.03, omega6: 0.25, fiber: 1.8 }},
-      { id: 'amaranth', name: 'Amaranth (cooked)', category: 'grains', emoji: '🌾', serving: '100g',
-        nutrients: { protein: 3.8, histidine: 0.1, isoleucine: 0.14, leucine: 0.22, lysine: 0.2, methionine: 0.06, phenylalanine: 0.16, threonine: 0.13, tryptophan: 0.04, valine: 0.17, vitaminA: 0, vitaminC: 0, vitaminK: 0, vitaminB6: 0.11, folate: 22, vitaminE: 0.42, thiamin: 0.01, riboflavin: 0.02, niacin: 0.24, calcium: 47, iron: 2.1, magnesium: 65, zinc: 0.9, potassium: 135, phosphorus: 148, selenium: 5.5, copper: 0.15, omega3: 0.03, omega6: 0.96, fiber: 2.1 }},
-
-      // NUTS & SEEDS
-      { id: 'tahini', name: 'Tahini (Abbaya)', category: 'nuts-seeds', emoji: '⭐', serving: '100g',
-        nutrients: { protein: 17.0, histidine: 0.47, isoleucine: 0.69, leucine: 1.24, lysine: 0.49, methionine: 0.53, phenylalanine: 0.84, threonine: 0.67, tryptophan: 0.34, valine: 0.89, vitaminA: 3, vitaminC: 0, vitaminK: 0, vitaminB6: 0.15, folate: 98, vitaminE: 0.25, thiamin: 1.22, riboflavin: 0.47, niacin: 5.45, calcium: 426, iron: 8.95, magnesium: 95, zinc: 4.62, potassium: 414, phosphorus: 732, selenium: 34.4, copper: 1.65, omega3: 0.04, omega6: 21.8, fiber: 9.3 }},
-      { id: 'almonds', name: 'Almonds', category: 'nuts-seeds', emoji: '🥜', serving: '100g',
-        nutrients: { protein: 21.2, histidine: 0.55, isoleucine: 0.75, leucine: 1.47, lysine: 0.58, methionine: 0.16, phenylalanine: 1.13, threonine: 0.6, tryptophan: 0.21, valine: 0.86, vitaminA: 0, vitaminC: 0, vitaminK: 0, vitaminB6: 0.14, folate: 44, vitaminE: 25.6, thiamin: 0.2, riboflavin: 1.14, niacin: 3.62, calcium: 269, iron: 3.7, magnesium: 270, zinc: 3.1, potassium: 733, phosphorus: 481, selenium: 4.1, copper: 1.03, omega3: 0, omega6: 12.3, fiber: 12.5 }},
-      { id: 'walnuts', name: 'Walnuts', category: 'nuts-seeds', emoji: '🥜', serving: '100g',
-        nutrients: { protein: 15.2, histidine: 0.39, isoleucine: 0.63, leucine: 1.17, lysine: 0.42, methionine: 0.24, phenylalanine: 0.71, threonine: 0.6, tryptophan: 0.17, valine: 0.75, vitaminA: 1, vitaminC: 1.3, vitaminK: 2.7, vitaminB6: 0.54, folate: 98, vitaminE: 0.7, thiamin: 0.34, riboflavin: 0.15, niacin: 1.13, calcium: 98, iron: 2.9, magnesium: 158, zinc: 3.1, potassium: 441, phosphorus: 346, selenium: 4.9, copper: 1.59, omega3: 9.08, omega6: 38.1, fiber: 6.7 }},
-      { id: 'cashews', name: 'Cashews', category: 'nuts-seeds', emoji: '🥜', serving: '100g',
-        nutrients: { protein: 18.2, histidine: 0.46, isoleucine: 0.79, leucine: 1.47, lysine: 0.93, methionine: 0.36, phenylalanine: 0.95, threonine: 0.69, tryptophan: 0.29, valine: 1.09, vitaminA: 0, vitaminC: 0.5, vitaminK: 34.1, vitaminB6: 0.42, folate: 25, vitaminE: 0.9, thiamin: 0.42, riboflavin: 0.06, niacin: 1.06, calcium: 37, iron: 6.7, magnesium: 292, zinc: 5.8, potassium: 660, phosphorus: 593, selenium: 19.9, copper: 2.2, omega3: 0.06, omega6: 7.78, fiber: 3.3 }},
-      { id: 'peanuts', name: 'Peanuts', category: 'nuts-seeds', emoji: '🥜', serving: '100g',
-        nutrients: { protein: 25.8, histidine: 0.65, isoleucine: 0.91, leucine: 1.67, lysine: 0.93, methionine: 0.32, phenylalanine: 1.34, threonine: 0.88, tryptophan: 0.25, valine: 1.08, vitaminA: 0, vitaminC: 0, vitaminK: 0, vitaminB6: 0.35, folate: 240, vitaminE: 8.3, thiamin: 0.64, riboflavin: 0.14, niacin: 12.07, calcium: 92, iron: 4.6, magnesium: 168, zinc: 3.3, potassium: 705, phosphorus: 376, selenium: 7.2, copper: 1.14, omega3: 0, omega6: 15.6, fiber: 8.5 }},
-      { id: 'pistachios', name: 'Pistachios', category: 'nuts-seeds', emoji: '🥜', serving: '100g',
-        nutrients: { protein: 20.2, histidine: 0.51, isoleucine: 0.89, leucine: 1.6, lysine: 1.14, methionine: 0.34, phenylalanine: 1.09, threonine: 0.67, tryptophan: 0.25, valine: 1.26, vitaminA: 26, vitaminC: 5.6, vitaminK: 13.2, vitaminB6: 1.7, folate: 51, vitaminE: 2.9, thiamin: 0.87, riboflavin: 0.16, niacin: 1.3, calcium: 105, iron: 3.9, magnesium: 121, zinc: 2.2, potassium: 1025, phosphorus: 490, selenium: 7, copper: 1.3, omega3: 0.26, omega6: 13.2, fiber: 10.6 }},
-      { id: 'brazil-nuts', name: 'Brazil Nuts', category: 'nuts-seeds', emoji: '🥜', serving: '100g',
-        nutrients: { protein: 14.3, histidine: 0.41, isoleucine: 0.52, leucine: 1.19, lysine: 0.49, methionine: 1.01, phenylalanine: 0.63, threonine: 0.36, tryptophan: 0.14, valine: 0.76, vitaminA: 0, vitaminC: 0.7, vitaminK: 0, vitaminB6: 0.1, folate: 22, vitaminE: 5.7, thiamin: 0.62, riboflavin: 0.04, niacin: 0.3, calcium: 160, iron: 2.4, magnesium: 376, zinc: 4.1, potassium: 659, phosphorus: 725, selenium: 1917, copper: 1.74, omega3: 0.02, omega6: 20.5, fiber: 7.5 }},
-      { id: 'sunflower-seeds', name: 'Sunflower Seeds', category: 'nuts-seeds', emoji: '🌻', serving: '100g',
-        nutrients: { protein: 20.8, histidine: 0.56, isoleucine: 0.94, leucine: 1.43, lysine: 0.76, methionine: 0.49, phenylalanine: 0.98, threonine: 0.76, tryptophan: 0.35, valine: 1.12, vitaminA: 3, vitaminC: 1.4, vitaminK: 0, vitaminB6: 1.35, folate: 227, vitaminE: 35.2, thiamin: 1.48, riboflavin: 0.36, niacin: 8.34, calcium: 78, iron: 5.3, magnesium: 325, zinc: 5.0, potassium: 645, phosphorus: 660, selenium: 53, copper: 1.8, omega3: 0.07, omega6: 23.1, fiber: 8.6 }},
-      { id: 'pumpkin-seeds', name: 'Pumpkin Seeds', category: 'nuts-seeds', emoji: '🎃', serving: '100g',
-        nutrients: { protein: 30.2, histidine: 0.78, isoleucine: 1.28, leucine: 2.42, lysine: 1.24, methionine: 0.6, phenylalanine: 1.73, threonine: 1.0, tryptophan: 0.58, valine: 1.58, vitaminA: 16, vitaminC: 1.9, vitaminK: 7.3, vitaminB6: 0.14, folate: 58, vitaminE: 2.2, thiamin: 0.27, riboflavin: 0.15, niacin: 4.99, calcium: 46, iron: 8.8, magnesium: 592, zinc: 7.8, potassium: 809, phosphorus: 1233, selenium: 9.4, copper: 1.34, omega3: 0.12, omega6: 20.7, fiber: 6.0 }},
-      { id: 'chia-seeds', name: 'Chia Seeds', category: 'nuts-seeds', emoji: '🌱', serving: '100g',
-        nutrients: { protein: 16.5, histidine: 0.53, isoleucine: 0.7, leucine: 1.18, lysine: 0.88, methionine: 0.59, phenylalanine: 0.92, threonine: 0.67, tryptophan: 0.44, valine: 0.95, vitaminA: 54, vitaminC: 1.6, vitaminK: 0, vitaminB6: 0, folate: 49, vitaminE: 0.5, thiamin: 0.62, riboflavin: 0.17, niacin: 8.83, calcium: 631, iron: 7.7, magnesium: 335, zinc: 4.6, potassium: 407, phosphorus: 860, selenium: 55.2, copper: 0.92, omega3: 17.8, omega6: 5.84, fiber: 34.4 }},
-      { id: 'flaxseeds', name: 'Flaxseeds', category: 'nuts-seeds', emoji: '🌱', serving: '100g',
-        nutrients: { protein: 18.3, histidine: 0.47, isoleucine: 0.82, leucine: 1.24, lysine: 0.81, methionine: 0.37, phenylalanine: 0.96, threonine: 0.77, tryptophan: 0.3, valine: 1.07, vitaminA: 0, vitaminC: 0.6, vitaminK: 4.3, vitaminB6: 0.47, folate: 87, vitaminE: 0.31, thiamin: 1.64, riboflavin: 0.16, niacin: 3.08, calcium: 255, iron: 5.7, magnesium: 392, zinc: 4.3, potassium: 813, phosphorus: 642, selenium: 25.4, copper: 1.22, omega3: 22.8, omega6: 5.9, fiber: 27.3 }},
-      { id: 'hemp-seeds', name: 'Hemp Seeds', category: 'nuts-seeds', emoji: '🌱', serving: '100g',
-        nutrients: { protein: 31.6, histidine: 0.97, isoleucine: 1.29, leucine: 2.16, lysine: 1.28, methionine: 0.93, phenylalanine: 1.45, threonine: 1.15, tryptophan: 0.37, valine: 1.62, vitaminA: 11, vitaminC: 0.5, vitaminK: 0, vitaminB6: 0.6, folate: 110, vitaminE: 0.8, thiamin: 1.28, riboflavin: 0.29, niacin: 9.2, calcium: 70, iron: 7.95, magnesium: 700, zinc: 9.9, potassium: 1200, phosphorus: 1650, selenium: 0.8, copper: 1.6, omega3: 8.68, omega6: 27.4, fiber: 4.0 }},
-      { id: 'sesame-seeds', name: 'Sesame Seeds', category: 'nuts-seeds', emoji: '🌱', serving: '100g',
-        nutrients: { protein: 17.7, histidine: 0.52, isoleucine: 0.76, leucine: 1.36, lysine: 0.57, methionine: 0.59, phenylalanine: 0.94, threonine: 0.74, tryptophan: 0.39, valine: 0.99, vitaminA: 9, vitaminC: 0, vitaminK: 0, vitaminB6: 0.79, folate: 97, vitaminE: 0.25, thiamin: 0.79, riboflavin: 0.25, niacin: 4.52, calcium: 975, iron: 14.6, magnesium: 351, zinc: 7.8, potassium: 468, phosphorus: 629, selenium: 34.4, copper: 4.08, omega3: 0.38, omega6: 21.4, fiber: 11.8 }},
-
-      // VEGETABLES
-      { id: 'spinach', name: 'Spinach (raw)', category: 'vegetables', emoji: '🥬', serving: '100g',
-        nutrients: { protein: 2.9, histidine: 0.06, isoleucine: 0.15, leucine: 0.22, lysine: 0.17, methionine: 0.05, phenylalanine: 0.13, threonine: 0.12, tryptophan: 0.04, valine: 0.16, vitaminA: 469, vitaminC: 28.1, vitaminK: 483, vitaminB6: 0.2, folate: 194, vitaminE: 2.0, thiamin: 0.08, riboflavin: 0.19, niacin: 0.72, calcium: 99, iron: 2.7, magnesium: 79, zinc: 0.5, potassium: 558, phosphorus: 49, selenium: 1.0, copper: 0.13, omega3: 0.14, omega6: 0.03, fiber: 2.2 }},
-      { id: 'kale', name: 'Kale (raw)', category: 'vegetables', emoji: '🥬', serving: '100g',
-        nutrients: { protein: 4.3, histidine: 0.08, isoleucine: 0.22, leucine: 0.29, lysine: 0.24, methionine: 0.04, phenylalanine: 0.19, threonine: 0.16, tryptophan: 0.05, valine: 0.21, vitaminA: 500, vitaminC: 120, vitaminK: 817, vitaminB6: 0.27, folate: 141, vitaminE: 1.5, thiamin: 0.11, riboflavin: 0.13, niacin: 1.0, calcium: 150, iron: 1.5, magnesium: 47, zinc: 0.6, potassium: 491, phosphorus: 92, selenium: 0.9, copper: 1.5, omega3: 0.18, omega6: 0.14, fiber: 3.6 }},
-      { id: 'broccoli', name: 'Broccoli (raw)', category: 'vegetables', emoji: '🥦', serving: '100g',
-        nutrients: { protein: 2.8, histidine: 0.06, isoleucine: 0.08, leucine: 0.13, lysine: 0.14, methionine: 0.04, phenylalanine: 0.09, threonine: 0.09, tryptophan: 0.03, valine: 0.13, vitaminA: 31, vitaminC: 89.2, vitaminK: 102, vitaminB6: 0.18, folate: 63, vitaminE: 0.78, thiamin: 0.07, riboflavin: 0.12, niacin: 0.64, calcium: 47, iron: 0.7, magnesium: 21, zinc: 0.4, potassium: 316, phosphorus: 66, selenium: 2.5, copper: 0.05, omega3: 0.02, omega6: 0.02, fiber: 2.6 }},
-      { id: 'brussels-sprouts', name: 'Brussels Sprouts', category: 'vegetables', emoji: '🥬', serving: '100g',
-        nutrients: { protein: 3.4, histidine: 0.07, isoleucine: 0.13, leucine: 0.18, lysine: 0.16, methionine: 0.03, phenylalanine: 0.11, threonine: 0.12, tryptophan: 0.04, valine: 0.16, vitaminA: 38, vitaminC: 85, vitaminK: 177, vitaminB6: 0.22, folate: 61, vitaminE: 0.88, thiamin: 0.14, riboflavin: 0.09, niacin: 0.75, calcium: 42, iron: 1.4, magnesium: 23, zinc: 0.4, potassium: 389, phosphorus: 69, selenium: 1.6, copper: 0.07, omega3: 0.1, omega6: 0.05, fiber: 3.8 }},
-      { id: 'sweet-potato', name: 'Sweet Potato (baked)', category: 'vegetables', emoji: '🍠', serving: '100g',
-        nutrients: { protein: 2.0, histidine: 0.03, isoleucine: 0.06, leucine: 0.09, lysine: 0.06, methionine: 0.03, phenylalanine: 0.08, threonine: 0.06, tryptophan: 0.02, valine: 0.08, vitaminA: 961, vitaminC: 19.6, vitaminK: 2.3, vitaminB6: 0.29, folate: 6, vitaminE: 0.71, thiamin: 0.11, riboflavin: 0.11, niacin: 1.49, calcium: 38, iron: 0.7, magnesium: 27, zinc: 0.3, potassium: 475, phosphorus: 54, selenium: 0.2, copper: 0.16, omega3: 0, omega6: 0.01, fiber: 3.3 }},
-      { id: 'carrots', name: 'Carrots (raw)', category: 'vegetables', emoji: '🥕', serving: '100g',
-        nutrients: { protein: 0.9, histidine: 0.02, isoleucine: 0.04, leucine: 0.05, lysine: 0.05, methionine: 0.01, phenylalanine: 0.03, threonine: 0.04, tryptophan: 0.01, valine: 0.05, vitaminA: 835, vitaminC: 5.9, vitaminK: 13.2, vitaminB6: 0.14, folate: 19, vitaminE: 0.66, thiamin: 0.07, riboflavin: 0.06, niacin: 0.98, calcium: 33, iron: 0.3, magnesium: 12, zinc: 0.2, potassium: 320, phosphorus: 35, selenium: 0.1, copper: 0.05, omega3: 0, omega6: 0.12, fiber: 2.8 }},
-      { id: 'bell-pepper-red', name: 'Bell Pepper (red)', category: 'vegetables', emoji: '🫑', serving: '100g',
-        nutrients: { protein: 1.0, histidine: 0.02, isoleucine: 0.03, leucine: 0.05, lysine: 0.04, methionine: 0.01, phenylalanine: 0.03, threonine: 0.03, tryptophan: 0.01, valine: 0.04, vitaminA: 157, vitaminC: 128, vitaminK: 4.9, vitaminB6: 0.29, folate: 46, vitaminE: 1.58, thiamin: 0.05, riboflavin: 0.09, niacin: 0.98, calcium: 7, iron: 0.4, magnesium: 12, zinc: 0.3, potassium: 211, phosphorus: 26, selenium: 0.1, copper: 0.02, omega3: 0.03, omega6: 0.06, fiber: 2.1 }},
-      { id: 'tomatoes', name: 'Tomatoes (raw)', category: 'vegetables', emoji: '🍅', serving: '100g',
-        nutrients: { protein: 0.9, histidine: 0.02, isoleucine: 0.02, leucine: 0.03, lysine: 0.03, methionine: 0.01, phenylalanine: 0.03, threonine: 0.02, tryptophan: 0.01, valine: 0.02, vitaminA: 42, vitaminC: 14, vitaminK: 7.9, vitaminB6: 0.08, folate: 15, vitaminE: 0.54, thiamin: 0.04, riboflavin: 0.02, niacin: 0.59, calcium: 10, iron: 0.3, magnesium: 11, zinc: 0.2, potassium: 237, phosphorus: 24, selenium: 0, copper: 0.06, omega3: 0, omega6: 0.08, fiber: 1.2 }},
-      { id: 'avocado', name: 'Avocado', category: 'vegetables', emoji: '🥑', serving: '100g',
-        nutrients: { protein: 2.0, histidine: 0.05, isoleucine: 0.08, leucine: 0.14, lysine: 0.13, methionine: 0.04, phenylalanine: 0.1, threonine: 0.07, tryptophan: 0.03, valine: 0.11, vitaminA: 7, vitaminC: 10, vitaminK: 21, vitaminB6: 0.26, folate: 81, vitaminE: 2.07, thiamin: 0.07, riboflavin: 0.13, niacin: 1.74, calcium: 12, iron: 0.6, magnesium: 29, zinc: 0.6, potassium: 485, phosphorus: 52, selenium: 0.4, copper: 0.19, omega3: 0.11, omega6: 1.69, fiber: 6.7 }},
-      { id: 'mushrooms', name: 'Mushrooms (white)', category: 'vegetables', emoji: '🍄', serving: '100g',
-        nutrients: { protein: 3.1, histidine: 0.06, isoleucine: 0.08, leucine: 0.12, lysine: 0.11, methionine: 0.03, phenylalanine: 0.09, threonine: 0.11, tryptophan: 0.04, valine: 0.1, vitaminA: 0, vitaminC: 2.1, vitaminK: 0, vitaminB6: 0.1, folate: 17, vitaminE: 0.01, thiamin: 0.08, riboflavin: 0.4, niacin: 3.61, calcium: 3, iron: 0.5, magnesium: 9, zinc: 0.5, potassium: 318, phosphorus: 86, selenium: 9.3, copper: 0.32, omega3: 0, omega6: 0.16, fiber: 1.0 }},
-      { id: 'peas', name: 'Green Peas (raw)', category: 'vegetables', emoji: '🫛', serving: '100g',
-        nutrients: { protein: 5.4, histidine: 0.11, isoleucine: 0.2, leucine: 0.32, lysine: 0.32, methionine: 0.08, phenylalanine: 0.2, threonine: 0.2, tryptophan: 0.04, valine: 0.24, vitaminA: 38, vitaminC: 40, vitaminK: 24.8, vitaminB6: 0.17, folate: 65, vitaminE: 0.13, thiamin: 0.27, riboflavin: 0.13, niacin: 2.09, calcium: 25, iron: 1.5, magnesium: 33, zinc: 1.2, potassium: 244, phosphorus: 108, selenium: 1.8, copper: 0.18, omega3: 0.04, omega6: 0.19, fiber: 5.1 }},
-      { id: 'asparagus', name: 'Asparagus (raw)', category: 'vegetables', emoji: '🌿', serving: '100g',
-        nutrients: { protein: 2.2, histidine: 0.05, isoleucine: 0.07, leucine: 0.13, lysine: 0.1, methionine: 0.03, phenylalanine: 0.08, threonine: 0.08, tryptophan: 0.03, valine: 0.12, vitaminA: 38, vitaminC: 5.6, vitaminK: 41.6, vitaminB6: 0.09, folate: 52, vitaminE: 1.1, thiamin: 0.14, riboflavin: 0.14, niacin: 0.98, calcium: 24, iron: 2.1, magnesium: 14, zinc: 0.5, potassium: 202, phosphorus: 52, selenium: 2.3, copper: 0.19, omega3: 0.01, omega6: 0.03, fiber: 2.1 }},
-
-      // FRUITS
-      { id: 'banana', name: 'Banana', category: 'fruits', emoji: '🍌', serving: '100g',
-        nutrients: { protein: 1.1, histidine: 0.08, isoleucine: 0.03, leucine: 0.07, lysine: 0.05, methionine: 0.01, phenylalanine: 0.05, threonine: 0.03, tryptophan: 0.01, valine: 0.05, vitaminA: 3, vitaminC: 8.7, vitaminK: 0.5, vitaminB6: 0.37, folate: 20, vitaminE: 0.1, thiamin: 0.03, riboflavin: 0.07, niacin: 0.67, calcium: 5, iron: 0.3, magnesium: 27, zinc: 0.2, potassium: 358, phosphorus: 22, selenium: 1, copper: 0.08, omega3: 0.03, omega6: 0.05, fiber: 2.6 }},
-      { id: 'orange', name: 'Orange', category: 'fruits', emoji: '🍊', serving: '100g',
-        nutrients: { protein: 0.9, histidine: 0.02, isoleucine: 0.03, leucine: 0.02, lysine: 0.05, methionine: 0.02, phenylalanine: 0.03, threonine: 0.02, tryptophan: 0.01, valine: 0.04, vitaminA: 11, vitaminC: 53.2, vitaminK: 0, vitaminB6: 0.06, folate: 30, vitaminE: 0.18, thiamin: 0.09, riboflavin: 0.04, niacin: 0.28, calcium: 40, iron: 0.1, magnesium: 10, zinc: 0.1, potassium: 181, phosphorus: 14, selenium: 0.5, copper: 0.05, omega3: 0.01, omega6: 0.02, fiber: 2.4 }},
-      { id: 'blueberries', name: 'Blueberries', category: 'fruits', emoji: '🫐', serving: '100g',
-        nutrients: { protein: 0.7, histidine: 0.01, isoleucine: 0.02, leucine: 0.04, lysine: 0.01, methionine: 0.01, phenylalanine: 0.03, threonine: 0.02, tryptophan: 0, valine: 0.03, vitaminA: 3, vitaminC: 9.7, vitaminK: 19.3, vitaminB6: 0.05, folate: 6, vitaminE: 0.57, thiamin: 0.04, riboflavin: 0.04, niacin: 0.42, calcium: 6, iron: 0.3, magnesium: 6, zinc: 0.2, potassium: 77, phosphorus: 12, selenium: 0.1, copper: 0.06, omega3: 0.06, omega6: 0.09, fiber: 2.4 }},
-      { id: 'strawberries', name: 'Strawberries', category: 'fruits', emoji: '🍓', serving: '100g',
-        nutrients: { protein: 0.7, histidine: 0.01, isoleucine: 0.02, leucine: 0.03, lysine: 0.03, methionine: 0, phenylalanine: 0.02, threonine: 0.02, tryptophan: 0.01, valine: 0.02, vitaminA: 1, vitaminC: 58.8, vitaminK: 2.2, vitaminB6: 0.05, folate: 24, vitaminE: 0.29, thiamin: 0.02, riboflavin: 0.02, niacin: 0.39, calcium: 16, iron: 0.4, magnesium: 13, zinc: 0.1, potassium: 153, phosphorus: 24, selenium: 0.4, copper: 0.05, omega3: 0.07, omega6: 0.09, fiber: 2.0 }},
-      { id: 'mango', name: 'Mango', category: 'fruits', emoji: '🥭', serving: '100g',
-        nutrients: { protein: 0.8, histidine: 0.01, isoleucine: 0.03, leucine: 0.05, lysine: 0.07, methionine: 0.01, phenylalanine: 0.03, threonine: 0.03, tryptophan: 0.01, valine: 0.04, vitaminA: 54, vitaminC: 36.4, vitaminK: 4.2, vitaminB6: 0.12, folate: 43, vitaminE: 0.9, thiamin: 0.03, riboflavin: 0.04, niacin: 0.67, calcium: 11, iron: 0.2, magnesium: 10, zinc: 0.1, potassium: 168, phosphorus: 14, selenium: 0.6, copper: 0.11, omega3: 0.05, omega6: 0.02, fiber: 1.6 }},
-      { id: 'kiwi', name: 'Kiwi', category: 'fruits', emoji: '🥝', serving: '100g',
-        nutrients: { protein: 1.1, histidine: 0.03, isoleucine: 0.05, leucine: 0.07, lysine: 0.06, methionine: 0.02, phenylalanine: 0.05, threonine: 0.05, tryptophan: 0.02, valine: 0.06, vitaminA: 4, vitaminC: 92.7, vitaminK: 40.3, vitaminB6: 0.06, folate: 25, vitaminE: 1.46, thiamin: 0.03, riboflavin: 0.03, niacin: 0.34, calcium: 34, iron: 0.3, magnesium: 17, zinc: 0.1, potassium: 312, phosphorus: 34, selenium: 0.2, copper: 0.13, omega3: 0.04, omega6: 0.25, fiber: 3.0 }},
-      { id: 'dates', name: 'Dates (medjool)', category: 'fruits', emoji: '🌴', serving: '100g',
-        nutrients: { protein: 1.8, histidine: 0.03, isoleucine: 0.05, leucine: 0.08, lysine: 0.05, methionine: 0.02, phenylalanine: 0.05, threonine: 0.05, tryptophan: 0.01, valine: 0.07, vitaminA: 7, vitaminC: 0, vitaminK: 2.7, vitaminB6: 0.25, folate: 15, vitaminE: 0.05, thiamin: 0.05, riboflavin: 0.06, niacin: 1.61, calcium: 64, iron: 0.9, magnesium: 54, zinc: 0.4, potassium: 696, phosphorus: 62, selenium: 3, copper: 0.36, omega3: 0, omega6: 0.02, fiber: 6.7 }},
-
-      // FERMENTED
-      { id: 'sauerkraut', name: 'Sauerkraut', category: 'fermented', emoji: '🥬', serving: '100g',
-        nutrients: { protein: 0.9, histidine: 0.02, isoleucine: 0.04, leucine: 0.05, lysine: 0.05, methionine: 0.01, phenylalanine: 0.03, threonine: 0.03, tryptophan: 0.01, valine: 0.04, vitaminA: 1, vitaminC: 14.7, vitaminK: 13, vitaminB6: 0.13, folate: 24, vitaminE: 0.14, thiamin: 0.02, riboflavin: 0.02, niacin: 0.14, calcium: 30, iron: 1.5, magnesium: 13, zinc: 0.2, potassium: 170, phosphorus: 20, selenium: 0.6, copper: 0.1, omega3: 0.03, omega6: 0.04, fiber: 2.9 }},
-      { id: 'kimchi', name: 'Kimchi', category: 'fermented', emoji: '🌶️', serving: '100g',
-        nutrients: { protein: 1.1, histidine: 0.02, isoleucine: 0.03, leucine: 0.05, lysine: 0.04, methionine: 0.01, phenylalanine: 0.03, threonine: 0.03, tryptophan: 0.01, valine: 0.04, vitaminA: 5, vitaminC: 0, vitaminK: 43.6, vitaminB6: 0.21, folate: 52, vitaminE: 0.11, thiamin: 0.01, riboflavin: 0.02, niacin: 0.1, calcium: 33, iron: 0.5, magnesium: 14, zinc: 0.2, potassium: 151, phosphorus: 24, selenium: 0.5, copper: 0.02, omega3: 0.1, omega6: 0.1, fiber: 1.6 }},
-      { id: 'miso', name: 'Miso Paste', category: 'fermented', emoji: '🍶', serving: '100g',
-        nutrients: { protein: 12.8, histidine: 0.31, isoleucine: 0.56, leucine: 0.89, lysine: 0.48, methionine: 0.14, phenylalanine: 0.57, threonine: 0.46, tryptophan: 0.14, valine: 0.57, vitaminA: 4, vitaminC: 0, vitaminK: 29.3, vitaminB6: 0.2, folate: 19, vitaminE: 0.01, thiamin: 0.1, riboflavin: 0.23, niacin: 0.91, calcium: 57, iron: 2.5, magnesium: 48, zinc: 2.6, potassium: 210, phosphorus: 159, selenium: 7, copper: 0.42, omega3: 0.35, omega6: 2.88, fiber: 5.4 }},
-      { id: 'natto', name: 'Natto', category: 'fermented', emoji: '🫘', serving: '100g',
-        nutrients: { protein: 17.7, histidine: 0.48, isoleucine: 0.81, leucine: 1.37, lysine: 1.0, methionine: 0.22, phenylalanine: 0.88, threonine: 0.73, tryptophan: 0.24, valine: 0.84, vitaminA: 0, vitaminC: 13, vitaminK: 23.1, vitaminB6: 0.13, folate: 8, vitaminE: 0.01, thiamin: 0.16, riboflavin: 0.19, niacin: 0, calcium: 217, iron: 8.6, magnesium: 115, zinc: 3, potassium: 729, phosphorus: 174, selenium: 8.8, copper: 0.67, omega3: 0, omega6: 4.9, fiber: 5.4 }},
-      { id: 'soy-yogurt', name: 'Soy Yogurt', category: 'fermented', emoji: '🥛', serving: '100g',
-        nutrients: { protein: 4.0, histidine: 0.1, isoleucine: 0.18, leucine: 0.3, lysine: 0.24, methionine: 0.05, phenylalanine: 0.19, threonine: 0.16, tryptophan: 0.05, valine: 0.18, vitaminA: 0, vitaminC: 0, vitaminK: 0, vitaminB6: 0.04, folate: 16, vitaminE: 0, thiamin: 0.04, riboflavin: 0.03, niacin: 0.1, calcium: 118, iron: 0.6, magnesium: 15, zinc: 0.5, potassium: 141, phosphorus: 65, selenium: 2.6, copper: 0.11, omega3: 0.2, omega6: 1.1, fiber: 0.6 }},
-
-      // OTHER
-      { id: 'nutritional-yeast', name: 'Nutritional Yeast', category: 'other', emoji: '✨', serving: '100g',
-        nutrients: { protein: 50.0, histidine: 1.1, isoleucine: 2.5, leucine: 3.5, lysine: 3.5, methionine: 0.7, phenylalanine: 2.0, threonine: 2.5, tryptophan: 0.7, valine: 2.8, vitaminA: 0, vitaminC: 0, vitaminK: 0, vitaminB6: 56.3, folate: 3125, vitaminE: 0, thiamin: 56.3, riboflavin: 56.3, niacin: 350, calcium: 25, iron: 5, magnesium: 75, zinc: 16.9, potassium: 2000, phosphorus: 1050, selenium: 45, copper: 0.6, omega3: 0, omega6: 0, fiber: 25 }},
-      { id: 'spirulina', name: 'Spirulina', category: 'other', emoji: '🌊', serving: '100g',
-        nutrients: { protein: 57.5, histidine: 1.1, isoleucine: 3.2, leucine: 4.9, lysine: 3.0, methionine: 1.4, phenylalanine: 2.8, threonine: 2.9, tryptophan: 0.9, valine: 3.5, vitaminA: 570, vitaminC: 10, vitaminK: 25.5, vitaminB6: 0.4, folate: 94, vitaminE: 5, thiamin: 2.4, riboflavin: 3.7, niacin: 12.8, calcium: 120, iron: 28.5, magnesium: 195, zinc: 2, potassium: 1363, phosphorus: 118, selenium: 7.2, copper: 6.1, omega3: 0.8, omega6: 1.3, fiber: 3.6 }},
-      { id: 'seaweed-nori', name: 'Nori Seaweed', category: 'other', emoji: '🌊', serving: '100g',
-        nutrients: { protein: 30.7, histidine: 0.6, isoleucine: 1.3, leucine: 2.4, lysine: 1.6, methionine: 0.6, phenylalanine: 1.3, threonine: 1.5, tryptophan: 0.5, valine: 1.8, vitaminA: 260, vitaminC: 39, vitaminK: 4, vitaminB6: 0.6, folate: 1460, vitaminE: 1.0, thiamin: 0.7, riboflavin: 2.3, niacin: 10.0, calcium: 280, iron: 9.0, magnesium: 2, zinc: 1.1, potassium: 2400, phosphorus: 510, selenium: 0.7, copper: 0.5, omega3: 0.1, omega6: 0.1, fiber: 34.5 }},
-      { id: 'olive-oil', name: 'Olive Oil', category: 'other', emoji: '🫒', serving: '100g',
-        nutrients: { protein: 0, histidine: 0, isoleucine: 0, leucine: 0, lysine: 0, methionine: 0, phenylalanine: 0, threonine: 0, tryptophan: 0, valine: 0, vitaminA: 0, vitaminC: 0, vitaminK: 60.2, vitaminB6: 0, folate: 0, vitaminE: 14.4, thiamin: 0, riboflavin: 0, niacin: 0, calcium: 1, iron: 0.6, magnesium: 0, zinc: 0, potassium: 1, phosphorus: 0, selenium: 0, copper: 0, omega3: 0.76, omega6: 9.76, fiber: 0 }},
-      { id: 'flaxseed-oil', name: 'Flaxseed Oil', category: 'other', emoji: '🌱', serving: '100g',
-        nutrients: { protein: 0, histidine: 0, isoleucine: 0, leucine: 0, lysine: 0, methionine: 0, phenylalanine: 0, threonine: 0, tryptophan: 0, valine: 0, vitaminA: 0, vitaminC: 0, vitaminK: 9.3, vitaminB6: 0, folate: 0, vitaminE: 0.47, thiamin: 0, riboflavin: 0, niacin: 0, calcium: 0, iron: 0, magnesium: 0, zinc: 0, potassium: 0, phosphorus: 0, selenium: 0, copper: 0, omega3: 53.4, omega6: 12.7, fiber: 0 }},
-      { id: 'fortified-plant-milk', name: 'Fortified Plant Milk', category: 'other', emoji: '🥛', serving: '100g',
-        nutrients: { protein: 3.3, histidine: 0.08, isoleucine: 0.14, leucine: 0.23, lysine: 0.19, methionine: 0.04, phenylalanine: 0.15, threonine: 0.12, tryptophan: 0.04, valine: 0.14, vitaminA: 63, vitaminC: 0, vitaminK: 0, vitaminB6: 0.21, folate: 10, vitaminE: 0, thiamin: 0.04, riboflavin: 0.17, niacin: 0.17, calcium: 120, iron: 0.4, magnesium: 10, zinc: 0.3, potassium: 145, phosphorus: 44, selenium: 1.3, copper: 0.13, omega3: 0.13, omega6: 1.04, fiber: 0.8 }},
-      { id: 'cacao-powder', name: 'Cacao Powder', category: 'other', emoji: '🍫', serving: '100g',
-        nutrients: { protein: 19.6, histidine: 0.2, isoleucine: 0.7, leucine: 1.2, lysine: 0.5, methionine: 0.2, phenylalanine: 0.9, threonine: 0.6, tryptophan: 0.3, valine: 1.0, vitaminA: 0, vitaminC: 0, vitaminK: 2.5, vitaminB6: 0.1, folate: 32, vitaminE: 0.1, thiamin: 0.1, riboflavin: 0.2, niacin: 2.2, calcium: 128, iron: 13.9, magnesium: 499, zinc: 6.8, potassium: 1524, phosphorus: 734, selenium: 14.3, copper: 3.8, omega3: 0, omega6: 0.4, fiber: 33.2 }}
-    ];
-
-    // ============================================
-    // DAILY VALUES REFERENCE
-    // ============================================
-    const dailyValues = {
-      histidine: 0.7, isoleucine: 1.4, leucine: 2.73, lysine: 2.1,
-      methionine: 0.73, phenylalanine: 1.75, threonine: 1.05, tryptophan: 0.28, valine: 1.82,
-      vitaminA: 900, vitaminC: 90, vitaminK: 120, vitaminB6: 1.3, folate: 400,
-      vitaminE: 15, thiamin: 1.2, riboflavin: 1.3, niacin: 16,
-      calcium: 1000, iron: 18, magnesium: 400, zinc: 11, potassium: 4700,
-      phosphorus: 700, selenium: 55, copper: 0.9,
-      omega3: 1.6, omega6: 17, fiber: 28
-    };
-
-    // ============================================
-    // STATE
-    // ============================================
-    let selectedIngredients = [];
-    let currentCategory = 'all';
-    let searchQuery = '';
-
-    // ============================================
-    // INITIALIZATION
-    // ============================================
-    function init() {
-      setupCategoryPills();
-      renderIngredients();
-      updateDashboard();
-    }
-
-    // ============================================
-    // CATEGORY PILLS
-    // ============================================
-    function setupCategoryPills() {
-      const pills = document.querySelectorAll('.category-pill');
-      pills.forEach(pill => {
-        pill.addEventListener('click', () => {
-          pills.forEach(p => p.classList.remove('active'));
-          pill.classList.add('active');
-          currentCategory = pill.dataset.category;
-          renderIngredients();
-        });
-      });
-    }
-
-    // ============================================
-    // SEARCH
-    // ============================================
-    function filterIngredients() {
-      searchQuery = document.getElementById('ingredientSearch').value.toLowerCase();
-      renderIngredients();
-    }
-
-    // ============================================
-    // RENDER INGREDIENTS
-    // ============================================
-    function renderIngredients() {
-      const grid = document.getElementById('ingredientGrid');
-
-      let filtered = ingredients.filter(ing => {
-        const matchesCategory = currentCategory === 'all' || ing.category === currentCategory;
-        const matchesSearch = searchQuery === '' || ing.name.toLowerCase().includes(searchQuery);
-        return matchesCategory && matchesSearch;
-      });
-
-      if (filtered.length === 0) {
-        grid.innerHTML = '<div class="no-results">No ingredients found</div>';
-        return;
-      }
-
-      grid.innerHTML = filtered.map(ing => {
-        const isSelected = selectedIngredients.includes(ing.id);
-        return `
-          <div class="ingredient-card ${isSelected ? 'selected' : ''}" onclick="toggleIngredient('${ing.id}')">
-            <div class="check-mark">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-                <path d="M20 6L9 17l-5-5"/>
-              </svg>
-            </div>
-            <div class="emoji">${ing.emoji}</div>
-            <div class="name">${ing.name}</div>
-            <div class="protein">${ing.nutrients.protein}g protein</div>
-          </div>
-        `;
-      }).join('');
-    }
-
-    // ============================================
-    // TOGGLE INGREDIENT
-    // ============================================
-    function toggleIngredient(id) {
-      const index = selectedIngredients.indexOf(id);
-      if (index > -1) {
-        selectedIngredients.splice(index, 1);
-      } else {
-        selectedIngredients.push(id);
-      }
-      renderIngredients();
-      renderSelectedItems();
-      updateDashboard();
-      updateMealBar();
-    }
-
-    // ============================================
-    // RENDER SELECTED ITEMS
-    // ============================================
-    function renderSelectedItems() {
-      const container = document.getElementById('selectedItems');
-
-      if (selectedIngredients.length === 0) {
-        container.innerHTML = '<span class="empty-state">No ingredients selected</span>';
-        return;
-      }
-
-      container.innerHTML = selectedIngredients.map(id => {
-        const ing = ingredients.find(i => i.id === id);
-        return `
-          <span class="meal-tag">
-            ${ing.emoji} ${ing.name}
-            <span class="remove" onclick="event.stopPropagation(); toggleIngredient('${id}')">&times;</span>
-          </span>
-        `;
-      }).join('');
-    }
-
-    // ============================================
-    // UPDATE MEAL BAR (Mobile)
-    // ============================================
-    function updateMealBar() {
-      const bar = document.getElementById('mealBar');
-      const items = document.getElementById('mealBarItems');
-
-      if (selectedIngredients.length > 0) {
-        bar.classList.add('visible');
-        items.innerHTML = selectedIngredients.map(id => {
-          const ing = ingredients.find(i => i.id === id);
-          return `
-            <span class="meal-tag">
-              ${ing.emoji} ${ing.name.split(' ')[0]}
-              <span class="remove" onclick="event.stopPropagation(); toggleIngredient('${id}')">&times;</span>
-            </span>
-          `;
-        }).join('');
-      } else {
-        bar.classList.remove('visible');
-      }
-    }
-
-    // ============================================
-    // CALCULATE TOTALS
-    // ============================================
-    function calculateTotals() {
-      const totals = {
-        protein: 0,
-        histidine: 0, isoleucine: 0, leucine: 0, lysine: 0,
-        methionine: 0, phenylalanine: 0, threonine: 0, tryptophan: 0, valine: 0,
-        vitaminA: 0, vitaminC: 0, vitaminK: 0, vitaminB6: 0, folate: 0,
-        vitaminE: 0, thiamin: 0, riboflavin: 0, niacin: 0,
-        calcium: 0, iron: 0, magnesium: 0, zinc: 0, potassium: 0,
-        phosphorus: 0, selenium: 0, copper: 0,
-        omega3: 0, omega6: 0, fiber: 0
-      };
-
-      selectedIngredients.forEach(id => {
-        const ing = ingredients.find(i => i.id === id);
-        if (ing && ing.nutrients) {
-          Object.keys(totals).forEach(key => {
-            if (ing.nutrients[key] !== undefined) {
-              totals[key] += ing.nutrients[key];
-            }
-          });
-        }
-      });
-
-      return totals;
-    }
-
-    // ============================================
-    // UPDATE DASHBOARD
-    // ============================================
-    function updateDashboard() {
-      const totals = calculateTotals();
-
-      updateScore(totals);
-      updateProtein(totals);
-      updateNutrientSection('amino', totals, [
-        { key: 'histidine', name: 'Histidine', unit: 'g' },
-        { key: 'isoleucine', name: 'Isoleucine', unit: 'g' },
-        { key: 'leucine', name: 'Leucine', unit: 'g' },
-        { key: 'lysine', name: 'Lysine', unit: 'g' },
-        { key: 'methionine', name: 'Methionine', unit: 'g' },
-        { key: 'phenylalanine', name: 'Phenylalanine', unit: 'g' },
-        { key: 'threonine', name: 'Threonine', unit: 'g' },
-        { key: 'tryptophan', name: 'Tryptophan', unit: 'g' },
-        { key: 'valine', name: 'Valine', unit: 'g' }
-      ]);
-      updateNutrientSection('vitamin', totals, [
-        { key: 'vitaminA', name: 'Vitamin A', unit: 'mcg' },
-        { key: 'vitaminC', name: 'Vitamin C', unit: 'mg' },
-        { key: 'vitaminE', name: 'Vitamin E', unit: 'mg' },
-        { key: 'vitaminK', name: 'Vitamin K', unit: 'mcg' },
-        { key: 'vitaminB6', name: 'Vitamin B6', unit: 'mg' },
-        { key: 'folate', name: 'Folate', unit: 'mcg' },
-        { key: 'thiamin', name: 'Thiamin (B1)', unit: 'mg' },
-        { key: 'riboflavin', name: 'Riboflavin (B2)', unit: 'mg' },
-        { key: 'niacin', name: 'Niacin (B3)', unit: 'mg' }
-      ]);
-      updateNutrientSection('mineral', totals, [
-        { key: 'calcium', name: 'Calcium', unit: 'mg' },
-        { key: 'iron', name: 'Iron', unit: 'mg' },
-        { key: 'magnesium', name: 'Magnesium', unit: 'mg' },
-        { key: 'zinc', name: 'Zinc', unit: 'mg' },
-        { key: 'potassium', name: 'Potassium', unit: 'mg' },
-        { key: 'phosphorus', name: 'Phosphorus', unit: 'mg' },
-        { key: 'selenium', name: 'Selenium', unit: 'mcg' },
-        { key: 'copper', name: 'Copper', unit: 'mg' }
-      ]);
-      updateNutrientSection('fat', totals, [
-        { key: 'omega3', name: 'Omega-3 (ALA)', unit: 'g' },
-        { key: 'omega6', name: 'Omega-6', unit: 'g' },
-        { key: 'fiber', name: 'Fiber', unit: 'g' }
-      ]);
-      updateSuggestions(totals);
-      updateTahiniPromo();
-    }
-
-    // ============================================
-    // UPDATE SCORE CIRCLE
-    // ============================================
-    function updateScore(totals) {
-      const nutrients = Object.keys(dailyValues);
-      let totalScore = 0;
-
-      nutrients.forEach(key => {
-        const percentage = (totals[key] / dailyValues[key]) * 100;
-        totalScore += Math.min(percentage, 100);
-      });
-
-      const score = Math.round(totalScore / nutrients.length);
-
-      // Update text
-      document.getElementById('scoreValue').textContent = score + '%';
-
-      // Update circle
-      const progress = document.getElementById('scoreProgress');
-      const circumference = 2 * Math.PI * 44;
-      const offset = circumference - (score / 100) * circumference;
-      progress.style.strokeDashoffset = offset;
-
-      // Update color
-      if (score >= 80) {
-        progress.style.stroke = 'var(--success)';
-      } else if (score >= 50) {
-        progress.style.stroke = 'var(--warning)';
-      } else {
-        progress.style.stroke = 'var(--danger)';
-      }
-    }
-
-    // ============================================
-    // UPDATE PROTEIN
-    // ============================================
-    function updateProtein(totals) {
-      document.getElementById('proteinValue').textContent = totals.protein.toFixed(1) + 'g';
-    }
-
-    // ============================================
-    // UPDATE NUTRIENT SECTION
-    // ============================================
-    function updateNutrientSection(type, totals, nutrients) {
-      const barsContainer = document.getElementById(type + 'Bars');
-      const statusEl = document.getElementById(type + 'Status');
-
-      let allMet = true;
-      let someMet = false;
-
-      barsContainer.innerHTML = nutrients.map(n => {
-        const value = totals[n.key];
-        const daily = dailyValues[n.key];
-        const percentage = Math.min((value / daily) * 100, 100);
-        const displayPct = Math.round((value / daily) * 100);
-
-        if (percentage >= 100) someMet = true;
-        else allMet = false;
-
-        let fillClass = 'low';
-        if (percentage >= 100) fillClass = 'good';
-        else if (percentage >= 50) fillClass = 'medium';
-
-        return `
-          <div class="nutrient-bar">
-            <div class="bar-header">
-              <span class="bar-name">${n.name}</span>
-              <span class="bar-value">${value.toFixed(2)}${n.unit} (${displayPct}%)</span>
-            </div>
-            <div class="bar-track">
-              <div class="bar-fill ${fillClass}" style="width: ${percentage}%"></div>
-            </div>
-          </div>
-        `;
-      }).join('');
-
-      // Update status
-      if (allMet) {
-        statusEl.className = 'status good';
-        statusEl.innerHTML = '&#10003;';
-      } else if (someMet) {
-        statusEl.className = 'status warning';
-        statusEl.innerHTML = '!';
-      } else {
-        statusEl.className = 'status bad';
-        statusEl.innerHTML = '!';
-      }
-    }
-
-    // ============================================
-    // TOGGLE SECTION
-    // ============================================
-    function toggleSection(id) {
-      const section = document.getElementById(id);
-      section.classList.toggle('expanded');
-    }
-
-    // ============================================
-    // UPDATE SUGGESTIONS
-    // ============================================
-    function updateSuggestions(totals) {
-      const container = document.getElementById('suggestionList');
-      const suggestions = [];
-
-      if (totals.lysine < dailyValues.lysine * 0.5) {
-        suggestions.push('Add <strong>legumes</strong> (chickpeas, lentils, tofu) for lysine');
-      }
-      if (totals.methionine < dailyValues.methionine * 0.5) {
-        suggestions.push('Add <strong>grains</strong> or <strong>seeds</strong> for methionine');
-      }
-      if (totals.calcium < dailyValues.calcium * 0.5) {
-        suggestions.push('Add <strong>tahini</strong> or fortified plant milk for calcium');
-      }
-      if (totals.iron < dailyValues.iron * 0.5) {
-        suggestions.push('Add <strong>spinach</strong>, lentils, or pumpkin seeds for iron');
-      }
-      if (totals.zinc < dailyValues.zinc * 0.5) {
-        suggestions.push('Add <strong>tahini</strong> or pumpkin seeds for zinc');
-      }
-      if (totals.omega3 < dailyValues.omega3 * 0.5) {
-        suggestions.push('Add <strong>flaxseeds</strong>, chia seeds, or walnuts for omega-3');
-      }
-      if (totals.vitaminC < dailyValues.vitaminC * 0.5) {
-        suggestions.push('Add <strong>bell peppers</strong> or citrus for vitamin C');
-      }
-
-      if (suggestions.length === 0) {
-        if (selectedIngredients.length === 0) {
-          container.innerHTML = '<div class="suggestion-item">Select ingredients to get suggestions</div>';
-        } else {
-          container.innerHTML = '<div class="suggestion-item" style="color: var(--success);">Great job! Your meal looks nutritionally balanced.</div>';
-        }
-      } else {
-        container.innerHTML = suggestions.map(s => `<div class="suggestion-item">${s}</div>`).join('');
-      }
-    }
-
-    // ============================================
-    // UPDATE TAHINI PROMO
-    // ============================================
-    function updateTahiniPromo() {
-      const promo = document.getElementById('tahiniPromo');
-      const hasTahini = selectedIngredients.includes('tahini');
-
-      if (selectedIngredients.length > 0 && !hasTahini) {
-        promo.classList.add('visible');
-      } else {
-        promo.classList.remove('visible');
-      }
-    }
-
-    // ============================================
-    // ADD TAHINI
-    // ============================================
-    function addTahini() {
-      if (!selectedIngredients.includes('tahini')) {
-        selectedIngredients.push('tahini');
-        renderIngredients();
-        renderSelectedItems();
-        updateDashboard();
-        updateMealBar();
-      }
-    }
-
-    // ============================================
-    // CLEAR ALL
-    // ============================================
-    function clearAll() {
-      selectedIngredients = [];
-      document.getElementById('ingredientSearch').value = '';
-      searchQuery = '';
-      renderIngredients();
-      renderSelectedItems();
-      updateDashboard();
-      updateMealBar();
-    }
-
-    // Initialize
-    document.addEventListener('DOMContentLoaded', init);
-  </script>
-
-</body>
-</html>
