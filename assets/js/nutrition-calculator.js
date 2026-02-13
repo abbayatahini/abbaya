@@ -8,138 +8,74 @@
 // ============================================
 // SECTION 1: CONFIG & CONSTANTS (safe declarations)
 // ============================================
-if (typeof API_CONFIG === 'undefined') {
-  var API_CONFIG = {
-    USDA_API_KEY: 'DEMO_KEY',
-    USDA_BASE: 'https://api.nal.usda.gov/fdc/v1',
-    OFF_BASE: 'https://world.openfoodfacts.org/api/v2'
-  };
-}
+// ================================================================
+// ABBAYA NUTRITION CALCULATOR v2.0 - ENGINE
+// ================================================================
 
-if (typeof baseDailyValues === 'undefined') {
-  var baseDailyValues = {
-    calories: 2000, protein: 50, carbs: 300, fat: 65,
-    histidine: 0.7, isoleucine: 1.4, leucine: 2.73, lysine: 2.1,
-    methionine: 0.73, phenylalanine: 1.75, threonine: 1.05, tryptophan: 0.28, valine: 1.82,
-    vitaminA: 900, vitaminC: 90, vitaminK: 120, vitaminB6: 1.3, folate: 400,
-    vitaminE: 15, thiamin: 1.2, riboflavin: 1.3, niacin: 16,
-    calcium: 1000, iron: 18, magnesium: 400, zinc: 11, potassium: 4700,
-    phosphorus: 700, selenium: 55, copper: 0.9, manganese: 2.3,
-    omega3: 1.6, omega6: 17, fiber: 28
-  };
-}
+var API_CONFIG = {
+  USDA_API_KEY: 'DEMO_KEY',
+  USDA_BASE: 'https://api.nal.usda.gov/fdc/v1',
+  OFF_BASE: 'https://world.openfoodfacts.org/api/v2'
+};
 
 var dailyValues = {};
-var k;
-for (k in baseDailyValues) { dailyValues[k] = baseDailyValues[k]; }
+var _k;
+for (_k in baseDailyValues) { dailyValues[_k] = baseDailyValues[_k]; }
 
-if (typeof upperLimits === 'undefined') {
-  var upperLimits = {
-    vitaminA: 3000, vitaminC: 2000, vitaminE: 1000, vitaminB6: 100,
-    folate: 1000, niacin: 35, calcium: 2500, iron: 45,
-    magnesium: 350, zinc: 40, selenium: 400, copper: 10,
-    manganese: 11, phosphorus: 4000
-  };
-}
+var upperLimits = {
+  vitaminA: 3000, vitaminC: 2000, vitaminE: 1000, vitaminB6: 100,
+  folate: 1000, niacin: 35, calcium: 2500, iron: 45,
+  magnesium: 350, zinc: 40, selenium: 400, copper: 10,
+  manganese: 11, phosphorus: 4000
+};
 
-if (typeof upperLimitWarnings === 'undefined') {
-  var upperLimitWarnings = {
-    en: {
-      vitaminA: 'Can cause liver damage', vitaminC: 'May cause GI distress and kidney stones',
-      vitaminE: 'Increases bleeding risk', vitaminB6: 'Can cause nerve damage',
-      folate: 'May mask B12 deficiency', niacin: 'Can cause flushing and liver damage',
-      calcium: 'Risk of kidney stones', iron: 'Can cause GI distress and organ damage',
-      magnesium: 'May cause diarrhea', zinc: 'Can cause copper deficiency',
-      selenium: 'Risk of selenosis', copper: 'Can cause liver damage',
-      manganese: 'Risk of neurological issues', phosphorus: 'May affect kidneys'
-    },
-    pt: {
-      vitaminA: 'Pode causar danos no fígado', vitaminC: 'Pode causar desconforto GI',
-      vitaminE: 'Aumenta risco de hemorragia', vitaminB6: 'Pode causar danos nos nervos',
-      folate: 'Pode mascarar deficiência de B12', niacin: 'Pode causar rubor',
-      calcium: 'Risco de pedras nos rins', iron: 'Pode causar danos em órgãos',
-      magnesium: 'Pode causar diarreia', zinc: 'Pode causar deficiência de cobre',
-      selenium: 'Risco de selenose', copper: 'Pode causar danos no fígado',
-      manganese: 'Risco neurológico', phosphorus: 'Pode afetar rins'
-    }
-  };
-}
+var upperLimitWarnings = {
+  en: {
+    vitaminA: 'Can cause liver damage', vitaminC: 'May cause GI distress and kidney stones',
+    vitaminE: 'Increases bleeding risk', vitaminB6: 'Can cause nerve damage',
+    folate: 'May mask B12 deficiency', niacin: 'Can cause flushing and liver damage',
+    calcium: 'Risk of kidney stones', iron: 'Can cause GI distress and organ damage',
+    magnesium: 'May cause diarrhea', zinc: 'Can cause copper deficiency',
+    selenium: 'Risk of selenosis', copper: 'Can cause liver damage',
+    manganese: 'Risk of neurological issues', phosphorus: 'May affect kidneys'
+  },
+  pt: {
+    vitaminA: 'Pode causar danos no fígado', vitaminC: 'Pode causar desconforto GI',
+    vitaminE: 'Aumenta risco de hemorragia', vitaminB6: 'Pode causar danos nos nervos',
+    folate: 'Pode mascarar deficiência de B12', niacin: 'Pode causar rubor',
+    calcium: 'Risco de pedras nos rins', iron: 'Pode causar danos em órgãos',
+    magnesium: 'Pode causar diarreia', zinc: 'Pode causar deficiência de cobre',
+    selenium: 'Risco de selenose', copper: 'Pode causar danos no fígado',
+    manganese: 'Risco neurológico', phosphorus: 'Pode afetar rins'
+  }
+};
 
-if (typeof nutrientNames === 'undefined') {
-  var nutrientNames = {
-    en: {
-      histidine:'Histidine', isoleucine:'Isoleucine', leucine:'Leucine', lysine:'Lysine',
-      methionine:'Methionine', phenylalanine:'Phenylalanine', threonine:'Threonine',
-      tryptophan:'Tryptophan', valine:'Valine', vitaminA:'Vitamin A', vitaminC:'Vitamin C',
-      vitaminE:'Vitamin E', vitaminK:'Vitamin K', vitaminB6:'Vitamin B6', folate:'Folate',
-      thiamin:'Thiamin (B1)', riboflavin:'Riboflavin (B2)', niacin:'Niacin (B3)',
-      calcium:'Calcium', iron:'Iron', magnesium:'Magnesium', zinc:'Zinc',
-      potassium:'Potassium', phosphorus:'Phosphorus', selenium:'Selenium',
-      copper:'Copper', manganese:'Manganese', omega3:'Omega-3 (ALA)',
-      omega6:'Omega-6', fiber:'Fiber'
-    },
-    pt: {
-      histidine:'Histidina', isoleucine:'Isoleucina', leucine:'Leucina', lysine:'Lisina',
-      methionine:'Metionina', phenylalanine:'Fenilalanina', threonine:'Treonina',
-      tryptophan:'Triptofano', valine:'Valina', vitaminA:'Vitamina A', vitaminC:'Vitamina C',
-      vitaminE:'Vitamina E', vitaminK:'Vitamina K', vitaminB6:'Vitamina B6', folate:'Folato',
-      thiamin:'Tiamina (B1)', riboflavin:'Riboflavina (B2)', niacin:'Niacina (B3)',
-      calcium:'Cálcio', iron:'Ferro', magnesium:'Magnésio', zinc:'Zinco',
-      potassium:'Potássio', phosphorus:'Fósforo', selenium:'Selénio',
-      copper:'Cobre', manganese:'Manganês', omega3:'Ómega-3 (ALA)',
-      omega6:'Ómega-6', fiber:'Fibra'
-    }
-  };
-}
+var nutrientNames = {
+  en: {
+    histidine:'Histidine', isoleucine:'Isoleucine', leucine:'Leucine', lysine:'Lysine',
+    methionine:'Methionine', phenylalanine:'Phenylalanine', threonine:'Threonine',
+    tryptophan:'Tryptophan', valine:'Valine', vitaminA:'Vitamin A', vitaminC:'Vitamin C',
+    vitaminE:'Vitamin E', vitaminK:'Vitamin K', vitaminB6:'Vitamin B6', folate:'Folate',
+    thiamin:'Thiamin (B1)', riboflavin:'Riboflavin (B2)', niacin:'Niacin (B3)',
+    calcium:'Calcium', iron:'Iron', magnesium:'Magnesium', zinc:'Zinc',
+    potassium:'Potassium', phosphorus:'Phosphorus', selenium:'Selenium',
+    copper:'Copper', manganese:'Manganese', omega3:'Omega-3 (ALA)',
+    omega6:'Omega-6', fiber:'Fiber'
+  },
+  pt: {
+    histidine:'Histidina', isoleucine:'Isoleucina', leucine:'Leucina', lysine:'Lisina',
+    methionine:'Metionina', phenylalanine:'Fenilalanina', threonine:'Treonina',
+    tryptophan:'Triptofano', valine:'Valina', vitaminA:'Vitamina A', vitaminC:'Vitamina C',
+    vitaminE:'Vitamina E', vitaminK:'Vitamina K', vitaminB6:'Vitamina B6', folate:'Folato',
+    thiamin:'Tiamina (B1)', riboflavin:'Riboflavina (B2)', niacin:'Niacina (B3)',
+    calcium:'Cálcio', iron:'Ferro', magnesium:'Magnésio', zinc:'Zinco',
+    potassium:'Potássio', phosphorus:'Fósforo', selenium:'Selénio',
+    copper:'Cobre', manganese:'Manganês', omega3:'Ómega-3 (ALA)',
+    omega6:'Ómega-6', fiber:'Fibra'
+  }
+};
 
-if (typeof mealPresets === 'undefined') {
-  var mealPresets = {
-    'buddha-bowl': {
-      name: { en: 'Buddha Bowl', pt: 'Buddha Bowl' },
-      items: [
-        { id: 'quinoa', serving: 1.5 }, { id: 'chickpeas', serving: 1 },
-        { id: 'avocado', serving: 0.5 }, { id: 'spinach', serving: 1 },
-        { id: 'tahini', serving: 0.3 }, { id: 'bell-pepper-red', serving: 0.5 }
-      ]
-    },
-    'power-smoothie': {
-      name: { en: 'Power Smoothie', pt: 'Smoothie Energético' },
-      items: [
-        { id: 'banana', serving: 1.5 }, { id: 'blueberries', serving: 1 },
-        { id: 'spinach', serving: 0.5 }, { id: 'chia-seeds', serving: 0.2 },
-        { id: 'fortified-plant-milk', serving: 2.5 }
-      ]
-    },
-    'protein-plate': {
-      name: { en: 'Protein Plate', pt: 'Prato Proteico' },
-      items: [
-        { id: 'tofu', serving: 1.5 }, { id: 'brown-rice', serving: 1.5 },
-        { id: 'broccoli', serving: 1 }, { id: 'pumpkin-seeds', serving: 0.3 },
-        { id: 'nutritional-yeast', serving: 0.1 }
-      ]
-    },
-    'mediterranean': {
-      name: { en: 'Mediterranean', pt: 'Mediterrâneo' },
-      items: [
-        { id: 'chickpeas', serving: 1 }, { id: 'tahini', serving: 0.3 },
-        { id: 'tomatoes', serving: 1 }, { id: 'olive-oil', serving: 0.15 },
-        { id: 'kale', serving: 0.5 }, { id: 'lentils', serving: 0.75 }
-      ]
-    },
-    'asian-bowl': {
-      name: { en: 'Asian Bowl', pt: 'Bowl Asiático' },
-      items: [
-        { id: 'tofu', serving: 1 }, { id: 'brown-rice', serving: 1.5 },
-        { id: 'edamame', serving: 0.75 }, { id: 'mushrooms', serving: 0.5 },
-        { id: 'sesame-seeds', serving: 0.1 }
-      ]
-    }
-  };
-}
-
-// ============================================
-// SECTION 2: STATE
-// ============================================
+// Section 2: State
 var currentLang = 'en';
 var currentCategory = 'all';
 var searchQuery = '';
@@ -150,7 +86,6 @@ var currentTheme = 'light';
 var currentMealSlot = 'breakfast';
 var searchDebounceTimer = null;
 var apiIngredients = [];
-
 var mealSlots = { breakfast: [], lunch: [], dinner: [], snacks: [] };
 var undoStack = [];
 var redoStack = [];
