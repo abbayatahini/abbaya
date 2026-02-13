@@ -2071,11 +2071,12 @@
 
   </div>
 
-  <script>
+ <script>
+var baseDailyValues, upperLimits, upperLimitWarnings, nutrientNames, mealPresets, API_CONFIG;
     // ============================================
     // COMPLETE TRANSLATIONS (Extended)
     // ============================================
-    const translations = {
+    var translations = {
       en: {
         hero: { title: "Vegan Nutrition Calculator", subtitle: "Build your meal. Track calories. Check completeness." },
         stats: { calories: "Calories", protein: "Protein", complete: "Complete", ingredients: "Ingredients" },
@@ -2164,7 +2165,7 @@
       }
     };
 
-    const ingredientNamesPt = {
+    var ingredientNamesPt = {
       'chickpeas': 'Grão-de-bico (cozido)', 'lentils': 'Lentilhas (cozidas)', 'black-beans': 'Feijão Preto (cozido)',
       'kidney-beans': 'Feijão Vermelho (cozido)', 'white-beans': 'Feijão Branco (cozido)', 'tofu': 'Tofu (firme)',
       'tempeh': 'Tempeh', 'edamame': 'Edamame', 'mung-beans': 'Feijão Mungo (cozido)', 'split-peas': 'Ervilhas Partidas (cozidas)',
@@ -2190,7 +2191,7 @@
     // ============================================
     // EXPANDED INGREDIENT DATABASE (80+ items)
     // ============================================
-    const ingredients = [
+    var ingredients = [
       // === LEGUMES ===
       { id: 'chickpeas', name: 'Chickpeas (cooked)', category: 'legumes', emoji: '🫘', serving: '100g',
         nutrients: { calories: 164, protein: 8.9, carbs: 27.4, fat: 2.6, histidine: 0.24, isoleucine: 0.38, leucine: 0.63, lysine: 0.58, methionine: 0.12, phenylalanine: 0.47, threonine: 0.32, tryptophan: 0.08, valine: 0.36, vitaminA: 1, vitaminC: 1.3, vitaminK: 4, vitaminB6: 0.14, folate: 172, vitaminE: 0.35, thiamin: 0.12, riboflavin: 0.06, niacin: 0.53, calcium: 49, iron: 2.9, magnesium: 48, zinc: 1.5, potassium: 291, phosphorus: 168, selenium: 3.7, copper: 0.35, manganese: 1.03, omega3: 0.04, omega6: 1.1, fiber: 7.6 }},
@@ -2352,7 +2353,7 @@
     // ============================================
     // DAILY VALUES (Base - modified by personalization)
     // ============================================
-    const baseDailyValues = {
+    var baseDailyValues = {
       calories: 2000, protein: 50, carbs: 300, fat: 65,
       histidine: 0.7, isoleucine: 1.4, leucine: 2.73, lysine: 2.1,
       methionine: 0.73, phenylalanine: 1.75, threonine: 1.05, tryptophan: 0.28, valine: 1.82,
@@ -2368,7 +2369,7 @@
     // ============================================
     // UPPER TOLERABLE LIMITS (UL) for overdose warnings
     // ============================================
-    const upperLimits = {
+    var upperLimits = {
       vitaminA: 3000,    // mcg (retinol equiv) — can cause liver damage
       vitaminC: 2000,    // mg — GI distress
       vitaminE: 1000,    // mg — bleeding risk
@@ -2385,7 +2386,7 @@
       phosphorus: 4000,  // mg — kidney issues
     };
 
-    const upperLimitNames = {
+    var upperLimitNames = {
       en: {
         vitaminA: 'Vitamin A', vitaminC: 'Vitamin C', vitaminE: 'Vitamin E',
         vitaminB6: 'Vitamin B6', folate: 'Folate', niacin: 'Niacin',
@@ -2405,7 +2406,7 @@
     // ============================================
     // MEAL PRESETS
     // ============================================
-    const mealPresets = {
+    var mealPresets = {
       'buddha-bowl': {
         name: { en: 'Buddha Bowl', pt: 'Buddha Bowl' },
         items: [
