@@ -1,150 +1,161 @@
 // ================================================================
-// ABBAYA NUTRITION CALCULATOR v2.0 - ENGINE
+// ABBAYA NUTRITION CALCULATOR v2.0 - ENGINE (FIXED)
 // ================================================================
-// REQUIRED: Include BEFORE this file:
-// 1. translations.js
-// 2. ingredients.js
-// 3. Chart.js CDN
-// 4. html2canvas CDN
+// Works with inline data from calculator/index.html
+// All declarations use var to avoid conflicts
 // ================================================================
 
 // ============================================
-// SECTION 1: CONFIG & CONSTANTS
+// SECTION 1: CONFIG & CONSTANTS (safe declarations)
 // ============================================
-const API_CONFIG = {
-  USDA_API_KEY: 'DEMO_KEY',
-  USDA_BASE: 'https://api.nal.usda.gov/fdc/v1',
-  OFF_BASE: 'https://world.openfoodfacts.org/api/v2'
-};
+if (typeof API_CONFIG === 'undefined') {
+  var API_CONFIG = {
+    USDA_API_KEY: 'DEMO_KEY',
+    USDA_BASE: 'https://api.nal.usda.gov/fdc/v1',
+    OFF_BASE: 'https://world.openfoodfacts.org/api/v2'
+  };
+}
 
-const baseDailyValues = {
-  calories: 2000, protein: 50, carbs: 300, fat: 65,
-  histidine: 0.7, isoleucine: 1.4, leucine: 2.73, lysine: 2.1,
-  methionine: 0.73, phenylalanine: 1.75, threonine: 1.05, tryptophan: 0.28, valine: 1.82,
-  vitaminA: 900, vitaminC: 90, vitaminK: 120, vitaminB6: 1.3, folate: 400,
-  vitaminE: 15, thiamin: 1.2, riboflavin: 1.3, niacin: 16,
-  calcium: 1000, iron: 18, magnesium: 400, zinc: 11, potassium: 4700,
-  phosphorus: 700, selenium: 55, copper: 0.9, manganese: 2.3,
-  omega3: 1.6, omega6: 17, fiber: 28
-};
+if (typeof baseDailyValues === 'undefined') {
+  var baseDailyValues = {
+    calories: 2000, protein: 50, carbs: 300, fat: 65,
+    histidine: 0.7, isoleucine: 1.4, leucine: 2.73, lysine: 2.1,
+    methionine: 0.73, phenylalanine: 1.75, threonine: 1.05, tryptophan: 0.28, valine: 1.82,
+    vitaminA: 900, vitaminC: 90, vitaminK: 120, vitaminB6: 1.3, folate: 400,
+    vitaminE: 15, thiamin: 1.2, riboflavin: 1.3, niacin: 16,
+    calcium: 1000, iron: 18, magnesium: 400, zinc: 11, potassium: 4700,
+    phosphorus: 700, selenium: 55, copper: 0.9, manganese: 2.3,
+    omega3: 1.6, omega6: 17, fiber: 28
+  };
+}
 
-let dailyValues = { ...baseDailyValues };
+var dailyValues = {};
+var k;
+for (k in baseDailyValues) { dailyValues[k] = baseDailyValues[k]; }
 
-const upperLimits = {
-  vitaminA: 3000, vitaminC: 2000, vitaminE: 1000, vitaminB6: 100,
-  folate: 1000, niacin: 35, calcium: 2500, iron: 45,
-  magnesium: 350, zinc: 40, selenium: 400, copper: 10,
-  manganese: 11, phosphorus: 4000
-};
+if (typeof upperLimits === 'undefined') {
+  var upperLimits = {
+    vitaminA: 3000, vitaminC: 2000, vitaminE: 1000, vitaminB6: 100,
+    folate: 1000, niacin: 35, calcium: 2500, iron: 45,
+    magnesium: 350, zinc: 40, selenium: 400, copper: 10,
+    manganese: 11, phosphorus: 4000
+  };
+}
 
-const upperLimitWarnings = {
-  en: {
-    vitaminA: 'Can cause liver damage', vitaminC: 'May cause GI distress and kidney stones',
-    vitaminE: 'Increases bleeding risk', vitaminB6: 'Can cause nerve damage',
-    folate: 'May mask B12 deficiency', niacin: 'Can cause flushing and liver damage',
-    calcium: 'Risk of kidney stones', iron: 'Can cause GI distress and organ damage',
-    magnesium: 'May cause diarrhea', zinc: 'Can cause copper deficiency',
-    selenium: 'Risk of selenosis', copper: 'Can cause liver damage',
-    manganese: 'Risk of neurological issues', phosphorus: 'May affect kidneys'
-  },
-  pt: {
-    vitaminA: 'Pode causar danos no fígado', vitaminC: 'Pode causar desconforto GI',
-    vitaminE: 'Aumenta risco de hemorragia', vitaminB6: 'Pode causar danos nos nervos',
-    folate: 'Pode mascarar deficiência de B12', niacin: 'Pode causar rubor',
-    calcium: 'Risco de pedras nos rins', iron: 'Pode causar danos em órgãos',
-    magnesium: 'Pode causar diarreia', zinc: 'Pode causar deficiência de cobre',
-    selenium: 'Risco de selenose', copper: 'Pode causar danos no fígado',
-    manganese: 'Risco neurológico', phosphorus: 'Pode afetar rins'
-  }
-};
+if (typeof upperLimitWarnings === 'undefined') {
+  var upperLimitWarnings = {
+    en: {
+      vitaminA: 'Can cause liver damage', vitaminC: 'May cause GI distress and kidney stones',
+      vitaminE: 'Increases bleeding risk', vitaminB6: 'Can cause nerve damage',
+      folate: 'May mask B12 deficiency', niacin: 'Can cause flushing and liver damage',
+      calcium: 'Risk of kidney stones', iron: 'Can cause GI distress and organ damage',
+      magnesium: 'May cause diarrhea', zinc: 'Can cause copper deficiency',
+      selenium: 'Risk of selenosis', copper: 'Can cause liver damage',
+      manganese: 'Risk of neurological issues', phosphorus: 'May affect kidneys'
+    },
+    pt: {
+      vitaminA: 'Pode causar danos no fígado', vitaminC: 'Pode causar desconforto GI',
+      vitaminE: 'Aumenta risco de hemorragia', vitaminB6: 'Pode causar danos nos nervos',
+      folate: 'Pode mascarar deficiência de B12', niacin: 'Pode causar rubor',
+      calcium: 'Risco de pedras nos rins', iron: 'Pode causar danos em órgãos',
+      magnesium: 'Pode causar diarreia', zinc: 'Pode causar deficiência de cobre',
+      selenium: 'Risco de selenose', copper: 'Pode causar danos no fígado',
+      manganese: 'Risco neurológico', phosphorus: 'Pode afetar rins'
+    }
+  };
+}
 
-const nutrientNames = {
-  en: {
-    histidine:'Histidine', isoleucine:'Isoleucine', leucine:'Leucine', lysine:'Lysine',
-    methionine:'Methionine', phenylalanine:'Phenylalanine', threonine:'Threonine',
-    tryptophan:'Tryptophan', valine:'Valine', vitaminA:'Vitamin A', vitaminC:'Vitamin C',
-    vitaminE:'Vitamin E', vitaminK:'Vitamin K', vitaminB6:'Vitamin B6', folate:'Folate',
-    thiamin:'Thiamin (B1)', riboflavin:'Riboflavin (B2)', niacin:'Niacin (B3)',
-    calcium:'Calcium', iron:'Iron', magnesium:'Magnesium', zinc:'Zinc',
-    potassium:'Potassium', phosphorus:'Phosphorus', selenium:'Selenium',
-    copper:'Copper', manganese:'Manganese', omega3:'Omega-3 (ALA)',
-    omega6:'Omega-6', fiber:'Fiber'
-  },
-  pt: {
-    histidine:'Histidina', isoleucine:'Isoleucina', leucine:'Leucina', lysine:'Lisina',
-    methionine:'Metionina', phenylalanine:'Fenilalanina', threonine:'Treonina',
-    tryptophan:'Triptofano', valine:'Valina', vitaminA:'Vitamina A', vitaminC:'Vitamina C',
-    vitaminE:'Vitamina E', vitaminK:'Vitamina K', vitaminB6:'Vitamina B6', folate:'Folato',
-    thiamin:'Tiamina (B1)', riboflavin:'Riboflavina (B2)', niacin:'Niacina (B3)',
-    calcium:'Cálcio', iron:'Ferro', magnesium:'Magnésio', zinc:'Zinco',
-    potassium:'Potássio', phosphorus:'Fósforo', selenium:'Selénio',
-    copper:'Cobre', manganese:'Manganês', omega3:'Ómega-3 (ALA)',
-    omega6:'Ómega-6', fiber:'Fibra'
-  }
-};
+if (typeof nutrientNames === 'undefined') {
+  var nutrientNames = {
+    en: {
+      histidine:'Histidine', isoleucine:'Isoleucine', leucine:'Leucine', lysine:'Lysine',
+      methionine:'Methionine', phenylalanine:'Phenylalanine', threonine:'Threonine',
+      tryptophan:'Tryptophan', valine:'Valine', vitaminA:'Vitamin A', vitaminC:'Vitamin C',
+      vitaminE:'Vitamin E', vitaminK:'Vitamin K', vitaminB6:'Vitamin B6', folate:'Folate',
+      thiamin:'Thiamin (B1)', riboflavin:'Riboflavin (B2)', niacin:'Niacin (B3)',
+      calcium:'Calcium', iron:'Iron', magnesium:'Magnesium', zinc:'Zinc',
+      potassium:'Potassium', phosphorus:'Phosphorus', selenium:'Selenium',
+      copper:'Copper', manganese:'Manganese', omega3:'Omega-3 (ALA)',
+      omega6:'Omega-6', fiber:'Fiber'
+    },
+    pt: {
+      histidine:'Histidina', isoleucine:'Isoleucina', leucine:'Leucina', lysine:'Lisina',
+      methionine:'Metionina', phenylalanine:'Fenilalanina', threonine:'Treonina',
+      tryptophan:'Triptofano', valine:'Valina', vitaminA:'Vitamina A', vitaminC:'Vitamina C',
+      vitaminE:'Vitamina E', vitaminK:'Vitamina K', vitaminB6:'Vitamina B6', folate:'Folato',
+      thiamin:'Tiamina (B1)', riboflavin:'Riboflavina (B2)', niacin:'Niacina (B3)',
+      calcium:'Cálcio', iron:'Ferro', magnesium:'Magnésio', zinc:'Zinco',
+      potassium:'Potássio', phosphorus:'Fósforo', selenium:'Selénio',
+      copper:'Cobre', manganese:'Manganês', omega3:'Ómega-3 (ALA)',
+      omega6:'Ómega-6', fiber:'Fibra'
+    }
+  };
+}
 
-const mealPresets = {
-  'buddha-bowl': {
-    name: { en: 'Buddha Bowl', pt: 'Buddha Bowl' },
-    items: [
-      { id: 'quinoa', serving: 1.5 }, { id: 'chickpeas', serving: 1 },
-      { id: 'avocado', serving: 0.5 }, { id: 'spinach', serving: 1 },
-      { id: 'tahini', serving: 0.3 }, { id: 'bell-pepper-red', serving: 0.5 }
-    ]
-  },
-  'power-smoothie': {
-    name: { en: 'Power Smoothie', pt: 'Smoothie Energético' },
-    items: [
-      { id: 'banana', serving: 1.5 }, { id: 'blueberries', serving: 1 },
-      { id: 'spinach', serving: 0.5 }, { id: 'chia-seeds', serving: 0.2 },
-      { id: 'fortified-plant-milk', serving: 2.5 }
-    ]
-  },
-  'protein-plate': {
-    name: { en: 'Protein Plate', pt: 'Prato Proteico' },
-    items: [
-      { id: 'tofu', serving: 1.5 }, { id: 'brown-rice', serving: 1.5 },
-      { id: 'broccoli', serving: 1 }, { id: 'pumpkin-seeds', serving: 0.3 },
-      { id: 'nutritional-yeast', serving: 0.1 }
-    ]
-  },
-  'mediterranean': {
-    name: { en: 'Mediterranean', pt: 'Mediterrâneo' },
-    items: [
-      { id: 'chickpeas', serving: 1 }, { id: 'tahini', serving: 0.3 },
-      { id: 'tomatoes', serving: 1 }, { id: 'olive-oil', serving: 0.15 },
-      { id: 'kale', serving: 0.5 }, { id: 'lentils', serving: 0.75 }
-    ]
-  },
-  'asian-bowl': {
-    name: { en: 'Asian Bowl', pt: 'Bowl Asiático' },
-    items: [
-      { id: 'tofu', serving: 1 }, { id: 'brown-rice', serving: 1.5 },
-      { id: 'edamame', serving: 0.75 }, { id: 'mushrooms', serving: 0.5 },
-      { id: 'sesame-seeds', serving: 0.1 }
-    ]
-  }
-};
+if (typeof mealPresets === 'undefined') {
+  var mealPresets = {
+    'buddha-bowl': {
+      name: { en: 'Buddha Bowl', pt: 'Buddha Bowl' },
+      items: [
+        { id: 'quinoa', serving: 1.5 }, { id: 'chickpeas', serving: 1 },
+        { id: 'avocado', serving: 0.5 }, { id: 'spinach', serving: 1 },
+        { id: 'tahini', serving: 0.3 }, { id: 'bell-pepper-red', serving: 0.5 }
+      ]
+    },
+    'power-smoothie': {
+      name: { en: 'Power Smoothie', pt: 'Smoothie Energético' },
+      items: [
+        { id: 'banana', serving: 1.5 }, { id: 'blueberries', serving: 1 },
+        { id: 'spinach', serving: 0.5 }, { id: 'chia-seeds', serving: 0.2 },
+        { id: 'fortified-plant-milk', serving: 2.5 }
+      ]
+    },
+    'protein-plate': {
+      name: { en: 'Protein Plate', pt: 'Prato Proteico' },
+      items: [
+        { id: 'tofu', serving: 1.5 }, { id: 'brown-rice', serving: 1.5 },
+        { id: 'broccoli', serving: 1 }, { id: 'pumpkin-seeds', serving: 0.3 },
+        { id: 'nutritional-yeast', serving: 0.1 }
+      ]
+    },
+    'mediterranean': {
+      name: { en: 'Mediterranean', pt: 'Mediterrâneo' },
+      items: [
+        { id: 'chickpeas', serving: 1 }, { id: 'tahini', serving: 0.3 },
+        { id: 'tomatoes', serving: 1 }, { id: 'olive-oil', serving: 0.15 },
+        { id: 'kale', serving: 0.5 }, { id: 'lentils', serving: 0.75 }
+      ]
+    },
+    'asian-bowl': {
+      name: { en: 'Asian Bowl', pt: 'Bowl Asiático' },
+      items: [
+        { id: 'tofu', serving: 1 }, { id: 'brown-rice', serving: 1.5 },
+        { id: 'edamame', serving: 0.75 }, { id: 'mushrooms', serving: 0.5 },
+        { id: 'sesame-seeds', serving: 0.1 }
+      ]
+    }
+  };
+}
 
 // ============================================
 // SECTION 2: STATE
 // ============================================
-let currentLang = 'en';
-let currentCategory = 'all';
-let searchQuery = '';
-let currentView = 'select';
-let macroChart = null;
-let completionChart = null;
-let currentTheme = 'light';
-let currentMealSlot = 'breakfast';
-let searchDebounceTimer = null;
-let apiIngredients = [];
+var currentLang = 'en';
+var currentCategory = 'all';
+var searchQuery = '';
+var currentView = 'select';
+var macroChart = null;
+var completionChart = null;
+var currentTheme = 'light';
+var currentMealSlot = 'breakfast';
+var searchDebounceTimer = null;
+var apiIngredients = [];
 
-let mealSlots = { breakfast: [], lunch: [], dinner: [], snacks: [] };
-let undoStack = [];
-let redoStack = [];
-const MAX_UNDO = 50;
-let selectedIngredients = mealSlots.breakfast;
+var mealSlots = { breakfast: [], lunch: [], dinner: [], snacks: [] };
+var undoStack = [];
+var redoStack = [];
+var MAX_UNDO = 50;
+var selectedIngredients = mealSlots.breakfast;
 
 // ============================================
 // SECTION 3: TOAST NOTIFICATIONS
@@ -300,9 +311,7 @@ function updatePersonalDV() {
   var tdee = Math.round(bmr * mult);
 
   dailyValues = {};
-  for (var key in baseDailyValues) {
-    dailyValues[key] = baseDailyValues[key];
-  }
+  for (var key in baseDailyValues) { dailyValues[key] = baseDailyValues[key]; }
   dailyValues.calories = tdee;
   dailyValues.protein = Math.round(weight * 0.8);
   dailyValues.carbs = Math.round(tdee * 0.55 / 4);
@@ -314,23 +323,16 @@ function updatePersonalDV() {
     methionine: 0.0104, phenylalanine: 0.025, threonine: 0.015,
     tryptophan: 0.004, valine: 0.026
   };
-  for (var k in aminoPerKg) {
-    dailyValues[k] = aminoPerKg[k] * weight;
-  }
+  for (var ak in aminoPerKg) { dailyValues[ak] = aminoPerKg[ak] * weight; }
 
   if (gender === 'male') {
-    dailyValues.iron = 8;
-    dailyValues.zinc = 11;
+    dailyValues.iron = 8; dailyValues.zinc = 11;
     dailyValues.magnesium = age > 30 ? 420 : 400;
   } else {
-    dailyValues.iron = age > 50 ? 8 : 18;
-    dailyValues.zinc = 8;
+    dailyValues.iron = age > 50 ? 8 : 18; dailyValues.zinc = 8;
     dailyValues.magnesium = age > 30 ? 320 : 310;
   }
-  if (age > 50) {
-    dailyValues.vitaminB6 = 1.7;
-    dailyValues.calcium = 1200;
-  }
+  if (age > 50) { dailyValues.vitaminB6 = 1.7; dailyValues.calcium = 1200; }
 
   localStorage.setItem('abbaya-personal', JSON.stringify({ gender: gender, age: age, weight: weight, activity: activity }));
   updateDashboard();
@@ -347,7 +349,7 @@ function loadPersonalPreferences() {
       document.getElementById('personalActivity').value = p.activity || 'moderate';
       updatePersonalDV();
     }
-  } catch (e) { /* ignore */ }
+  } catch (e) {}
 }
 
 // ============================================
@@ -360,9 +362,7 @@ function switchMealSlot(slot) {
   } else {
     selectedIngredients = mealSlots[slot];
   }
-  document.querySelectorAll('.meal-slot-btn').forEach(function(b) {
-    b.classList.remove('active');
-  });
+  document.querySelectorAll('.meal-slot-btn').forEach(function(b) { b.classList.remove('active'); });
   if (event && event.target) {
     var btn = event.target.closest('.meal-slot-btn');
     if (btn) btn.classList.add('active');
@@ -377,21 +377,18 @@ function getAllIngredients() {
     var slot = mealSlots[slots[s]];
     for (var i = 0; i < slot.length; i++) {
       var item = slot[i];
-      if (map[item.id]) {
-        map[item.id].serving += item.serving;
-      } else {
-        map[item.id] = { id: item.id, serving: item.serving };
-      }
+      if (map[item.id]) { map[item.id].serving += item.serving; }
+      else { map[item.id] = { id: item.id, serving: item.serving }; }
     }
   }
   return Object.values(map);
 }
 
 function updateSlotCounts() {
-  var slots = ['breakfast', 'lunch', 'dinner', 'snacks'];
-  for (var i = 0; i < slots.length; i++) {
-    var el = document.getElementById(slots[i] + 'Count');
-    if (el) el.textContent = mealSlots[slots[i]].length;
+  var slotNames = ['breakfast', 'lunch', 'dinner', 'snacks'];
+  for (var i = 0; i < slotNames.length; i++) {
+    var el = document.getElementById(slotNames[i] + 'Count');
+    if (el) el.textContent = mealSlots[slotNames[i]].length;
   }
 }
 
@@ -399,10 +396,7 @@ function loadPreset(presetId) {
   var preset = mealPresets[presetId];
   if (!preset) return;
   saveState();
-  if (currentMealSlot === 'all') {
-    currentMealSlot = 'breakfast';
-    selectedIngredients = mealSlots.breakfast;
-  }
+  if (currentMealSlot === 'all') { currentMealSlot = 'breakfast'; selectedIngredients = mealSlots.breakfast; }
   mealSlots[currentMealSlot] = preset.items.map(function(i) { return { id: i.id, serving: i.serving }; });
   selectedIngredients = mealSlots[currentMealSlot];
   refreshAll();
@@ -432,6 +426,7 @@ function setupCategoryPills() {
     });
   });
 }
+
 // ============================================
 // SECTION 11: SEARCH + API
 // ============================================
@@ -513,24 +508,13 @@ function addApiFood(fdcId, name) {
     .then(function(r) { return r.json(); })
     .then(function(data) {
       var n = parseUSDA(data);
-      var ing = {
-        id: 'api-' + fdcId,
-        name: name.substring(0, 50),
-        category: 'api',
-        emoji: '🔬',
-        serving: '100g',
-        isApi: true,
-        nutrients: n
-      };
+      var ing = { id: 'api-' + fdcId, name: name.substring(0, 50), category: 'api', emoji: '🔬', serving: '100g', isApi: true, nutrients: n };
       if (!ingredients.find(function(i) { return i.id === ing.id; })) {
         ingredients.push(ing);
         apiIngredients.push(ing);
       }
       saveState();
-      if (currentMealSlot === 'all') {
-        currentMealSlot = 'breakfast';
-        selectedIngredients = mealSlots.breakfast;
-      }
+      if (currentMealSlot === 'all') { currentMealSlot = 'breakfast'; selectedIngredients = mealSlots.breakfast; }
       selectedIngredients.push({ id: ing.id, serving: 1 });
       refreshAll();
       showToast('✅ ' + name + ' added', 'success');
@@ -557,8 +541,7 @@ function parseUSDA(data) {
     1215: 'methionine', 1217: 'phenylalanine', 1211: 'threonine',
     1210: 'tryptophan', 1219: 'valine',
     1106: 'vitaminA', 1162: 'vitaminC', 1185: 'vitaminK', 1175: 'vitaminB6',
-    1177: 'folate', 1109: 'vitaminE', 1165: 'thiamin', 1166: 'riboflavin',
-    1167: 'niacin',
+    1177: 'folate', 1109: 'vitaminE', 1165: 'thiamin', 1166: 'riboflavin', 1167: 'niacin',
     1087: 'calcium', 1089: 'iron', 1090: 'magnesium', 1095: 'zinc',
     1092: 'potassium', 1091: 'phosphorus', 1103: 'selenium', 1098: 'copper',
     1101: 'manganese', 1079: 'fiber', 1404: 'omega3', 1269: 'omega6'
@@ -581,52 +564,29 @@ function addOFFFood(code, name) {
     .then(function(data) {
       var nm = (data.product && data.product.nutriments) ? data.product.nutriments : {};
       var n = {
-        calories: nm['energy-kcal_100g'] || 0,
-        protein: nm.proteins_100g || 0,
-        carbs: nm.carbohydrates_100g || 0,
-        fat: nm.fat_100g || 0,
-        fiber: nm.fiber_100g || 0,
-        calcium: (nm.calcium_100g || 0) * 1000,
-        iron: (nm.iron_100g || 0) * 1000,
-        magnesium: (nm.magnesium_100g || 0) * 1000,
-        zinc: (nm.zinc_100g || 0) * 1000,
-        potassium: (nm.potassium_100g || 0) * 1000,
-        phosphorus: (nm.phosphorus_100g || 0) * 1000,
-        selenium: (nm.selenium_100g || 0) * 1e6,
-        copper: (nm.copper_100g || 0) * 1000,
+        calories: nm['energy-kcal_100g'] || 0, protein: nm.proteins_100g || 0,
+        carbs: nm.carbohydrates_100g || 0, fat: nm.fat_100g || 0, fiber: nm.fiber_100g || 0,
+        calcium: (nm.calcium_100g || 0) * 1000, iron: (nm.iron_100g || 0) * 1000,
+        magnesium: (nm.magnesium_100g || 0) * 1000, zinc: (nm.zinc_100g || 0) * 1000,
+        potassium: (nm.potassium_100g || 0) * 1000, phosphorus: (nm.phosphorus_100g || 0) * 1000,
+        selenium: (nm.selenium_100g || 0) * 1e6, copper: (nm.copper_100g || 0) * 1000,
         manganese: (nm.manganese_100g || 0) * 1000,
-        vitaminA: (nm['vitamin-a_100g'] || 0) * 1e6,
-        vitaminC: (nm['vitamin-c_100g'] || 0) * 1000,
-        vitaminE: (nm['vitamin-e_100g'] || 0) * 1000,
-        vitaminK: (nm['vitamin-k_100g'] || 0) * 1e6,
-        vitaminB6: (nm['vitamin-b6_100g'] || 0) * 1000,
-        folate: (nm.folates_100g || 0) * 1e6,
-        thiamin: (nm['vitamin-b1_100g'] || 0) * 1000,
-        riboflavin: (nm['vitamin-b2_100g'] || 0) * 1000,
+        vitaminA: (nm['vitamin-a_100g'] || 0) * 1e6, vitaminC: (nm['vitamin-c_100g'] || 0) * 1000,
+        vitaminE: (nm['vitamin-e_100g'] || 0) * 1000, vitaminK: (nm['vitamin-k_100g'] || 0) * 1e6,
+        vitaminB6: (nm['vitamin-b6_100g'] || 0) * 1000, folate: (nm.folates_100g || 0) * 1e6,
+        thiamin: (nm['vitamin-b1_100g'] || 0) * 1000, riboflavin: (nm['vitamin-b2_100g'] || 0) * 1000,
         niacin: (nm['vitamin-pp_100g'] || 0) * 1000,
-        omega3: nm['omega-3-fat_100g'] || 0,
-        omega6: nm['omega-6-fat_100g'] || 0,
+        omega3: nm['omega-3-fat_100g'] || 0, omega6: nm['omega-6-fat_100g'] || 0,
         histidine: 0, isoleucine: 0, leucine: 0, lysine: 0,
         methionine: 0, phenylalanine: 0, threonine: 0, tryptophan: 0, valine: 0
       };
-      var ing = {
-        id: 'off-' + code,
-        name: name.substring(0, 50),
-        category: 'api',
-        emoji: '🌍',
-        serving: '100g',
-        isApi: true,
-        nutrients: n
-      };
+      var ing = { id: 'off-' + code, name: name.substring(0, 50), category: 'api', emoji: '🌍', serving: '100g', isApi: true, nutrients: n };
       if (!ingredients.find(function(i) { return i.id === ing.id; })) {
         ingredients.push(ing);
         apiIngredients.push(ing);
       }
       saveState();
-      if (currentMealSlot === 'all') {
-        currentMealSlot = 'breakfast';
-        selectedIngredients = mealSlots.breakfast;
-      }
+      if (currentMealSlot === 'all') { currentMealSlot = 'breakfast'; selectedIngredients = mealSlots.breakfast; }
       selectedIngredients.push({ id: ing.id, serving: 1 });
       refreshAll();
       showToast('✅ ' + name + ' added', 'success');
@@ -647,7 +607,7 @@ function renderIngredients() {
   var filtered = ingredients.filter(function(ing) {
     var catMatch = currentCategory === 'all' || ing.category === currentCategory;
     var nameStr = getIngredientName(ing).toLowerCase();
-    var searchMatch = !searchQuery || nameStr.includes(searchQuery);
+    var searchMatch = !searchQuery || nameStr.indexOf(searchQuery) !== -1;
     return catMatch && searchMatch;
   });
 
@@ -674,19 +634,13 @@ function renderIngredients() {
 // ============================================
 function toggleIngredient(id) {
   saveState();
-  if (currentMealSlot === 'all') {
-    currentMealSlot = 'breakfast';
-    selectedIngredients = mealSlots.breakfast;
-  }
+  if (currentMealSlot === 'all') { currentMealSlot = 'breakfast'; selectedIngredients = mealSlots.breakfast; }
   var idx = -1;
   for (var i = 0; i < selectedIngredients.length; i++) {
     if (selectedIngredients[i].id === id) { idx = i; break; }
   }
-  if (idx > -1) {
-    selectedIngredients.splice(idx, 1);
-  } else {
-    selectedIngredients.push({ id: id, serving: 1 });
-  }
+  if (idx > -1) selectedIngredients.splice(idx, 1);
+  else selectedIngredients.push({ id: id, serving: 1 });
   refreshAll();
 }
 
@@ -725,23 +679,13 @@ function renderSelectedItems() {
 function updateServing(id, val) {
   var items = currentMealSlot === 'all' ? getAllSlotItems() : selectedIngredients;
   var item = items.find(function(s) { return s.id === id; });
-  if (item) {
-    item.serving = parseFloat(val);
-    renderSelectedItems();
-    updateDashboard();
-    updateMealBar();
-  }
+  if (item) { item.serving = parseFloat(val); renderSelectedItems(); updateDashboard(); updateMealBar(); }
 }
 
 function updateServingGrams(id, g) {
   var items = currentMealSlot === 'all' ? getAllSlotItems() : selectedIngredients;
   var item = items.find(function(s) { return s.id === id; });
-  if (item) {
-    item.serving = parseFloat(g) / 100;
-    renderSelectedItems();
-    updateDashboard();
-    updateMealBar();
-  }
+  if (item) { item.serving = parseFloat(g) / 100; renderSelectedItems(); updateDashboard(); updateMealBar(); }
 }
 
 function getAllSlotItems() {
@@ -749,20 +693,15 @@ function getAllSlotItems() {
   var slots = Object.keys(mealSlots);
   for (var i = 0; i < slots.length; i++) {
     var slot = mealSlots[slots[i]];
-    for (var j = 0; j < slot.length; j++) {
-      a.push(slot[j]);
-    }
+    for (var j = 0; j < slot.length; j++) { a.push(slot[j]); }
   }
   return a;
 }
 
 function clearAll() {
   saveState();
-  if (currentMealSlot === 'all') {
-    mealSlots = { breakfast: [], lunch: [], dinner: [], snacks: [] };
-  } else {
-    mealSlots[currentMealSlot] = [];
-  }
+  if (currentMealSlot === 'all') { mealSlots = { breakfast: [], lunch: [], dinner: [], snacks: [] }; }
+  else { mealSlots[currentMealSlot] = []; }
   selectedIngredients = currentMealSlot === 'all' ? [] : mealSlots[currentMealSlot];
   var searchInput = document.getElementById('ingredientSearch');
   if (searchInput) searchInput.value = '';
@@ -773,10 +712,7 @@ function clearAll() {
 
 function addTahini() {
   saveState();
-  if (currentMealSlot === 'all') {
-    currentMealSlot = 'breakfast';
-    selectedIngredients = mealSlots.breakfast;
-  }
+  if (currentMealSlot === 'all') { currentMealSlot = 'breakfast'; selectedIngredients = mealSlots.breakfast; }
   var hasTahini = selectedIngredients.some(function(s) { return s.id === 'tahini'; });
   if (!hasTahini) {
     selectedIngredients.push({ id: 'tahini', serving: 0.3 });
@@ -784,7 +720,6 @@ function addTahini() {
     showToast('⭐ Tahini added!', 'success');
   }
 }
-
 // ============================================
 // SECTION 14: CALCULATIONS
 // ============================================
@@ -807,9 +742,9 @@ function calculateTotals() {
     if (ing && ing.nutrients) {
       var keys = Object.keys(totals);
       for (var j = 0; j < keys.length; j++) {
-        var k = keys[j];
-        if (ing.nutrients[k] !== undefined) {
-          totals[k] += ing.nutrients[k] * sel.serving;
+        var ky = keys[j];
+        if (ing.nutrients[ky] !== undefined) {
+          totals[ky] += ing.nutrients[ky] * sel.serving;
         }
       }
     }
@@ -824,21 +759,14 @@ function updateDashboard() {
   var totals = calculateTotals();
   var items = currentMealSlot === 'all' ? getAllIngredients() : selectedIngredients;
 
-  var heroCalEl = document.getElementById('heroCalories');
-  var heroProEl = document.getElementById('heroProtein');
-  var heroItemsEl = document.getElementById('heroItems');
-  var totalCalEl = document.getElementById('totalCalories');
-  var totalCarbsEl = document.getElementById('totalCarbs');
-  var totalFatEl = document.getElementById('totalFat');
+  var el;
+  el = document.getElementById('heroCalories'); if (el) el.textContent = Math.round(totals.calories);
+  el = document.getElementById('heroProtein'); if (el) el.textContent = totals.protein.toFixed(1) + 'g';
+  el = document.getElementById('heroItems'); if (el) el.textContent = items.length;
+  el = document.getElementById('totalCalories'); if (el) el.textContent = Math.round(totals.calories);
+  el = document.getElementById('totalCarbs'); if (el) el.textContent = totals.carbs.toFixed(1) + 'g';
+  el = document.getElementById('totalFat'); if (el) el.textContent = totals.fat.toFixed(1) + 'g';
 
-  if (heroCalEl) heroCalEl.textContent = Math.round(totals.calories);
-  if (heroProEl) heroProEl.textContent = totals.protein.toFixed(1) + 'g';
-  if (heroItemsEl) heroItemsEl.textContent = items.length;
-  if (totalCalEl) totalCalEl.textContent = Math.round(totals.calories);
-  if (totalCarbsEl) totalCarbsEl.textContent = totals.carbs.toFixed(1) + 'g';
-  if (totalFatEl) totalFatEl.textContent = totals.fat.toFixed(1) + 'g';
-
-  // B12 warning
   var b12 = document.getElementById('b12Warning');
   if (b12) b12.style.display = items.length > 0 ? 'flex' : 'none';
 
@@ -873,16 +801,16 @@ function checkOverdoseWarnings(totals) {
 
   var keys = Object.keys(upperLimits);
   for (var i = 0; i < keys.length; i++) {
-    var k = keys[i];
-    var v = totals[k] || 0;
-    var limit = upperLimits[k];
+    var ky = keys[i];
+    var v = totals[ky] || 0;
+    var limit = upperLimits[ky];
     if (v > limit) {
       var pct = Math.round(v / limit * 100);
       var danger = v > limit * 1.5;
       html += '<div class="warning-card ' + (danger ? 'danger' : '') + '">' +
         '<span class="warning-icon">' + (danger ? '🚨' : '⚠️') + '</span>' +
-        '<div class="warning-text"><strong>' + t.overdosePrefix + ' ' + names[k] + ': ' + pct + '% of upper limit</strong><br>' +
-        (warns[k] || t.overdoseSuffix) + '</div></div>';
+        '<div class="warning-text"><strong>' + t.overdosePrefix + ' ' + names[ky] + ': ' + pct + '% of upper limit</strong><br>' +
+        (warns[ky] || t.overdoseSuffix) + '</div></div>';
     }
   }
   c.innerHTML = html;
@@ -893,13 +821,13 @@ function checkOverdoseWarnings(totals) {
 // ============================================
 function updateScore(totals) {
   var excludeKeys = ['calories', 'carbs', 'fat', 'protein'];
-  var keys = Object.keys(dailyValues).filter(function(k) {
-    return excludeKeys.indexOf(k) === -1;
+  var keys = Object.keys(dailyValues).filter(function(ky) {
+    return excludeKeys.indexOf(ky) === -1;
   });
   var total = 0;
   for (var i = 0; i < keys.length; i++) {
-    var k = keys[i];
-    total += Math.min((totals[k] / dailyValues[k]) * 100, 100);
+    var ky = keys[i];
+    total += Math.min((totals[ky] / dailyValues[ky]) * 100, 100);
   }
   var score = Math.round(total / keys.length);
 
@@ -937,16 +865,16 @@ function updateNutrientSection(type, totals, keys, defaultUnit) {
   var allMet = true;
   var someMet = false;
 
-  bars.innerHTML = keys.map(function(k) {
-    var v = totals[k] || 0;
-    var dv = dailyValues[k];
+  bars.innerHTML = keys.map(function(ky) {
+    var v = totals[ky] || 0;
+    var dv = dailyValues[ky];
     if (!dv) return '';
 
     var pct = Math.min(v / dv * 100, 100);
     var dpct = Math.round(v / dv * 100);
-    var ul = upperLimits[k];
+    var ul = upperLimits[ky];
     var over = ul && v > ul;
-    var unit = defaultUnit || unitMap[k] || 'mg';
+    var unit = defaultUnit || unitMap[ky] || 'mg';
 
     if (pct >= 100) someMet = true;
     else allMet = false;
@@ -958,23 +886,16 @@ function updateNutrientSection(type, totals, keys, defaultUnit) {
 
     return '<div class="nutrient-bar">' +
       '<div class="bar-header">' +
-      '<span class="bar-name">' + (names[k] || k) + (over ? ' <span class="overdose-icon">⚠️</span>' : '') + '</span>' +
+      '<span class="bar-name">' + (names[ky] || ky) + (over ? ' <span class="overdose-icon">⚠️</span>' : '') + '</span>' +
       '<span class="bar-value">' + v.toFixed(2) + unit + ' (' + dpct + '%)</span>' +
       '</div>' +
       '<div class="bar-track"><div class="bar-fill ' + cls + '" style="width:' + pct + '%"></div></div>' +
       '</div>';
   }).join('');
 
-  if (allMet) {
-    status.className = 'status good';
-    status.innerHTML = '&#10003;';
-  } else if (someMet) {
-    status.className = 'status warning';
-    status.innerHTML = '!';
-  } else {
-    status.className = 'status bad';
-    status.innerHTML = '!';
-  }
+  if (allMet) { status.className = 'status good'; status.innerHTML = '&#10003;'; }
+  else if (someMet) { status.className = 'status warning'; status.innerHTML = '!'; }
+  else { status.className = 'status bad'; status.innerHTML = '!'; }
 }
 
 function toggleSection(id) {
@@ -1022,11 +943,8 @@ function updateTahiniPromo() {
   if (!p) return;
   var items = currentMealSlot === 'all' ? getAllIngredients() : selectedIngredients;
   var hasTahini = items.some(function(s) { return s.id === 'tahini'; });
-  if (items.length > 0 && !hasTahini) {
-    p.classList.add('visible');
-  } else {
-    p.classList.remove('visible');
-  }
+  if (items.length > 0 && !hasTahini) { p.classList.add('visible'); }
+  else { p.classList.remove('visible'); }
 }
 
 // ============================================
@@ -1043,21 +961,11 @@ function initCharts() {
     type: 'doughnut',
     data: {
       labels: ['Protein', 'Carbs', 'Fat'],
-      datasets: [{
-        data: [0, 0, 0],
-        backgroundColor: ['#4CAF50', '#C4A35A', '#5C4033'],
-        borderWidth: 0
-      }]
+      datasets: [{ data: [0, 0, 0], backgroundColor: ['#4CAF50', '#C4A35A', '#5C4033'], borderWidth: 0 }]
     },
     options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: {
-          position: 'bottom',
-          labels: { font: { size: 10 }, padding: 10, color: tc }
-        }
-      },
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { position: 'bottom', labels: { font: { size: 10 }, padding: 10, color: tc } } },
       cutout: '60%'
     }
   });
@@ -1069,19 +977,16 @@ function initCharts() {
       datasets: [{
         data: [0, 0, 0, 0, 0],
         backgroundColor: 'rgba(196,163,90,0.3)',
-        borderColor: '#C4A35A',
-        borderWidth: 2,
+        borderColor: '#C4A35A', borderWidth: 2,
         pointBackgroundColor: '#C4A35A'
       }]
     },
     options: {
-      responsive: true,
-      maintainAspectRatio: false,
+      responsive: true, maintainAspectRatio: false,
       plugins: { legend: { display: false } },
       scales: {
         r: {
-          beginAtZero: true,
-          max: 100,
+          beginAtZero: true, max: 100,
           ticks: { display: false },
           grid: { color: 'rgba(196,163,90,0.2)' },
           angleLines: { color: 'rgba(196,163,90,0.2)' },
@@ -1095,41 +1000,27 @@ function initCharts() {
 function updateCharts(totals) {
   if (!macroChart || !completionChart) return;
 
-  macroChart.data.datasets[0].data = [
-    totals.protein * 4,
-    totals.carbs * 4,
-    totals.fat * 9
-  ];
-  macroChart.data.labels = currentLang === 'pt'
-    ? ['Proteína', 'Hidratos', 'Gordura']
-    : ['Protein', 'Carbs', 'Fat'];
+  macroChart.data.datasets[0].data = [totals.protein * 4, totals.carbs * 4, totals.fat * 9];
+  macroChart.data.labels = currentLang === 'pt' ? ['Proteína', 'Hidratos', 'Gordura'] : ['Protein', 'Carbs', 'Fat'];
   macroChart.update();
 
   var ps = Math.min(totals.protein / dailyValues.protein * 100, 100);
 
   var vitKeys = ['vitaminA', 'vitaminC', 'vitaminE', 'vitaminK', 'vitaminB6', 'folate'];
   var vs = 0;
-  for (var i = 0; i < vitKeys.length; i++) {
-    vs += Math.min(totals[vitKeys[i]] / dailyValues[vitKeys[i]] * 100, 100);
-  }
+  for (var i = 0; i < vitKeys.length; i++) { vs += Math.min(totals[vitKeys[i]] / dailyValues[vitKeys[i]] * 100, 100); }
   vs = vs / vitKeys.length;
 
   var minKeys = ['calcium', 'iron', 'magnesium', 'zinc'];
   var ms = 0;
-  for (var j = 0; j < minKeys.length; j++) {
-    ms += Math.min(totals[minKeys[j]] / dailyValues[minKeys[j]] * 100, 100);
-  }
+  for (var j = 0; j < minKeys.length; j++) { ms += Math.min(totals[minKeys[j]] / dailyValues[minKeys[j]] * 100, 100); }
   ms = ms / minKeys.length;
 
   var fs = Math.min(totals.omega3 / dailyValues.omega3 * 100, 100);
   var fbs = Math.min(totals.fiber / dailyValues.fiber * 100, 100);
 
-  completionChart.data.datasets[0].data = [
-    Math.round(ps), Math.round(vs), Math.round(ms), Math.round(fs), Math.round(fbs)
-  ];
-  completionChart.data.labels = currentLang === 'pt'
-    ? ['Proteína', 'Vitaminas', 'Minerais', 'Gorduras', 'Fibra']
-    : ['Protein', 'Vitamins', 'Minerals', 'Fats', 'Fiber'];
+  completionChart.data.datasets[0].data = [Math.round(ps), Math.round(vs), Math.round(ms), Math.round(fs), Math.round(fbs)];
+  completionChart.data.labels = currentLang === 'pt' ? ['Proteína', 'Vitaminas', 'Minerais', 'Gorduras', 'Fibra'] : ['Protein', 'Vitamins', 'Minerals', 'Fats', 'Fiber'];
   completionChart.update();
 }
 
@@ -1188,16 +1079,11 @@ function updateComparison() {
   var names = nutrientNames[currentLang];
 
   var nl = [
-    { k: 'calories', u: 'kcal', lower: true },
-    { k: 'protein', u: 'g', lower: false },
-    { k: 'calcium', u: 'mg', lower: false },
-    { k: 'iron', u: 'mg', lower: false },
-    { k: 'zinc', u: 'mg', lower: false },
-    { k: 'magnesium', u: 'mg', lower: false },
-    { k: 'fiber', u: 'g', lower: false },
-    { k: 'omega3', u: 'g', lower: false },
-    { k: 'selenium', u: 'mcg', lower: false },
-    { k: 'phosphorus', u: 'mg', lower: false }
+    { k: 'calories', u: 'kcal', lower: true }, { k: 'protein', u: 'g', lower: false },
+    { k: 'calcium', u: 'mg', lower: false }, { k: 'iron', u: 'mg', lower: false },
+    { k: 'zinc', u: 'mg', lower: false }, { k: 'magnesium', u: 'mg', lower: false },
+    { k: 'fiber', u: 'g', lower: false }, { k: 'omega3', u: 'g', lower: false },
+    { k: 'selenium', u: 'mcg', lower: false }, { k: 'phosphorus', u: 'mg', lower: false }
   ];
 
   var rows = nl.map(function(n) {
@@ -1224,23 +1110,14 @@ function saveMealFromModal() {
   var name = (input && input.value ? input.value.trim() : '') || ('Meal ' + new Date().toLocaleDateString());
   var items = currentMealSlot === 'all' ? getAllIngredients() : selectedIngredients;
 
-  if (!items.length) {
-    showToast('⚠️ No ingredients', 'warning');
-    return;
-  }
+  if (!items.length) { showToast('⚠️ No ingredients', 'warning'); return; }
 
   var totals = calculateTotals();
   var meal = {
-    id: Date.now().toString(),
-    name: name,
-    slot: currentMealSlot,
+    id: Date.now().toString(), name: name, slot: currentMealSlot,
     date: new Date().toISOString(),
     items: JSON.parse(JSON.stringify(items)),
-    summary: {
-      calories: Math.round(totals.calories),
-      protein: totals.protein.toFixed(1),
-      ingredients: items.length
-    }
+    summary: { calories: Math.round(totals.calories), protein: totals.protein.toFixed(1), ingredients: items.length }
   };
 
   var h = getMealHistory();
@@ -1255,21 +1132,15 @@ function saveMealFromModal() {
 }
 
 function getMealHistory() {
-  try {
-    return JSON.parse(localStorage.getItem('abbaya-meals')) || [];
-  } catch (e) {
-    return [];
-  }
+  try { return JSON.parse(localStorage.getItem('abbaya-meals')) || []; }
+  catch (e) { return []; }
 }
 
 function loadMeal(id) {
   var meal = getMealHistory().find(function(m) { return m.id === id; });
   if (!meal) return;
   saveState();
-  if (currentMealSlot === 'all') {
-    currentMealSlot = 'breakfast';
-    selectedIngredients = mealSlots.breakfast;
-  }
+  if (currentMealSlot === 'all') { currentMealSlot = 'breakfast'; selectedIngredients = mealSlots.breakfast; }
   mealSlots[currentMealSlot] = JSON.parse(JSON.stringify(meal.items));
   selectedIngredients = mealSlots[currentMealSlot];
   refreshAll();
@@ -1303,29 +1174,19 @@ function renderMealHistory() {
   var h = getMealHistory();
   var t = translations[currentLang].history;
 
-  if (!h.length) {
-    c.innerHTML = '<div class="empty-state">' + t.empty + '</div>';
-    return;
-  }
+  if (!h.length) { c.innerHTML = '<div class="empty-state">' + t.empty + '</div>'; return; }
 
   var locale = currentLang === 'pt' ? 'pt-PT' : 'en-US';
   c.innerHTML = h.slice(0, 10).map(function(meal) {
-    var d = new Date(meal.date).toLocaleDateString(locale, {
-      month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
-    });
+    var d = new Date(meal.date).toLocaleDateString(locale, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
     var emojis = meal.items.map(function(i) {
       var ing = ingredients.find(function(x) { return x.id === i.id; });
       return ing ? ing.emoji : '🔬';
     }).join(' ');
 
     return '<div class="history-card">' +
-      '<div class="history-card-header">' +
-      '<span class="history-card-title">' + meal.name + '</span>' +
-      '<span class="history-card-date">' + d + '</span></div>' +
-      '<div class="history-card-stats">' +
-      '<span>🔥 ' + meal.summary.calories + ' kcal</span>' +
-      '<span>💪 ' + meal.summary.protein + 'g</span>' +
-      '<span>🥗 ' + meal.summary.ingredients + '</span></div>' +
+      '<div class="history-card-header"><span class="history-card-title">' + meal.name + '</span><span class="history-card-date">' + d + '</span></div>' +
+      '<div class="history-card-stats"><span>🔥 ' + meal.summary.calories + ' kcal</span><span>💪 ' + meal.summary.protein + 'g</span><span>🥗 ' + meal.summary.ingredients + '</span></div>' +
       '<div class="history-card-ingredients">' + emojis + '</div>' +
       '<div class="history-card-actions">' +
       '<button class="history-btn" onclick="loadMeal(\'' + meal.id + '\')">' + t.load + '</button>' +
@@ -1340,10 +1201,7 @@ function renderMealHistory() {
 // ============================================
 function shareMeal() {
   var items = currentMealSlot === 'all' ? getAllIngredients() : selectedIngredients;
-  if (!items.length) {
-    showToast('⚠️ No ingredients', 'warning');
-    return;
-  }
+  if (!items.length) { showToast('⚠️ No ingredients', 'warning'); return; }
   openModal('shareModal');
 }
 
@@ -1357,11 +1215,8 @@ function copyShareUrl() {
   var input = document.getElementById('shareUrlInput');
   if (!input) return;
   input.select();
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(input.value);
-  } else {
-    document.execCommand('copy');
-  }
+  if (navigator.clipboard) { navigator.clipboard.writeText(input.value); }
+  else { document.execCommand('copy'); }
   showToast(translations[currentLang].toast.copied, 'success');
   closeModal('shareModal');
 }
@@ -1388,7 +1243,7 @@ function loadSharedMeal() {
       showToast('🔗 Shared meal loaded!', 'success');
       history.replaceState({}, '', location.pathname);
     }
-  } catch (e) { /* ignore bad data */ }
+  } catch (e) {}
 }
 
 function exportImage() {
@@ -1420,29 +1275,15 @@ function setupKeyboardShortcuts() {
   document.addEventListener('keydown', function(e) {
     var isCtrl = e.ctrlKey || e.metaKey;
 
-    if (isCtrl && e.key === 'z' && !e.shiftKey) {
-      e.preventDefault();
-      undo();
-    }
-    if (isCtrl && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) {
-      e.preventDefault();
-      redo();
-    }
-    if (isCtrl && e.key === 's') {
-      e.preventDefault();
-      openModal('saveMealModal');
-    }
+    if (isCtrl && e.key === 'z' && !e.shiftKey) { e.preventDefault(); undo(); }
+    if (isCtrl && (e.key === 'y' || (e.key === 'z' && e.shiftKey))) { e.preventDefault(); redo(); }
+    if (isCtrl && e.key === 's') { e.preventDefault(); openModal('saveMealModal'); }
     if (e.key === '/' && !isCtrl) {
       var searchEl = document.getElementById('ingredientSearch');
-      if (document.activeElement !== searchEl) {
-        e.preventDefault();
-        if (searchEl) searchEl.focus();
-      }
+      if (document.activeElement !== searchEl) { e.preventDefault(); if (searchEl) searchEl.focus(); }
     }
     if (e.key === 'Escape') {
-      document.querySelectorAll('.modal-overlay.visible').forEach(function(m) {
-        m.classList.remove('visible');
-      });
+      document.querySelectorAll('.modal-overlay.visible').forEach(function(m) { m.classList.remove('visible'); });
       hideApiResults();
     }
   });
@@ -1458,7 +1299,7 @@ function saveSession() {
       currentMealSlot: currentMealSlot,
       apiIngredients: apiIngredients
     }));
-  } catch (e) { /* storage full or unavailable */ }
+  } catch (e) {}
 }
 
 function loadSession() {
@@ -1467,11 +1308,8 @@ function loadSession() {
     if (s && s.mealSlots) {
       mealSlots = s.mealSlots;
       currentMealSlot = s.currentMealSlot || 'breakfast';
-      if (currentMealSlot === 'all') {
-        selectedIngredients = getAllIngredients();
-      } else {
-        selectedIngredients = mealSlots[currentMealSlot];
-      }
+      if (currentMealSlot === 'all') { selectedIngredients = getAllIngredients(); }
+      else { selectedIngredients = mealSlots[currentMealSlot]; }
     }
     if (s && s.apiIngredients) {
       for (var i = 0; i < s.apiIngredients.length; i++) {
@@ -1482,22 +1320,16 @@ function loadSession() {
         }
       }
     }
-  } catch (e) { /* ignore */ }
+  } catch (e) {}
 }
 
-// Auto-save every 30 seconds
 setInterval(saveSession, 30000);
 window.addEventListener('beforeunload', saveSession);
 
-// Close API results & modals on outside click
 document.addEventListener('click', function(e) {
   var searchBox = document.querySelector('.search-box');
-  if (searchBox && !searchBox.contains(e.target)) {
-    hideApiResults();
-  }
-  if (e.target.classList.contains('modal-overlay')) {
-    e.target.classList.remove('visible');
-  }
+  if (searchBox && !searchBox.contains(e.target)) { hideApiResults(); }
+  if (e.target.classList.contains('modal-overlay')) { e.target.classList.remove('visible'); }
 });
 
 // ============================================
@@ -1542,7 +1374,6 @@ function init() {
   loadSharedMeal();
   updateUndoRedoButtons();
 
-  // Activate correct meal slot button on load
   document.querySelectorAll('.meal-slot-btn').forEach(function(btn) {
     var onclickAttr = btn.getAttribute('onclick') || '';
     if (onclickAttr.indexOf(currentMealSlot) !== -1) {
