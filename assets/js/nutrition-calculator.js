@@ -13,7 +13,7 @@
 // ================================================================
 
 var API_CONFIG = {
-  USDA_API_KEY: 'DEMO_KEY',
+  USDA_API_KEY: 'o28CUod3jK4kfUYf9dcKOJFObZJs21dLxYut51vd',
   USDA_BASE: 'https://api.nal.usda.gov/fdc/v1',
   OFF_BASE: 'https://world.openfoodfacts.org/api/v2'
 };
