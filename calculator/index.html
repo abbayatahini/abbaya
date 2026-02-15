@@ -2781,9 +2781,9 @@ var baseDailyValues, upperLimits, upperLimitWarnings, nutrientNames, mealPresets
     }
   };
 
-  // Helper to click and search
+   // Helper to click and search (Strong Version)
   function triggerSearch(itemName) {
-    // 1. Remove emojis to get clean text (e.g. "Spinach 🍃" -> "Spinach")
+    // 1. Clean the name
     var cleanName = itemName.replace(/([\u2700-\u27BF]|[\uE000-\uF8FF]|\uD83C[\uDC00-\uDFFF]|\uD83D[\uDC00-\uDFFF]|[\u2011-\u26FF]|\uD83E[\uDD10-\uDDFF])/g, '').trim();
     
     // 2. Find Search Input
@@ -2791,10 +2791,22 @@ var baseDailyValues, upperLimits, upperLimitWarnings, nutrientNames, mealPresets
     if(input) {
        input.value = cleanName;
        input.focus();
-       // Trigger the search logic
-       var event = new Event('input', { bubbles: true });
-       input.dispatchEvent(event);
-       // Scroll user to the search box
+       
+       // 3. Force the Search to Run
+       // We fire all standard events to make sure the app hears us
+       input.dispatchEvent(new Event('input', { bubbles: true }));
+       input.dispatchEvent(new Event('change', { bubbles: true }));
+       
+       // Simulate pressing "Enter"
+       var enterEvent = new KeyboardEvent('keyup', {
+          key: 'Enter',
+          code: 'Enter',
+          keyCode: 13,
+          bubbles: true
+       });
+       input.dispatchEvent(enterEvent);
+
+       // 4. Scroll to it
        input.scrollIntoView({behavior: 'smooth', block: 'center'});
     }
   }
