@@ -1688,6 +1688,28 @@
       .charts-grid { grid-template-columns: 1fr; }
       .personalization-bar { flex-direction: column; align-items: stretch; }
     }
+    /* --- SMART TIP BOX --- */
+#smart-tip-box {
+  background: linear-gradient(135deg, #fff8e1 0%, #ffffff 100%);
+  border-left: 5px solid #C4A35A;
+  padding: 15px;
+  margin: 20px 0;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(196, 163, 90, 0.15);
+  display: none; /* Hidden by default */
+  animation: slideInDown 0.5s ease-out;
+}
+
+.tip-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.tip-icon { font-size: 24px; }
+.tip-text { font-size: 14px; color: #5d4037; font-weight: 500; }
+.tip-bold { font-weight: 800; color: #C4A35A; }
+    
   </style>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
@@ -1859,7 +1881,15 @@
                   <button class="preset-btn" onclick="loadPreset('asian-bowl')" role="listitem">🍜 Asian Bowl</button>
                 </div>
               </div>
-
+<!-- Smart Nutrient Tip -->
+<div id="smart-tip-box">
+  <div class="tip-content">
+    <span class="tip-icon" id="tip-icon">💡</span>
+    <span class="tip-text" id="tip-text">
+      Loading smart tips...
+    </span>
+  </div>
+</div>
               <!-- Search with API -->
               <div class="search-box">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
@@ -2540,39 +2570,72 @@ var baseDailyValues, upperLimits, upperLimitWarnings, nutrientNames, mealPresets
 </div>
 
 <script>
-  // 1. The Confetti Function
+  // ==========================================
+  // 1. CONFETTI CELEBRATION
+  // ==========================================
   function celebrateMeal() {
-    // Scroll to top to see the result
     window.scrollTo({top: 0, behavior: 'smooth'});
-    
-    // Fire Confetti!
     var duration = 3 * 1000;
     var animationEnd = Date.now() + duration;
     var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 10000 };
 
-    function randomInRange(min, max) {
-      return Math.random() * (max - min) + min;
-    }
+    function randomInRange(min, max) { return Math.random() * (max - min) + min; }
 
     var interval = setInterval(function() {
       var timeLeft = animationEnd - Date.now();
-
-      if (timeLeft <= 0) {
-        return clearInterval(interval);
-      }
-
+      if (timeLeft <= 0) return clearInterval(interval);
       var particleCount = 50 * (timeLeft / duration);
-      // Since particles fall down, start a bit higher than random
       confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
       confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
     }, 250);
   }
 
-  // 2. Simple Sync Script (Keeps numbers updated)
+  // ==========================================
+  // 2. SMART NUTRITIONIST LOGIC
+  // ==========================================
+  var tips = [
+    { nutrient: 'protein', threshold: 15, icon: '💪', msg: 'Low on <b class="tip-bold">Protein</b>? Try adding <b class="tip-bold">Tofu, Lentils, or Seitan</b>.' },
+    { nutrient: 'iron', threshold: 5, icon: '🥬', msg: 'Need <b class="tip-bold">Iron</b>? Add <b class="tip-bold">Spinach, Chickpeas, or Pumpkin Seeds</b>.' },
+    { nutrient: 'calcium', threshold: 300, icon: '🦴', msg: 'Boost <b class="tip-bold">Calcium</b> with <b class="tip-bold">Kale, Almonds, or Chia Seeds</b>.' },
+    { nutrient: 'omega3', threshold: 1, icon: '🧠', msg: 'For <b class="tip-bold">Omega-3s</b>, try <b class="tip-bold">Walnuts, Flaxseeds, or Hemp Hearts</b>.' }
+  ];
+
+  function updateSmartTip(vals) {
+    var box = document.getElementById('smart-tip-box');
+    var text = document.getElementById('tip-text');
+    var icon = document.getElementById('tip-icon');
+    
+    // Find the first nutrient that is below the threshold
+    var activeTip = null;
+    
+    for (var i = 0; i < tips.length; i++) {
+      var t = tips[i];
+      if ((vals[t.nutrient] || 0) < t.threshold) {
+        activeTip = t;
+        break; 
+      }
+    }
+
+    if (activeTip) {
+      box.style.display = 'block'; 
+      text.innerHTML = activeTip.msg;
+      icon.innerText = activeTip.icon;
+    } else {
+      box.style.display = 'none'; 
+    }
+  }
+
+  // ==========================================
+  // 3. MASTER SYNC (Runs every 1 second)
+  // ==========================================
   setInterval(function() {
     if (typeof dailyValues !== 'undefined' && dailyValues.calories) {
+       // Update Sticky Bar
        document.getElementById('sticky-cal-val').innerText = Math.round(dailyValues.calories || 0);
        document.getElementById('sticky-pro-val').innerText = Math.round(dailyValues.protein || 0) + 'g';
+       
+       // Update Smart Tip
+       updateSmartTip(dailyValues);
     }
   }, 1000);
 </script>
