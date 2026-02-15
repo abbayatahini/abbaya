@@ -1706,6 +1706,56 @@
   gap: 12px;
 }
 
+/* --- MASSIVE SEASONAL HARVEST WIDGET --- */
+#harvest-widget {
+  background: #fdfbf7;
+  border: 1px solid #e0e0e0;
+  border-left: 5px solid #4CAF50;
+  border-radius: 8px;
+  padding: 20px;
+  margin: 20px 0;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  display: none; /* Hidden until location found */
+  animation: fadeIn 0.8s;
+}
+
+.harvest-header {
+  display: flex; justify-content: space-between; align-items: center;
+  margin-bottom: 15px; border-bottom: 1px solid #eee; padding-bottom: 10px;
+}
+.harvest-title { font-size: 16px; font-weight: 700; color: #2E7D32; text-transform: uppercase; letter-spacing: 1px; }
+.harvest-location { font-size: 12px; color: #888; font-style: italic; }
+
+.harvest-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.harvest-col h4 { 
+  font-size: 14px; color: #555; margin-bottom: 8px; font-weight: 800; 
+  text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #eee; display: inline-block;
+}
+
+/* Scrollable List for lots of data */
+.harvest-list { 
+  list-style: none; padding: 0; margin: 0; 
+  max-height: 200px; overflow-y: auto; /* Scroll if too long */
+}
+
+.harvest-list li { 
+  font-size: 13px; color: #444; margin-bottom: 6px; 
+  display: flex; align-items: center; gap: 8px;
+  border-bottom: 1px dashed #eee; padding-bottom: 4px;
+}
+
+/* Custom Scrollbar to look nice */
+.harvest-list::-webkit-scrollbar { width: 4px; }
+.harvest-list::-webkit-scrollbar-thumb { background: #ccc; border-radius: 4px; }
+
+.tag-wild { background: #E8F5E9; color: #2E7D32; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; text-transform: uppercase; }
+.tag-fruit { background: #FFF3E0; color: #E65100; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; }
+.tag-veg { background: #E0F2F1; color: #00695C; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: bold; }
 .tip-icon { font-size: 24px; }
 .tip-text { font-size: 14px; color: #5d4037; font-weight: 500; }
 .tip-bold { font-weight: 800; color: #C4A35A; }
@@ -1869,6 +1919,25 @@
 
             <!-- Select View -->
             <div id="selectView" role="tabpanel">
+
+<!-- Seasonal Harvest Widget -->
+<div id="harvest-widget">
+  <div class="harvest-header">
+    <span class="harvest-title">🌱 In Season Now</span>
+    <span id="harvest-season-name" class="harvest-location">Detecting Location...</span>
+  </div>
+  
+  <div class="harvest-grid">
+    <div class="harvest-col">
+      <h4>🛒 Best to Buy</h4>
+      <ul id="market-list" class="harvest-list"></ul>
+    </div>
+    <div class="harvest-col">
+      <h4>🌲 Wild Forage</h4>
+      <ul id="forage-list" class="harvest-list"></ul>
+    </div>
+  </div>
+</div>
               
               <!-- Meal Presets -->
               <div class="presets-section">
@@ -2638,7 +2707,134 @@ var baseDailyValues, upperLimits, upperLimitWarnings, nutrientNames, mealPresets
        updateSmartTip(dailyValues);
     }
   }, 1000);
-</script>
+
+    // ==========================================
+  // 5. MASSIVE SEASONAL HARVEST DATABASE
+  // ==========================================
+  var harvestDB = {
+    spring: {
+      buy: [
+        { name: 'Asparagus 🎋', type: 'veg' }, { name: 'Peas (Sugar Snap) 🟢', type: 'veg' },
+        { name: 'Spinach 🍃', type: 'veg' }, { name: 'Strawberries 🍓', type: 'fruit' },
+        { name: 'Radishes 🔴', type: 'veg' }, { name: 'Artichokes 🥬', type: 'veg' },
+        { name: 'Rhubarb 🥧', type: 'veg' }, { name: 'Lettuce & Greens 🥗', type: 'veg' },
+        { name: 'Apricots 🍑', type: 'fruit' }, { name: 'Mint 🌿', type: 'veg' },
+        { name: 'New Potatoes 🥔', type: 'veg' }, { name: 'Morel Mushrooms 🍄', type: 'veg' }
+      ],
+      forage: [
+        'Dandelion Greens 🌼', 'Wild Garlic / Ramps 🧄', 'Nettle (Tea/Soup) 🌿', 
+        'Fiddlehead Ferns 🌀', 'Chickweed ☘️', 'Violet Flowers 🌸', 
+        'Garlic Mustard 🌿', 'Wild Asparagus 🎋', 'Spruce Tips 🌲'
+      ]
+    },
+    summer: {
+      buy: [
+        { name: 'Tomatoes 🍅', type: 'fruit' }, { name: 'Zucchini / Squash 🥒', type: 'veg' },
+        { name: 'Bell Peppers 🌶️', type: 'veg' }, { name: 'Blueberries 🫐', type: 'fruit' },
+        { name: 'Watermelon 🍉', type: 'fruit' }, { name: 'Corn on Cob 🌽', type: 'veg' },
+        { name: 'Peaches & Nectarines 🍑', type: 'fruit' }, { name: 'Plums 🟣', type: 'fruit' },
+        { name: 'Eggplant 🍆', type: 'veg' }, { name: 'Green Beans 🟢', type: 'veg' },
+        { name: 'Cherries 🍒', type: 'fruit' }, { name: 'Cucumber 🥒', type: 'veg' },
+        { name: 'Basil & Herbs 🌿', type: 'veg' }, { name: 'Raspberries 🍇', type: 'fruit' }
+      ],
+      forage: [
+        'Blackberries (Bramble) 🍇', 'Elderflowers 🌸', 'Chanterelle Mushrooms 🍄', 
+        'Wild Mint 🍃', 'Purslane 🌿', 'Red Clover 🌸', 
+        'Wild Strawberries 🍓', 'Mulberries 🟣', 'Milkweed Pods 🌿'
+      ]
+    },
+    autumn: {
+      buy: [
+        { name: 'Pumpkins 🎃', type: 'veg' }, { name: 'Apples 🍎', type: 'fruit' },
+        { name: 'Sweet Potato 🍠', type: 'veg' }, { name: 'Grapes 🍇', type: 'fruit' },
+        { name: 'Butternut Squash 🥣', type: 'veg' }, { name: 'Brussels Sprouts 🥬', type: 'veg' },
+        { name: 'Pears 🍐', type: 'fruit' }, { name: 'Cranberries 🔴', type: 'fruit' },
+        { name: 'Figs 🟣', type: 'fruit' }, { name: 'Mushrooms 🍄', type: 'veg' },
+        { name: 'Cauliflower 🥦', type: 'veg' }, { name: 'Parsnips 🥕', type: 'veg' }
+      ],
+      forage: [
+        'Chestnuts 🌰', 'Walnuts / Pecans 🥜', 'Porcini Mushrooms 🍄', 
+        'Rose Hips 🌹', 'Hazelnuts 🌰', 'Crabapples 🍎', 
+        'Wild Grapes 🍇', 'Acorns (Processed) 🌰', 'Hen of the Woods 🍄'
+      ]
+    },
+    winter: {
+      buy: [
+        { name: 'Kale / Collards 🥬', type: 'veg' }, { name: 'Oranges / Citrus 🍊', type: 'fruit' },
+        { name: 'Carrots & Beets 🥕', type: 'veg' }, { name: 'Cabbage 🟢', type: 'veg' },
+        { name: 'Pomegranates 🔴', type: 'fruit' }, { name: 'Leeks 🧅', type: 'veg' },
+        { name: 'Grapefruit 🟡', type: 'fruit' }, { name: 'Turnips ⚪', type: 'veg' },
+        { name: 'Kiwi 🥝', type: 'fruit' }, { name: 'Onions & Garlic 🧄', type: 'veg' }
+      ],
+      forage: [
+        'Winter Cress 🌿', 'Pine Needles (Tea) 🌲', 'Birch Bark 🪵', 
+        'Oyster Mushrooms 🍄', 'Rose Hips (Dried) 🌹', 'Maple Sap (Late Winter) 🍁', 
+        'Chaga Mushroom 🍄', 'Usnea (Lichen) 🌿'
+      ]
+    }
+  };
+
+  function initHarvestEngine() {
+    if (!navigator.geolocation) return;
+
+    navigator.geolocation.getCurrentPosition(function(position) {
+      // 1. Get Location & Date
+      var lat = position.coords.latitude;
+      var month = new Date().getMonth(); // 0 = Jan, 11 = Dec
+      
+      // 2. Determine Season (Flip for Southern Hemisphere)
+      var isNorth = lat > 0;
+      var season = '';
+      
+      if (isNorth) {
+        if (month >= 2 && month <= 4) season = 'spring';
+        else if (month >= 5 && month <= 7) season = 'summer';
+        else if (month >= 8 && month <= 10) season = 'autumn';
+        else season = 'winter';
+      } else {
+        // Southern Hemisphere Logic
+        if (month >= 2 && month <= 4) season = 'autumn';
+        else if (month >= 5 && month <= 7) season = 'winter';
+        else if (month >= 8 && month <= 10) season = 'spring';
+        else season = 'summer';
+      }
+
+      // 3. Render Data to UI
+      var data = harvestDB[season];
+      var widget = document.getElementById('harvest-widget');
+      var seasonTitle = document.getElementById('harvest-season-name');
+      var marketList = document.getElementById('market-list');
+      var forageList = document.getElementById('forage-list');
+
+      // Update Header
+      widget.style.display = 'block';
+      seasonTitle.innerText = (isNorth ? 'Northern ' : 'Southern ') + season.charAt(0).toUpperCase() + season.slice(1);
+
+      // Clear old lists
+      marketList.innerHTML = '';
+      forageList.innerHTML = '';
+
+      // Fill Market List (with Fruit/Veg tags)
+      data.buy.forEach(function(item) {
+        var li = document.createElement('li');
+        var tagClass = item.type === 'fruit' ? 'tag-fruit' : 'tag-veg';
+        var tagName = item.type === 'fruit' ? 'FRUIT' : 'VEG';
+        li.innerHTML = `<span class="${tagClass}">${tagName}</span> ${item.name}`;
+        marketList.appendChild(li);
+      });
+
+      // Fill Forage List (with Wild tags)
+      data.forage.forEach(function(item) {
+        var li = document.createElement('li');
+        li.innerHTML = `<span class="tag-wild">WILD</span> ${item}`;
+        forageList.appendChild(li);
+      });
+    });
+  }
+
+  // Run the Harvest Engine
+  initHarvestEngine();
   
+</script>
 </body>
 </html>
