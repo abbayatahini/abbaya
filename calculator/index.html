@@ -1689,6 +1689,7 @@
       .personalization-bar { flex-direction: column; align-items: stretch; }
     }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 </head>
 <body class="is-preload">
 
@@ -2520,7 +2521,7 @@ var baseDailyValues, upperLimits, upperLimitWarnings, nutrientNames, mealPresets
 <!-- Load the engine -->
 <script src="../assets/js/nutrition-calculator.js"></script>
 
-<!-- Sticky Mobile Stats Bar -->
+<!-- Sticky Mobile Stats Bar (Upgraded) -->
 <div id="sticky-mobile-footer">
   <div class="sticky-stat">
     <span class="sticky-label">Calories</span>
@@ -2532,19 +2533,44 @@ var baseDailyValues, upperLimits, upperLimitWarnings, nutrientNames, mealPresets
     <span id="sticky-pro-val" class="sticky-value">0g</span>
   </div>
 
-  <!-- Scroll to Top Button -->
-  <button class="sticky-add-btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
-    ↑ Top
+  <!-- Celebrate Button -->
+  <button class="sticky-add-btn" onclick="celebrateMeal()">
+    🎉 Finish
   </button>
 </div>
 
 <script>
-  // Simple Sync Script
+  // 1. The Confetti Function
+  function celebrateMeal() {
+    // Scroll to top to see the result
+    window.scrollTo({top: 0, behavior: 'smooth'});
+    
+    // Fire Confetti!
+    var duration = 3 * 1000;
+    var animationEnd = Date.now() + duration;
+    var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 10000 };
+
+    function randomInRange(min, max) {
+      return Math.random() * (max - min) + min;
+    }
+
+    var interval = setInterval(function() {
+      var timeLeft = animationEnd - Date.now();
+
+      if (timeLeft <= 0) {
+        return clearInterval(interval);
+      }
+
+      var particleCount = 50 * (timeLeft / duration);
+      // Since particles fall down, start a bit higher than random
+      confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+      confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+    }, 250);
+  }
+
+  // 2. Simple Sync Script (Keeps numbers updated)
   setInterval(function() {
-    // Attempt to read from the main dashboard logic
     if (typeof dailyValues !== 'undefined' && dailyValues.calories) {
-       // Update Sticky Bar with formatted numbers
-       // We use Math.round to keep it clean
        document.getElementById('sticky-cal-val').innerText = Math.round(dailyValues.calories || 0);
        document.getElementById('sticky-pro-val').innerText = Math.round(dailyValues.protein || 0) + 'g';
     }
