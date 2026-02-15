@@ -151,6 +151,59 @@
       50% { transform: scale(1.05); }
     }
 
+    /* --- MOBILE STICKY BAR --- */
+#sticky-mobile-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: #fff;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.1);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 12px 0;
+  z-index: 9999;
+  border-top: 1px solid #f0f0f0;
+  /* Only show on small screens */
+  display: flex; 
+}
+
+@media (min-width: 769px) {
+  #sticky-mobile-footer { display: none !important; }
+}
+
+.sticky-stat {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.sticky-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  color: #888;
+  letter-spacing: 1px;
+  font-weight: 600;
+}
+
+.sticky-value {
+  font-size: 18px;
+  font-weight: 800;
+  color: #C4A35A; /* Your Gold Theme Color */
+}
+
+.sticky-add-btn {
+  background: #C4A35A;
+  color: white;
+  border: none;
+  padding: 8px 20px;
+  border-radius: 50px;
+  font-weight: bold;
+  font-size: 14px;
+  box-shadow: 0 4px 10px rgba(196, 163, 90, 0.3);
+  cursor: pointer;
+}
     @keyframes shake {
       0%, 100% { transform: translateX(0); }
       10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }
@@ -2467,5 +2520,36 @@ var baseDailyValues, upperLimits, upperLimitWarnings, nutrientNames, mealPresets
 <!-- Load the engine -->
 <script src="../assets/js/nutrition-calculator.js"></script>
 
+<!-- Sticky Mobile Stats Bar -->
+<div id="sticky-mobile-footer">
+  <div class="sticky-stat">
+    <span class="sticky-label">Calories</span>
+    <span id="sticky-cal-val" class="sticky-value">0</span>
+  </div>
+  
+  <div class="sticky-stat">
+    <span class="sticky-label">Protein</span>
+    <span id="sticky-pro-val" class="sticky-value">0g</span>
+  </div>
+
+  <!-- Scroll to Top Button -->
+  <button class="sticky-add-btn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})">
+    ↑ Top
+  </button>
+</div>
+
+<script>
+  // Simple Sync Script
+  setInterval(function() {
+    // Attempt to read from the main dashboard logic
+    if (typeof dailyValues !== 'undefined' && dailyValues.calories) {
+       // Update Sticky Bar with formatted numbers
+       // We use Math.round to keep it clean
+       document.getElementById('sticky-cal-val').innerText = Math.round(dailyValues.calories || 0);
+       document.getElementById('sticky-pro-val').innerText = Math.round(dailyValues.protein || 0) + 'g';
+    }
+  }, 1000);
+</script>
+  
 </body>
 </html>
