@@ -179,17 +179,42 @@
         visibility: visible !important;
     }
     
-    /* The menu container itself */
-    #header #nav #menu {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: var(--brand-dark);
-        z-index: 99998;
-    }
+  /* The menu container itself */
+#header #nav #menu {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background: var(--brand-dark);
+    z-index: 99998;
+    overflow-y: auto;
+    padding: 5em 2em 2em;
+}
+
+/* Style menu links */
+#header #nav #menu ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    text-align: center;
+}
+
+#header #nav #menu ul li {
+    padding: 0.8em 0;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+#header #nav #menu ul li a {
+    color: white;
+    font-size: 1.3em;
+    text-decoration: none;
+}
+
+#header #nav #menu ul li a:hover {
+    color: var(--brand-primary);
+}
     
     /* Adjust language switcher */
     .lang-switcher {
@@ -420,47 +445,62 @@ color: var(--brand-dark);
         <header class="major">
             <h2>Shop Our Tahini</h2>
             <p>Authentic tahini made in Ethiopia from 100% Humera sesame seeds.<br />
-Imported fresh to Portugal. Rich, creamy, and traditional.</p>
+            Imported fresh to Portugal. Rich, creamy, and traditional.</p>
         </header>
 
-        <div class="table-wrapper">
-            <table>
-                <thead>
-                    <tr>
-                        <th>Product</th>
-                        <th>Size</th>
-                        <th>Price</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td><strong>Classic Tahini</strong><br><small>Smooth, creamy, 100% natural</small></td>
-                        <td>250g Jar</td>
-                        <td>€6.50</td>
-                      <a href="#contact" id="buy-250g" class="button small primary">Order</a>
-                    </tr>
-                    <tr>
-                        <td><strong>Classic Tahini</strong><br><small>Family size — great value</small></td>
-                        <td>900g Jar</td>
-                        <td>€10.00</td>
-                        <a href="#contact" id="buy-900g" class="button small primary">Order</a>
-                    </tr>
-                    <tr>
-                        <td><strong>Classic Tahini</strong><br><small>For restaurants, cafés & bulk buyers</small></td>
-                        <td>5kg Bucket</td>
-                        <td>€40.00</td>
-                       <a href="#contact" id="buy-5kg" class="button small primary">Order</a>
-                    </tr>
-                </tbody>
-            </table>
+        <!-- Product Cards -->
+        <div class="product-grid">
+
+            <!-- Product 1 -->
+            <div class="product-card">
+                <div class="product-image">
+                    <img src="images/final_label.png" alt="Abbaya Tahini 250g Jar" />
+                    <span class="product-badge">Best Seller</span>
+                </div>
+                <div class="product-info">
+                    <h3>Classic Tahini</h3>
+                    <p class="product-size">250g Jar</p>
+                    <p class="product-desc">Smooth, creamy, 100% natural</p>
+                    <p class="product-price">€6.50</p>
+                    <a href="#contact" class="button primary small">Order Now</a>
+                </div>
+            </div>
+
+            <!-- Product 2 -->
+            <div class="product-card">
+                <div class="product-image">
+                    <img src="images/final_label.png" alt="Abbaya Tahini 900g Jar" />
+                    <span class="product-badge">Best Value</span>
+                </div>
+                <div class="product-info">
+                    <h3>Classic Tahini</h3>
+                    <p class="product-size">900g Jar</p>
+                    <p class="product-desc">Family size — great value</p>
+                    <p class="product-price">€10.00</p>
+                    <a href="#contact" class="button primary small">Order Now</a>
+                </div>
+            </div>
+
+            <!-- Product 3 -->
+            <div class="product-card">
+                <div class="product-image">
+                    <img src="images/final_label.png" alt="Abbaya Tahini 5kg Bucket" />
+                    <span class="product-badge">Wholesale</span>
+                </div>
+                <div class="product-info">
+                    <h3>Classic Tahini</h3>
+                    <p class="product-size">5kg Bucket</p>
+                    <p class="product-desc">For restaurants, cafés & bulk buyers</p>
+                    <p class="product-price">€40.00</p>
+                    <a href="#contact" class="button primary small">Order Now</a>
+                </div>
+            </div>
+
         </div>
 
-        <p style="margin-top: 2em;"><em>* Prices include VAT. Delivery fees may apply depending on location.</em></p>
-
-        <ul class="actions special" style="margin-top: 2em;">
-            <li><a href="#buy" class="button primary large">How to Buy</a></li>
-        </ul>
+        <p style="margin-top: 2em; text-align:center;">
+            <em>* Prices include VAT. Delivery fees may apply depending on location.</em>
+        </p>
     </div>
 </section>
 			<!-- Products -->
@@ -647,24 +687,60 @@ v				<div class="image"><img src="images/cookie final.webp" alt="Vegan Tahini Sw
 	<script src="assets/js/breakpoints.min.js"></script>
 	<script src="assets/js/util.js"></script>
 	<script src="assets/js/main.js"></script>
-			<script>
-		// Back to Top Button
-		var backToTop = document.getElementById('back-to-top');
-		
-		window.addEventListener('scroll', function() {
-			if (window.scrollY > 300) {
-				backToTop.classList.add('visible');
-			} else {
-				backToTop.classList.remove('visible');
-			}
-		});
-	</script>
+
+		<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    // ---- MOBILE MENU FIX ----
+    const menuToggle = document.querySelector('.menuToggle');
+    const menu = document.getElementById('menu');
+    
+    if (menuToggle && menu) {
+        menuToggle.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            menu.style.display = (menu.style.display === 'block') ? 'none' : 'block';
+            document.body.style.overflow = (menu.style.display === 'block') ? 'hidden' : '';
+        });
+
+        // Close when a menu link is clicked
+        menu.querySelectorAll('a').forEach(function(link) {
+            link.addEventListener('click', function() {
+                menu.style.display = 'none';
+                document.body.style.overflow = '';
+            });
+        });
+
+        // Close when clicking outside the menu
+        document.addEventListener('click', function(e) {
+            if (!menu.contains(e.target) && !menuToggle.contains(e.target)) {
+                menu.style.display = 'none';
+                document.body.style.overflow = '';
+            }
+        });
+    }
+
+    // ---- BACK TO TOP ----
+    var backToTop = document.getElementById('back-to-top');
+    if (backToTop) {
+        window.addEventListener('scroll', function() {
+            if (window.scrollY > 300) {
+                backToTop.classList.add('visible');
+            } else {
+                backToTop.classList.remove('visible');
+            }
+        });
+    }
+
+});
+</script>
 		
 	<!-- Back to Top Button -->
 	<a href="#" id="back-to-top" title="Back to Top">↑</a>
 		
 	</body>
 </html>
+
 
 
 
