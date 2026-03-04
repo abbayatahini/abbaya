@@ -7,7 +7,7 @@
       "@type": "Product",
       "name": "Abbaya Tahini",
       "image": "https://abbayatahini.com/images/final_label.png",
-      "description": "Premium tahini made in Ethiopia from 100% Humera sesame seeds. Creamy, natural, and available in Portugal.",
+      "description": "Premium stone-ground tahini made in Ethiopia from 100% Humera sesame seeds. Creamy, natural, and available in Portugal.",
       "brand": {
         "@type": "Brand",
         "name": "Abbaya Tahini"
@@ -30,10 +30,9 @@
     <meta name="description" content="Premium Tahini made in a modern factory in Ethiopia using 100% Humera sesame seeds. Now available in Portugal. Creamy, natural, and delicious.">
     <meta name="keywords" content="tahini portugal, ethiopian tahini, humera sesame, buy tahini coimbra, natural peanut butter alternative, vegan portugal, keto food portugal">
     <meta name="author" content="Abbaya Tahini">
-    <meta property="og:title" content="Abbaya Tahini - Authentic Ethiopian Tahini">
-    <meta property="og:description" content="Made in Ethiopia with 100% Humera Sesame. Now available in Portugal. Taste the difference.">
-    <meta property="og:image" content="https://abbayatahini.com/images/final_label.png">
-    <meta property="og:url" content="https://abbayatahini.com">
+    
+    <!-- Fixes the 404 Favicon Console Error -->
+    <link rel="icon" type="image/png" href="images/final_label.png">
 
     <link rel="stylesheet" href="assets/css/main.css" />
     <noscript><link rel="stylesheet" href="assets/css/noscript.css" /></noscript>
@@ -48,15 +47,12 @@
         --brand-bg: #FDF8F0;
     }
 
-    /* ===== PREVENT ALL HORIZONTAL OVERFLOW ===== */
+    /* ===== PREVENT ALL HORIZONTAL OVERFLOW (Fixes off-screen menu) ===== */
     html, body {
         overflow-x: hidden !important;
         width: 100% !important;
-        max-width: 100% !important;
-    }
-
-    *, *::before, *::after {
-        box-sizing: border-box;
+        max-width: 100vw !important;
+        position: relative;
     }
 
     #page-wrapper {
@@ -64,58 +60,17 @@
         width: 100% !important;
     }
 
+    *, *::before, *::after {
+        box-sizing: border-box !important;
+    }
+
     img {
-        max-width: 100%;
+        max-width: 100% !important;
         height: auto;
     }
-
-    /* ===== SKIP LINK ===== */
-    .skip-link {
-        position: absolute;
-        top: -9999px;
-        left: -9999px;
-        z-index: 99999;
-        background: var(--brand-primary);
-        color: var(--brand-dark);
-        padding: 1em 1.5em;
-        font-weight: bold;
-        text-decoration: none;
-        border: 2px solid var(--brand-secondary);
-    }
-    .skip-link:focus {
-        top: 10px;
-        left: 10px;
-    }
-
-    /* ===== BACK TO TOP ===== */
-    #back-to-top {
-        position: fixed;
-        bottom: 30px;
-        right: 30px;
-        width: 50px;
-        height: 50px;
-        background-color: var(--brand-primary);
-        color: var(--brand-dark);
-        text-align: center;
-        line-height: 50px;
-        font-size: 24px;
-        font-weight: bold;
-        border-radius: 50%;
-        text-decoration: none;
-        opacity: 0;
-        visibility: hidden;
-        transition: all 0.3s ease;
-        z-index: 9999;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-    }
-    #back-to-top:hover {
-        background-color: var(--brand-secondary);
-        color: white;
-        transform: translateY(-5px);
-    }
-    #back-to-top.visible {
-        opacity: 1;
-        visibility: visible;
+    
+    .spotlight .image img {
+        width: 100% !important;
     }
 
     /* ===== HEADER ===== */
@@ -148,67 +103,32 @@
     }
 
     /* ===== SECTION COLORS ===== */
-    .wrapper.style1 {
-        background-color: var(--brand-primary);
-    }
-    .wrapper.style1 h2,
-    .wrapper.style1 h3 {
-        color: white;
-    }
-    .wrapper.style3,
-    .wrapper.style4,
-    .wrapper.style5 {
-        background-color: var(--brand-light);
-        color: var(--brand-dark);
-    }
-    .wrapper.style4 h2,
-    .wrapper.style4 h3 {
-        color: var(--brand-dark);
-    }
-
-    /* ===== FOOTER ===== */
-    #footer {
-        background-color: var(--brand-dark);
-    }
-
-    /* ===== LINKS ===== */
-    a {
-        color: var(--brand-primary);
-    }
+    .wrapper.style1 { background-color: var(--brand-primary); }
+    .wrapper.style1 h2, .wrapper.style1 h3 { color: white; }
+    .wrapper.style3, .wrapper.style4, .wrapper.style5 { background-color: var(--brand-light); color: var(--brand-dark); }
+    .wrapper.style4 h2, .wrapper.style4 h3 { color: var(--brand-dark); }
+    #footer { background-color: var(--brand-dark); }
+    a { color: var(--brand-primary); }
 
     /* ===== BUTTONS ===== */
-    .button.primary {
-        background-color: var(--brand-primary) !important;
-        color: var(--brand-dark) !important;
-    }
-    .button.primary:hover {
-        background-color: var(--brand-secondary) !important;
-        color: white !important;
-    }
+    .button.primary { background-color: var(--brand-primary) !important; color: var(--brand-dark) !important; }
+    .button.primary:hover { background-color: var(--brand-secondary) !important; color: white !important; }
 
     /* ===== TABLE ===== */
-    .table-wrapper {
-        overflow-x: auto;
-        width: 100%;
-    }
-    .table-wrapper table {
-        background: rgba(255,255,255,0.1);
-    }
-    .table-wrapper table thead {
-        background: var(--brand-primary);
-        color: var(--brand-dark);
-    }
-    .table-wrapper table tbody tr:nth-child(even) {
-        background: rgba(255,255,255,0.05);
-    }
+    .table-wrapper { overflow-x: auto; width: 100%; }
+    .table-wrapper table { background: rgba(255,255,255,0.1); }
+    .table-wrapper table thead { background: var(--brand-primary); color: var(--brand-dark); }
+    .table-wrapper table tbody tr:nth-child(even) { background: rgba(255,255,255,0.05); }
 
     /* ===== LANGUAGE SWITCHER ===== */
     .lang-switcher {
-        position: fixed;
-        top: 1em;
-        left: 1em;
-        z-index: 9500;
-        pointer-events: auto;
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        z-index: 9999;
+    }
+    @media screen and (max-width: 980px) {
+        .lang-switcher { position: fixed; }
     }
     .lang-switcher a {
         color: white;
@@ -219,17 +139,37 @@
         font-size: 0.85em;
         background: rgba(0,0,0,0.5);
         display: inline-block;
-        cursor: pointer;
     }
-    .lang-switcher a:hover {
-        background: var(--brand-primary);
-        color: var(--brand-dark);
-    }
-    .lang-switcher a.active {
+    .lang-switcher a:hover, .lang-switcher a.active {
         background: var(--brand-primary);
         color: var(--brand-dark);
         font-weight: bold;
     }
+
+    /* ===== BACK TO TOP ===== */
+    #back-to-top {
+        position: fixed;
+        bottom: 30px;
+        right: 30px;
+        width: 50px;
+        height: 50px;
+        background-color: var(--brand-primary);
+        color: var(--brand-dark);
+        text-align: center;
+        line-height: 50px;
+        font-size: 24px;
+        font-weight: bold;
+        border-radius: 50%;
+        text-decoration: none;
+        opacity: 0;
+        visibility: hidden;
+        transition: all 0.3s ease;
+        z-index: 9998;
+        box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    }
+    #back-to-top:hover { background-color: var(--brand-secondary); color: white; transform: translateY(-5px); }
+    #back-to-top.visible { opacity: 1; visibility: visible; }
+    .skip-link { position: absolute; left: -9999px; }
 
     /* ===== PRODUCT CARDS ===== */
     .product-grid {
@@ -247,9 +187,7 @@
         box-shadow: 0 4px 20px rgba(0,0,0,0.2);
         transition: transform 0.3s ease;
     }
-    .product-card:hover {
-        transform: translateY(-5px);
-    }
+    .product-card:hover { transform: translateY(-5px); }
     .product-image {
         position: relative;
         width: 100%;
@@ -260,17 +198,10 @@
         justify-content: center;
         overflow: hidden;
     }
-    .product-image img {
-        max-height: 175px;
-        max-width: 155px;
-        width: auto;
-        height: auto;
-        object-fit: contain;
-    }
+    .product-image img { max-height: 175px; max-width: 155px; object-fit: contain; }
     .product-badge {
         position: absolute;
-        top: 8px;
-        right: 8px;
+        top: 8px; right: 8px;
         background: var(--brand-primary);
         color: var(--brand-dark);
         font-size: 0.7em;
@@ -278,25 +209,10 @@
         padding: 0.25em 0.6em;
         border-radius: 20px;
     }
-    .product-info {
-        padding: 1em;
-        color: white;
-    }
-    .product-info h3 {
-        margin-bottom: 0.2em;
-        font-size: 1em;
-        color: white;
-    }
-    .product-size {
-        font-size: 0.85em;
-        opacity: 0.9;
-        margin: 0.2em 0;
-    }
-    .product-desc {
-        font-size: 0.8em;
-        opacity: 0.7;
-        margin: 0.2em 0;
-    }
+    .product-info { padding: 1em; color: white; }
+    .product-info h3 { margin-bottom: 0.2em; font-size: 1em; color: white; }
+    .product-size { font-size: 0.85em; opacity: 0.9; margin: 0.2em 0; }
+    .product-desc { font-size: 0.8em; opacity: 0.7; margin: 0.2em 0; }
     .product-price {
         font-size: 1.4em;
         font-weight: bold;
@@ -308,193 +224,16 @@
         margin: 0.5em 0;
     }
 
-    /* ===== MOBILE STYLES ===== */
-    @media screen and (max-width: 980px) {
-
-        /* Fixed header */
-        #header {
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            right: 0 !important;
-            width: 100vw !important;
-            height: 60px !important;
-            z-index: 9000 !important;
-            background: var(--brand-dark) !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: flex-end !important;
-            padding: 0 1em !important;
-            overflow: visible !important;
-        }
-
-        /* Hide the h1 site title on mobile to save space */
-        #header h1 {
-            position: absolute !important;
-            left: 50% !important;
-            transform: translateX(-50%) !important;
-            font-size: 0.9em !important;
-            white-space: nowrap !important;
-        }
-
-        /* Nav wrapper */
-        #header #nav {
-            display: block !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-            position: static !important;
-        }
-
-        #header #nav > ul {
-            list-style: none !important;
-            margin: 0 !important;
-            padding: 0 !important;
-        }
-
-        #header #nav > ul > li {
-            list-style: none !important;
-        }
-
-        /* Hamburger button */
-        #header #nav .menuToggle {
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            visibility: visible !important;
-            opacity: 1 !important;
-            position: relative !important;
-            top: auto !important;
-            right: auto !important;
-            left: auto !important;
-            width: 50px !important;
-            height: 44px !important;
-            background: var(--brand-primary) !important;
-            border-radius: 6px !important;
-            cursor: pointer !important;
-            pointer-events: all !important;
-            touch-action: manipulation !important;
-            z-index: 9100 !important;
-            text-decoration: none !important;
-            -webkit-tap-highlight-color: rgba(0,0,0,0) !important;
-        }
-
-        #header #nav .menuToggle span {
-            display: block !important;
-            color: var(--brand-dark) !important;
-            font-size: 0.6em !important;
-            font-weight: bold !important;
-            letter-spacing: 0.05em !important;
-            pointer-events: none !important;
-        }
-
-        /* Full screen menu */
-        #header #nav #menu {
-            display: none;
-            position: fixed !important;
-            top: 60px !important;
-            left: 0 !important;
-            right: 0 !important;
-            width: 100vw !important;
-            height: calc(100vh - 60px) !important;
-            background: var(--brand-dark) !important;
-            z-index: 8999 !important;
-            overflow-y: auto !important;
-            padding: 1.5em 2em 4em !important;
-            -webkit-overflow-scrolling: touch !important;
-        }
-
-        #header #nav #menu ul {
-            list-style: none !important;
-            padding: 0 !important;
-            margin: 0 !important;
-            text-align: center !important;
-        }
-
-        #header #nav #menu ul li {
-            list-style: none !important;
-            padding: 0.8em 0 !important;
-            border-bottom: 1px solid rgba(255,255,255,0.1) !important;
-        }
-
-        #header #nav #menu ul li a {
-            color: white !important;
-            font-size: 1.2em !important;
-            text-decoration: none !important;
-            display: block !important;
-            padding: 0.5em !important;
-            pointer-events: all !important;
-            touch-action: manipulation !important;
-        }
-
-        #header #nav #menu ul li a:active {
-            color: var(--brand-primary) !important;
-            background: rgba(255,255,255,0.05) !important;
-            border-radius: 4px !important;
-        }
-
-        /* Push content below header */
-        #page-wrapper {
-            padding-top: 60px !important;
-        }
-
-        /* Language switcher - small and top left */
-        .lang-switcher {
-            top: 0.9em !important;
-            left: 0.5em !important;
-            z-index: 9200 !important;
-        }
-        .lang-switcher a {
-            padding: 0.3em 0.5em !important;
-            font-size: 0.75em !important;
-        }
-
-        /* Product grid - 1 column on mobile */
-        .product-grid {
-            grid-template-columns: 1fr !important;
-            max-width: 300px !important;
-            margin: 1em auto 0 !important;
-        }
-
-        /* Fix spotlight overflow */
-        .spotlight {
-            flex-direction: column !important;
-        }
-        .spotlight .image {
-            width: 100% !important;
-            max-width: 100% !important;
-        }
-        .spotlight .image img {
-            width: 100% !important;
-            max-width: 100% !important;
-        }
-    }
-
+    /* ===== MOBILE TEXT ADJUSTMENTS ===== */
     @media screen and (max-width: 768px) {
-        /* 2 columns on tablet */
-        .product-grid {
-            grid-template-columns: repeat(2, 1fr) !important;
-            max-width: 600px !important;
-        }
-
-        p, li, blockquote {
-            font-size: 16px !important;
-            line-height: 1.6 !important;
-        }
-        h2 {
-            font-size: 1.8em !important;
-        }
-        .button {
-            font-size: 15px !important;
-        }
+        .product-grid { grid-template-columns: repeat(2, 1fr) !important; max-width: 600px !important; }
+        p, li, blockquote { font-size: 16px !important; line-height: 1.6 !important; }
+        h2 { font-size: 1.8em !important; }
+        .button { font-size: 15px !important; }
     }
-
     @media screen and (max-width: 480px) {
-        .product-grid {
-            grid-template-columns: 1fr !important;
-            max-width: 280px !important;
-        }
+        .product-grid { grid-template-columns: 1fr !important; max-width: 280px !important; }
     }
-
     </style>
 </head>
 
@@ -598,7 +337,7 @@
                     </header>
 
                     <div class="product-grid">
-
+                        <!-- Product 1 -->
                         <div class="product-card">
                             <div class="product-image">
                                 <img src="images/tahini 900g.jpg" alt="Abbaya Tahini 250g Jar" />
@@ -613,6 +352,7 @@
                             </div>
                         </div>
 
+                        <!-- Product 2 -->
                         <div class="product-card">
                             <div class="product-image">
                                 <img src="images/tahini 900g.jpg" alt="Abbaya Tahini 900g Jar" />
@@ -627,6 +367,7 @@
                             </div>
                         </div>
 
+                        <!-- Product 3 -->
                         <div class="product-card">
                             <div class="product-image">
                                 <img src="images/tahini 5kg.jpg" alt="Abbaya Tahini 5kg Bucket" />
@@ -640,7 +381,6 @@
                                 <a href="#contact" class="button primary small">Order Now</a>
                             </div>
                         </div>
-
                     </div>
 
                     <p style="margin-top:2em; text-align:center;">
@@ -848,75 +588,16 @@
     <script src="assets/js/main.js"></script>
 
     <script>
-    // Wait for everything including main.js to finish
-    window.addEventListener('load', function() {
-
-        var menuToggle = document.querySelector('a.menuToggle');
-        var menu = document.getElementById('menu');
-        var isOpen = false;
-
-        function openMenu() {
-            menu.style.display = 'block';
-            menu.style.visibility = 'visible';
-            menu.style.opacity = '1';
-            document.body.style.overflow = 'hidden';
-            isOpen = true;
-        }
-
-        function closeMenu() {
-            menu.style.display = 'none';
-            document.body.style.overflow = '';
-            isOpen = false;
-        }
-
-        if (menuToggle && menu) {
-
-            // Remove any existing listeners by cloning
-            var newToggle = menuToggle.cloneNode(true);
-            menuToggle.parentNode.replaceChild(newToggle, menuToggle);
-            menuToggle = newToggle;
-
-            menuToggle.addEventListener('click', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                isOpen ? closeMenu() : openMenu();
-            });
-
-            menuToggle.addEventListener('touchend', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-                isOpen ? closeMenu() : openMenu();
-            }, { passive: false });
-
-            // Close on menu link click
-            document.querySelectorAll('#menu a').forEach(function(link) {
-                link.addEventListener('click', function() {
-                    closeMenu();
-                });
-            });
-
-            // Close on outside click
-            document.addEventListener('click', function(e) {
-                if (isOpen && !menu.contains(e.target) && !menuToggle.contains(e.target)) {
-                    closeMenu();
-                }
-            });
-        }
-
-        // Back to top
+    document.addEventListener('DOMContentLoaded', function() {
+        // ---- BACK TO TOP ONLY ----
         var backToTop = document.getElementById('back-to-top');
         if (backToTop) {
             window.addEventListener('scroll', function() {
                 backToTop.classList.toggle('visible', window.scrollY > 300);
             });
         }
-
     });
     </script>
 
-    <!-- Back to Top -->
-    <a href="#" id="back-to-top" title="Back to Top">↑</a>
-
 </body>
 </html>
-
